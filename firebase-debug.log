@@ -1,0 +1,292 @@
+[debug] [2026-04-06T21:44:06.321Z] ----------------------------------------------------------------------
+[debug] [2026-04-06T21:44:06.325Z] Command:       C:\Users\darkc\OneDrive\Documentos\web\node\v22\node.exe C:\Users\darkc\OneDrive\Documentos\web\node\v22\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2026-04-06T21:44:06.325Z] CLI Version:   15.13.0
+[debug] [2026-04-06T21:44:06.326Z] Platform:      win32
+[debug] [2026-04-06T21:44:06.326Z] Node Version:  v22.19.0
+[debug] [2026-04-06T21:44:06.327Z] Time:          Mon Apr 06 2026 18:44:06 GMT-0300 (Brasilia Standard Time)
+[debug] [2026-04-06T21:44:06.327Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\darkc\OneDrive\Documentos\GitHub\ES-PI3-2026-T2-G01
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2026-04-06T21:44:23.760Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-06T21:44:23.760Z] > authorizing via signed-in user (tomzin.bean@gmail.com)
+[debug] [2026-04-06T21:44:23.762Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:23.762Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:23.765Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/mesclainvest-fe733 [none]
+[debug] [2026-04-06T21:44:24.300Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/mesclainvest-fe733 200
+[debug] [2026-04-06T21:44:24.300Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/mesclainvest-fe733 {"projectId":"mesclainvest-fe733","projectNumber":"388988662520","displayName":"MesclaInvest","name":"projects/mesclainvest-fe733","resources":{"hostingSite":"mesclainvest-fe733"},"state":"ACTIVE","etag":"1_05cb80cb-ec96-4f06-b18e-7be49476e454"}
+[info] i  Using project mesclainvest-fe733 (MesclaInvest) . 
+[info] 
+=== Firestore Setup
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-04-06T21:44:24.321Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:24.321Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:24.321Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/mesclainvest-fe733/databases [none]
+[debug] [2026-04-06T21:44:24.945Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/mesclainvest-fe733/databases 200
+[debug] [2026-04-06T21:44:24.945Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/mesclainvest-fe733/databases {"databases":[{"name":"projects/mesclainvest-fe733/databases/(default)","uid":"a470fe72-722c-4094-b261-ca200783446b","createTime":"2026-04-06T21:34:00.632470Z","updateTime":"2026-04-06T21:34:00.632470Z","locationId":"southamerica-east1","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-04-06T21:34:00.632470Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"i","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IJ+JkZmZ2pMDMKa6vsmX2pMD"}]}
+[info] 
+[info] Firestore Security Rules allow you to define how and when to allow
+[info] requests. You can keep these rules in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[debug] [2026-04-06T21:44:26.406Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:26.407Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:26.407Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/mesclainvest-fe733/releases pageSize=10&pageToken=
+[debug] [2026-04-06T21:44:27.765Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/mesclainvest-fe733/releases 200
+[debug] [2026-04-06T21:44:27.765Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/mesclainvest-fe733/releases {"releases":[{"name":"projects/mesclainvest-fe733/releases/cloud.firestore","rulesetName":"projects/mesclainvest-fe733/rulesets/deba7218-a16d-4826-99d0-702f94d61f0e","createTime":"2026-04-06T21:34:03.192766Z","updateTime":"2026-04-06T21:34:03.192766Z"},{"name":"projects/mesclainvest-fe733/releases/firebase.storage/mesclainvest-fe733.firebasestorage.app","rulesetName":"projects/mesclainvest-fe733/rulesets/ebc879f2-1673-4a38-ad9c-77299365a215","createTime":"2026-04-06T21:41:42.800347Z","updateTime":"2026-04-06T21:41:42.800347Z"}]}
+[debug] [2026-04-06T21:44:27.787Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:27.787Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:27.787Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/mesclainvest-fe733/rulesets/deba7218-a16d-4826-99d0-702f94d61f0e [none]
+[debug] [2026-04-06T21:44:28.257Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/mesclainvest-fe733/rulesets/deba7218-a16d-4826-99d0-702f94d61f0e 200
+[debug] [2026-04-06T21:44:28.257Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/mesclainvest-fe733/rulesets/deba7218-a16d-4826-99d0-702f94d61f0e [omitted]
+[info] i  Downloaded the existing Firestore Security Rules from the Firebase console 
+[info] i  Skipping write of firestore.rules 
+[info] 
+[info] Firestore indexes allow you to perform complex queries while
+[info] maintaining performance that scales with the size of the result
+[info] set. You can keep index definitions in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[debug] [2026-04-06T21:44:30.250Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:30.250Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:30.251Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:30.251Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:30.251Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/mesclainvest-fe733/databases/(default)/collectionGroups/-/indexes [none]
+[debug] [2026-04-06T21:44:30.254Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/mesclainvest-fe733/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* [none]
+[debug] [2026-04-06T21:44:30.474Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/mesclainvest-fe733/databases/(default)/collectionGroups/-/indexes 200
+[debug] [2026-04-06T21:44:30.474Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/mesclainvest-fe733/databases/(default)/collectionGroups/-/indexes {}
+[debug] [2026-04-06T21:44:30.477Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/mesclainvest-fe733/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* 200
+[debug] [2026-04-06T21:44:30.478Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/mesclainvest-fe733/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* {"fields":[{"name":"projects/mesclainvest-fe733/databases/(default)/collectionGroups/__default__/fields/*","indexConfig":{"indexes":[{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","order":"ASCENDING"}],"state":"READY"},{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","order":"DESCENDING"}],"state":"READY"},{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","arrayConfig":"CONTAINS"}],"state":"READY"}]}}]}
+[info] i  Downloaded the existing Firestore indexes from the Firebase console 
+[info] i  firestore.indexes.json is unchanged 
+[info] 
+=== Functions Setup
+[debug] [2026-04-06T21:44:30.484Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-06T21:44:30.484Z] > authorizing via signed-in user (tomzin.bean@gmail.com)
+[debug] [2026-04-06T21:44:30.485Z] [iam] checking project mesclainvest-fe733 for permissions ["firebase.projects.get"]
+[debug] [2026-04-06T21:44:30.485Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:30.485Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:30.485Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/mesclainvest-fe733:testIamPermissions [none]
+[debug] [2026-04-06T21:44:30.485Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/mesclainvest-fe733:testIamPermissions  x-goog-user-project=mesclainvest-fe733
+[debug] [2026-04-06T21:44:30.485Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/mesclainvest-fe733:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-04-06T21:44:31.466Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/mesclainvest-fe733:testIamPermissions 200
+[debug] [2026-04-06T21:44:31.466Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/mesclainvest-fe733:testIamPermissions {"permissions":["firebase.projects.get"]}
+[info] Let's create a new codebase for your functions.
+[info] A directory corresponding to the codebase will be created in your project
+[info] with sample code pre-configured.
+
+[info] See https://firebase.google.com/docs/functions/organize-functions for
+[info] more information on organizing your functions using codebases.
+
+[info] Functions can be deployed with firebase deploy.
+
+[info] i  functions/.eslintrc.js is unchanged 
+[info] i  functions/tsconfig.dev.json is unchanged 
+[info] i  functions/package.json is unchanged 
+[info] i  functions/tsconfig.json is unchanged 
+[info] i  functions/src/index.ts is unchanged 
+[info] i  functions/.gitignore is unchanged 
+[info] 
+=== Storage Setup
+[info] 
+[info] Firebase Storage Security Rules allow you to define how and when to allow
+[info] uploads and downloads. You can keep these rules in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[info] i  storage: ensuring required API firebasestorage.googleapis.com is enabled... 
+[debug] [2026-04-06T21:44:39.270Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:39.270Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:39.271Z] >>> [apiv2][query] GET https://firebasestorage.googleapis.com/v1alpha/projects/mesclainvest-fe733/defaultBucket [none]
+[debug] [2026-04-06T21:44:40.583Z] <<< [apiv2][status] GET https://firebasestorage.googleapis.com/v1alpha/projects/mesclainvest-fe733/defaultBucket 200
+[debug] [2026-04-06T21:44:40.583Z] <<< [apiv2][body] GET https://firebasestorage.googleapis.com/v1alpha/projects/mesclainvest-fe733/defaultBucket {"name":"projects/mesclainvest-fe733/defaultBucket","location":"US-CENTRAL1","bucket":{"name":"projects/mesclainvest-fe733/buckets/mesclainvest-fe733.firebasestorage.app"},"storageClass":"REGIONAL"}
+[debug] [2026-04-06T21:44:40.584Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:40.584Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:40.584Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/mesclainvest-fe733/releases pageSize=10&pageToken=
+[debug] [2026-04-06T21:44:41.827Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/mesclainvest-fe733/releases 200
+[debug] [2026-04-06T21:44:41.827Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/mesclainvest-fe733/releases {"releases":[{"name":"projects/mesclainvest-fe733/releases/cloud.firestore","rulesetName":"projects/mesclainvest-fe733/rulesets/deba7218-a16d-4826-99d0-702f94d61f0e","createTime":"2026-04-06T21:34:03.192766Z","updateTime":"2026-04-06T21:34:03.192766Z"},{"name":"projects/mesclainvest-fe733/releases/firebase.storage/mesclainvest-fe733.firebasestorage.app","rulesetName":"projects/mesclainvest-fe733/rulesets/ebc879f2-1673-4a38-ad9c-77299365a215","createTime":"2026-04-06T21:41:42.800347Z","updateTime":"2026-04-06T21:41:42.800347Z"}]}
+[debug] [2026-04-06T21:44:41.828Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:41.828Z] Checked if tokens are valid: true, expires at: 1775513863018
+[debug] [2026-04-06T21:44:41.828Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/mesclainvest-fe733/rulesets/ebc879f2-1673-4a38-ad9c-77299365a215 [none]
+[debug] [2026-04-06T21:44:43.015Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/mesclainvest-fe733/rulesets/ebc879f2-1673-4a38-ad9c-77299365a215 200
+[debug] [2026-04-06T21:44:43.015Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/mesclainvest-fe733/rulesets/ebc879f2-1673-4a38-ad9c-77299365a215 [omitted]
+[info] Downloaded the existing Storage Security Rules from the Firebase console
+[info] +  Wrote storage.rules 
+[info] 
+=== Emulators Setup
+[info] i  firestore: downloading cloud-firestore-emulator-v1.20.4.jar... {"metadata":{"emulator":{"name":"firestore"},"message":"downloading cloud-firestore-emulator-v1.20.4.jar..."}}
+[debug] [2026-04-06T21:45:54.240Z] >>> [apiv2][query] GET https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-firestore-emulator-v1.20.4.jar 
+[debug] [2026-04-06T21:45:54.547Z] <<< [apiv2][status] GET https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-firestore-emulator-v1.20.4.jar 200
+[debug] [2026-04-06T21:45:54.547Z] <<< [apiv2][body] GET https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-firestore-emulator-v1.20.4.jar [stream]
+[info] i  storage: downloading cloud-storage-rules-runtime-v1.1.3.jar... {"metadata":{"emulator":{"name":"storage"},"message":"downloading cloud-storage-rules-runtime-v1.1.3.jar..."}}
+[debug] [2026-04-06T21:46:05.993Z] >>> [apiv2][query] GET https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-storage-rules-runtime-v1.1.3.jar 
+[debug] [2026-04-06T21:46:06.179Z] <<< [apiv2][status] GET https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-storage-rules-runtime-v1.1.3.jar 200
+[debug] [2026-04-06T21:46:06.180Z] <<< [apiv2][body] GET https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-storage-rules-runtime-v1.1.3.jar [stream]
+[info] i  ui: downloading ui-v1.15.0.zip... {"metadata":{"emulator":{"name":"ui"},"message":"downloading ui-v1.15.0.zip..."}}
+[debug] [2026-04-06T21:46:09.574Z] >>> [apiv2][query] GET https://storage.googleapis.com/firebase-preview-drop/emulator/ui-v1.15.0.zip 
+[info] 
+=== Agent Skills Setup
+[info] If you are using an AI coding agent, Firebase Agent Skills make it an expert at Firebase.
+[debug] [2026-04-06T21:46:09.741Z] <<< [apiv2][status] GET https://storage.googleapis.com/firebase-preview-drop/emulator/ui-v1.15.0.zip 200
+[debug] [2026-04-06T21:46:09.741Z] <<< [apiv2][body] GET https://storage.googleapis.com/firebase-preview-drop/emulator/ui-v1.15.0.zip [stream]
+[debug] [2026-04-06T21:46:10.131Z] Data is 3538469
+[debug] [2026-04-06T21:46:10.132Z] [unzip] Entry: client/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2026-04-06T21:46:10.132Z] [unzip] Processing entry: client\
+[debug] [2026-04-06T21:46:10.132Z] [unzip] mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\
+[debug] [2026-04-06T21:46:10.135Z] [unzip] Entry: client/favicon-16x16.png (compressed_size=293 bytes, uncompressed_size=293 bytes)
+[debug] [2026-04-06T21:46:10.135Z] [unzip] Processing entry: client\favicon-16x16.png
+[debug] [2026-04-06T21:46:10.135Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-04-06T21:46:10.136Z] [unzip] Writing file: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\favicon-16x16.png
+[debug] [2026-04-06T21:46:10.143Z] [unzip] Entry: client/safari-pinned-tab.svg (compressed_size=1433 bytes, uncompressed_size=2611 bytes)
+[debug] [2026-04-06T21:46:10.143Z] [unzip] Processing entry: client\safari-pinned-tab.svg
+[debug] [2026-04-06T21:46:10.143Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-04-06T21:46:10.144Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\safari-pinned-tab.svg
+[debug] [2026-04-06T21:46:10.163Z] [unzip] Entry: client/favicon.ico (compressed_size=2933 bytes, uncompressed_size=13294 bytes)
+[debug] [2026-04-06T21:46:10.164Z] [unzip] Processing entry: client\favicon.ico
+[debug] [2026-04-06T21:46:10.164Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-04-06T21:46:10.165Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\favicon.ico
+[debug] [2026-04-06T21:46:10.168Z] [unzip] Entry: client/index.html (compressed_size=1364 bytes, uncompressed_size=3071 bytes)
+[debug] [2026-04-06T21:46:10.168Z] [unzip] Processing entry: client\index.html
+[debug] [2026-04-06T21:46:10.168Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-04-06T21:46:10.168Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\index.html
+[debug] [2026-04-06T21:46:10.171Z] [unzip] Entry: client/android-chrome-192x192.png (compressed_size=2684 bytes, uncompressed_size=2684 bytes)
+[debug] [2026-04-06T21:46:10.171Z] [unzip] Processing entry: client\android-chrome-192x192.png
+[debug] [2026-04-06T21:46:10.171Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-04-06T21:46:10.171Z] [unzip] Writing file: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\android-chrome-192x192.png
+[debug] [2026-04-06T21:46:10.173Z] [unzip] Entry: client/apple-touch-icon.png (compressed_size=2123 bytes, uncompressed_size=2152 bytes)
+[debug] [2026-04-06T21:46:10.173Z] [unzip] Processing entry: client\apple-touch-icon.png
+[debug] [2026-04-06T21:46:10.173Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-04-06T21:46:10.174Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\apple-touch-icon.png
+[debug] [2026-04-06T21:46:10.183Z] [unzip] Entry: client/android-chrome-512x512.png (compressed_size=5369 bytes, uncompressed_size=5411 bytes)
+[debug] [2026-04-06T21:46:10.183Z] [unzip] Processing entry: client\android-chrome-512x512.png
+[debug] [2026-04-06T21:46:10.184Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-04-06T21:46:10.184Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\android-chrome-512x512.png
+[debug] [2026-04-06T21:46:10.187Z] [unzip] Entry: client/manifest.json (compressed_size=245 bytes, uncompressed_size=551 bytes)
+[debug] [2026-04-06T21:46:10.187Z] [unzip] Processing entry: client\manifest.json
+[debug] [2026-04-06T21:46:10.188Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-04-06T21:46:10.188Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\manifest.json
+[debug] [2026-04-06T21:46:10.191Z] [unzip] Entry: client/robots.txt (compressed_size=26 bytes, uncompressed_size=26 bytes)
+[debug] [2026-04-06T21:46:10.191Z] [unzip] Processing entry: client\robots.txt
+[debug] [2026-04-06T21:46:10.191Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-04-06T21:46:10.192Z] [unzip] Writing file: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\robots.txt
+[debug] [2026-04-06T21:46:10.194Z] [unzip] Entry: client/mstile-150x150.png (compressed_size=2034 bytes, uncompressed_size=2034 bytes)
+[debug] [2026-04-06T21:46:10.194Z] [unzip] Processing entry: client\mstile-150x150.png
+[debug] [2026-04-06T21:46:10.195Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-04-06T21:46:10.195Z] [unzip] Writing file: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\mstile-150x150.png
+[debug] [2026-04-06T21:46:10.197Z] [unzip] Entry: client/assets/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2026-04-06T21:46:10.197Z] [unzip] Processing entry: client\assets\
+[debug] [2026-04-06T21:46:10.197Z] [unzip] mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\
+[debug] [2026-04-06T21:46:10.199Z] [unzip] Entry: client/assets/index-BX-A56oj.js (compressed_size=582089 bytes, uncompressed_size=2092775 bytes)
+[debug] [2026-04-06T21:46:10.199Z] [unzip] Processing entry: client\assets\index-BX-A56oj.js
+[debug] [2026-04-06T21:46:10.199Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets
+[debug] [2026-04-06T21:46:10.200Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\index-BX-A56oj.js
+[debug] [2026-04-06T21:46:10.223Z] [unzip] Entry: client/assets/index-CjB9C900.css (compressed_size=35979 bytes, uncompressed_size=298654 bytes)
+[debug] [2026-04-06T21:46:10.224Z] [unzip] Processing entry: client\assets\index-CjB9C900.css
+[debug] [2026-04-06T21:46:10.224Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets
+[debug] [2026-04-06T21:46:10.224Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\index-CjB9C900.css
+[debug] [2026-04-06T21:46:10.228Z] [unzip] Entry: client/assets/index-BX-A56oj.js.map (compressed_size=2362482 bytes, uncompressed_size=10036679 bytes)
+[debug] [2026-04-06T21:46:10.228Z] [unzip] Processing entry: client\assets\index-BX-A56oj.js.map
+[debug] [2026-04-06T21:46:10.228Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets
+[debug] [2026-04-06T21:46:10.229Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\index-BX-A56oj.js.map
+[debug] [2026-04-06T21:46:10.310Z] [unzip] Entry: client/assets/extensions/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2026-04-06T21:46:10.310Z] [unzip] Processing entry: client\assets\extensions\
+[debug] [2026-04-06T21:46:10.310Z] [unzip] mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\extensions\
+[debug] [2026-04-06T21:46:10.311Z] [unzip] Entry: client/assets/extensions/default-extension.png (compressed_size=1646 bytes, uncompressed_size=1657 bytes)
+[debug] [2026-04-06T21:46:10.312Z] [unzip] Processing entry: client\assets\extensions\default-extension.png
+[debug] [2026-04-06T21:46:10.312Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\extensions
+[debug] [2026-04-06T21:46:10.312Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\extensions\default-extension.png
+[debug] [2026-04-06T21:46:10.314Z] [unzip] Entry: client/assets/img/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2026-04-06T21:46:10.315Z] [unzip] Processing entry: client\assets\img\
+[debug] [2026-04-06T21:46:10.315Z] [unzip] mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\img\
+[debug] [2026-04-06T21:46:10.315Z] [unzip] Entry: client/assets/img/database.png (compressed_size=29449 bytes, uncompressed_size=29988 bytes)
+[debug] [2026-04-06T21:46:10.316Z] [unzip] Processing entry: client\assets\img\database.png
+[debug] [2026-04-06T21:46:10.316Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\img
+[debug] [2026-04-06T21:46:10.316Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\img\database.png
+[debug] [2026-04-06T21:46:10.320Z] [unzip] Entry: client/assets/provider-icons/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2026-04-06T21:46:10.321Z] [unzip] Processing entry: client\assets\provider-icons\
+[debug] [2026-04-06T21:46:10.321Z] [unzip] mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\
+[debug] [2026-04-06T21:46:10.322Z] [unzip] Entry: client/assets/provider-icons/auth_service_saml.svg (compressed_size=575 bytes, uncompressed_size=1226 bytes)
+[debug] [2026-04-06T21:46:10.322Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_saml.svg
+[debug] [2026-04-06T21:46:10.322Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.322Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_saml.svg
+[debug] [2026-04-06T21:46:10.325Z] [unzip] Entry: client/assets/provider-icons/auth_service_phone.svg (compressed_size=261 bytes, uncompressed_size=414 bytes)
+[debug] [2026-04-06T21:46:10.326Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_phone.svg
+[debug] [2026-04-06T21:46:10.326Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.326Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_phone.svg
+[debug] [2026-04-06T21:46:10.330Z] [unzip] Entry: client/assets/provider-icons/auth_service_facebook.svg (compressed_size=289 bytes, uncompressed_size=457 bytes)
+[debug] [2026-04-06T21:46:10.330Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_facebook.svg
+[debug] [2026-04-06T21:46:10.330Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.331Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_facebook.svg
+[debug] [2026-04-06T21:46:10.334Z] [unzip] Entry: client/assets/provider-icons/auth_service_game_center.svg (compressed_size=991 bytes, uncompressed_size=3921 bytes)
+[debug] [2026-04-06T21:46:10.334Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_game_center.svg
+[debug] [2026-04-06T21:46:10.334Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.335Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_game_center.svg
+[debug] [2026-04-06T21:46:10.338Z] [unzip] Entry: client/assets/provider-icons/auth_service_apple.svg (compressed_size=230 bytes, uncompressed_size=334 bytes)
+[debug] [2026-04-06T21:46:10.338Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_apple.svg
+[debug] [2026-04-06T21:46:10.338Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.339Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_apple.svg
+[debug] [2026-04-06T21:46:10.342Z] [unzip] Entry: client/assets/provider-icons/auth_service_github.svg (compressed_size=466 bytes, uncompressed_size=838 bytes)
+[debug] [2026-04-06T21:46:10.342Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_github.svg
+[debug] [2026-04-06T21:46:10.342Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.343Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_github.svg
+[debug] [2026-04-06T21:46:10.346Z] [unzip] Entry: client/assets/provider-icons/auth_service_mslive.svg (compressed_size=203 bytes, uncompressed_size=378 bytes)
+[debug] [2026-04-06T21:46:10.346Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_mslive.svg
+[debug] [2026-04-06T21:46:10.346Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.347Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_mslive.svg
+[debug] [2026-04-06T21:46:10.350Z] [unzip] Entry: client/assets/provider-icons/auth_service_yahoo.svg (compressed_size=577 bytes, uncompressed_size=1182 bytes)
+[debug] [2026-04-06T21:46:10.350Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_yahoo.svg
+[debug] [2026-04-06T21:46:10.350Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.351Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_yahoo.svg
+[debug] [2026-04-06T21:46:10.354Z] [unzip] Entry: client/assets/provider-icons/auth_service_twitter.svg (compressed_size=444 bytes, uncompressed_size=751 bytes)
+[debug] [2026-04-06T21:46:10.354Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_twitter.svg
+[debug] [2026-04-06T21:46:10.354Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.356Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_twitter.svg
+[debug] [2026-04-06T21:46:10.361Z] [unzip] Entry: client/assets/provider-icons/auth_service_play_games.svg (compressed_size=565 bytes, uncompressed_size=1173 bytes)
+[debug] [2026-04-06T21:46:10.361Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_play_games.svg
+[debug] [2026-04-06T21:46:10.361Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.363Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_play_games.svg
+[debug] [2026-04-06T21:46:10.367Z] [unzip] Entry: client/assets/provider-icons/auth_service_email.svg (compressed_size=228 bytes, uncompressed_size=326 bytes)
+[debug] [2026-04-06T21:46:10.367Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_email.svg
+[debug] [2026-04-06T21:46:10.367Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.368Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_email.svg
+[debug] [2026-04-06T21:46:10.370Z] [unzip] Entry: client/assets/provider-icons/auth_service_google.svg (compressed_size=409 bytes, uncompressed_size=720 bytes)
+[debug] [2026-04-06T21:46:10.370Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_google.svg
+[debug] [2026-04-06T21:46:10.370Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.371Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_google.svg
+[debug] [2026-04-06T21:46:10.373Z] [unzip] Entry: client/assets/provider-icons/auth_service_oidc.svg (compressed_size=414 bytes, uncompressed_size=858 bytes)
+[debug] [2026-04-06T21:46:10.373Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_oidc.svg
+[debug] [2026-04-06T21:46:10.373Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-04-06T21:46:10.374Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_oidc.svg
+[debug] [2026-04-06T21:46:10.376Z] [unzip] Entry: client/browserconfig.xml (compressed_size=491 bytes, uncompressed_size=822 bytes)
+[debug] [2026-04-06T21:46:10.377Z] [unzip] Processing entry: client\browserconfig.xml
+[debug] [2026-04-06T21:46:10.377Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-04-06T21:46:10.377Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\browserconfig.xml
+[debug] [2026-04-06T21:46:10.380Z] [unzip] Entry: client/favicon-32x32.png (compressed_size=475 bytes, uncompressed_size=475 bytes)
+[debug] [2026-04-06T21:46:10.380Z] [unzip] Processing entry: client\favicon-32x32.png
+[debug] [2026-04-06T21:46:10.380Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-04-06T21:46:10.381Z] [unzip] Writing file: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\client\favicon-32x32.png
+[debug] [2026-04-06T21:46:10.382Z] [unzip] Entry: server/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2026-04-06T21:46:10.382Z] [unzip] Processing entry: server\
+[debug] [2026-04-06T21:46:10.383Z] [unzip] mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\server\
+[debug] [2026-04-06T21:46:10.384Z] [unzip] Entry: server/server.mjs.map (compressed_size=217845 bytes, uncompressed_size=944978 bytes)
+[debug] [2026-04-06T21:46:10.384Z] [unzip] Processing entry: server\server.mjs.map
+[debug] [2026-04-06T21:46:10.384Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\server
+[debug] [2026-04-06T21:46:10.385Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\server\server.mjs.map
+[debug] [2026-04-06T21:46:10.398Z] [unzip] Entry: server/server.mjs (compressed_size=276407 bytes, uncompressed_size=933701 bytes)
+[debug] [2026-04-06T21:46:10.398Z] [unzip] Processing entry: server\server.mjs
+[debug] [2026-04-06T21:46:10.398Z] [unzip] else mkdir: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\server
+[debug] [2026-04-06T21:46:10.399Z] [unzip] deflating: C:\Users\darkc\.cache\firebase\emulators\ui-v1.15.0\server\server.mjs
