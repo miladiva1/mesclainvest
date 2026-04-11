@@ -7,3 +7,21 @@ mobile/.dart_tool/
 mobile/build/
 mobile/.flutter-plugins
 mobile/.flutter-plugins-dependencies
+
+# Backend — TypeScript
+backend/dist/
+backend/*.log
+backend/.env.local
+backend/.env.production
+
+# Flutter — adicionais
+mobile/.idea/
+mobile/*.iml
+mobile/coverage/
+mobile/.packages
+mobile/.pub-cache/
+mobile/.pub/
+
+# Sistema
+.DS_Store
+*.log
