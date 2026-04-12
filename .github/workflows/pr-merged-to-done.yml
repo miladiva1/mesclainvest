@@ -57,7 +57,7 @@ jobs:
             for (const item of items) {
               for (const fv of item.fieldValues.nodes) {
                 if (fv.field?.name === 'Status') {
-                  const done = fv.field.options.find(o => o.name === 'Done');
+                  const done = fv.field.options.find(o => o.name === 'Feito!');
                   if (!done) continue;
                   await github.graphql(`
                     mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
