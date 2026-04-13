@@ -1,3 +1,8 @@
+// Vinícius
+/* Explicação do código:
+ *  
+ *  */
+
 class AppConstants {
   // URL base do backend
   static const String baseUrl = 'http://localhost:3000/api';

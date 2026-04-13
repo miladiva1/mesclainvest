@@ -1,0 +1,13 @@
+# Vinícius
+# Explicação do código:
+#  Não podemos deixar essa chave vazar.
+#  Rodei este comando no terminal Debian
+#  para garantir que os segredos não saiam da máquina:
+#  echo ".env" >> .gitignore
+#  echo "*.json" >> .gitignore
+#  Isso Garantirá que nenhum arquivo .env ou .json de credenciais (principalmente o token do
+#  firebase) seja rastreado pelo Git
+
+# Garante que estes arquivos Não SEJAM lidos no repositório quando ele for ao remoto
+.env
+*.json

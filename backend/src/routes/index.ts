@@ -1,3 +1,8 @@
+// Vinícius
+/* Explicação do código:
+ *  
+ *  */
+
 import { Router } from 'express';
 import authRoutes from './auth.routes';
 import startupsRoutes from './startups.routes';

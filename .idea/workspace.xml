@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1f900bf3-b5f5-4ddb-bc43-9601811305d7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/config/firebase.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/config/firebase.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/middlewares/auth.middleware.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/middlewares/auth.middleware.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/middlewares/error.middleware.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/middlewares/error.middleware.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/routes/auth.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/routes/auth.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/routes/dashboard.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/routes/dashboard.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/routes/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/routes/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/routes/startups.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/routes/startups.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/routes/tokens.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/routes/tokens.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/server.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/core/constants/app_constants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/core/constants/app_constants.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/core/routes/app_routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/core/routes/app_routes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/core/theme/app_colors.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/core/theme/app_colors.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/core/theme/app_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/core/theme/app_theme.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/core/theme/app_typography.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/core/theme/app_typography.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/pubspec.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="3CGOLBJkuYmTTEIBqFJ6OpsDe5P" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "feature/issue-59-integracao-firestore",
+    "kotlin-language-version-configured": "true",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1f900bf3-b5f5-4ddb-bc43-9601811305d7" name="Changes" comment="" />
+      <created>1776008384124</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1776008384124</updated>
+    </task>
+    <servers />
+  </component>
+</project>

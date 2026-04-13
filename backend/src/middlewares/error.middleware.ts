@@ -1,3 +1,8 @@
+// Vinícius
+/* Explicação do código:
+ *  
+ *  */
+
 import { Request, Response, NextFunction } from 'express';
 
 export const errorMiddleware = (

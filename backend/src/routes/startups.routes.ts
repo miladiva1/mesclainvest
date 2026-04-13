@@ -1,9 +1,16 @@
+// Vinícius
+/* Explicação do código:
+ *  
+ *  */
+
 import { Router } from 'express';
+import { StartupController } from '../controllers/startup.controller';
 
 const router = Router();
+const startupController = new StartupController();
 
-// GET /api/startups
-// GET /api/startups/:id
-// GET /api/startups/:id/events
+// Esta linha abaixo substitui o comentário "// GET /api/startups" 
+// e faz o trabalho de verdade:
+router.get('/', startupController.getAll.bind(startupController));
 
 export default router;

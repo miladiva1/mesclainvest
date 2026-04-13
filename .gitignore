@@ -25,3 +25,6 @@ mobile/.pub/
 # Sistema
 .DS_Store
 *.log
+
+#key do do Firebase
+serviceAccountKey.json

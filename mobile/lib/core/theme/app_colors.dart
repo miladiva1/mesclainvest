@@ -1,3 +1,8 @@
+// Vinícius
+/* Explicação do código:
+ *  
+ *  */
+
 import 'package:flutter/material.dart';
 
 class AppColors {
