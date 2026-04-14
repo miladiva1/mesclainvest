@@ -1,0 +1,12 @@
+# NUNCA edite os arquivos dentro da pasta lib!
+A pasta lib contém o código compilado. Ela é gerada e reescrita automaticamente pelo
+compilador do TypeScript toda vez que vocês fazem o build do projeto.
+Se você ou qualquer membro da sua equipe corrigir um bug ou adicionar uma
+linha de código diretamente no arquivo .js dentro de lib, essa alteração será
+completamente apagada e perdida na próxima vez que rodarem o comando de build
+(como npm run build ou tsc).
+</br>
+Todo o nosso foco de desenvolvimento, correções, arquitetura e os "moldes" 
+as features para a nossa equipe devem ocorrer exclusivamente na pasta src
+(onde estão os arquivos originais .ts). O Firebase só usa a lib para rodar,
+mas nós, como engenheiros de software, só trabalhamos na src.
