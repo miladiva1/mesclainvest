@@ -1,0 +1,110 @@
+[33mcommit 7cc55cb7bad95c1593d44a426c0c572583249aac[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtestes[m[33m, [m[1;31morigin/testes[m[33m, [m[1;31morigin/feature/issue-65-camada-data-domain[m[33m, [m[1;32mfeature/issue-65-camada-data-domain[m[33m)[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Tue Apr 14 17:00:18 2026 -0300
+
+    Inserindo planos de melhorias nas features de mobile
+
+[33mcommit 07542c5787404dacc010bd7da992b27e003ef3ee[m[33m ([m[1;31morigin/feature/issue-64-testes-backend[m[33m)[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Tue Apr 14 00:41:13 2026 -0300
+
+    Implementacao do firebase functions orientado a testes funcionando com sucesso ao rodar o codigo mobile que o professor passou firebase emulators:start simultaneamente
+
+[33mcommit 26fe2a02d484c7b561dfd102719cda4d8dc5c245[m[33m ([m[1;31morigin/feature/issue-61-firebase-functions-tdd[m[33m, [m[1;32mfeature/issue-61-firebase-functions-tdd[m[33m)[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Mon Apr 13 21:08:38 2026 -0300
+
+    Organizacao de firebase functions
+
+[33mcommit 6066f1e5818b43b373df0423de8b65f87eb62bd9[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Mon Apr 13 01:27:02 2026 -0300
+
+    implementacao completa da arquitetura firebase functions e validacao TDD (issue 61)
+
+[33mcommit 70bc9f240402d4e010b3431208e9a79743ab971f[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Mon Apr 13 00:37:07 2026 -0300
+
+    removendo backend express para iniciar padrao do prof. mateus (issue 61)
+
+[33mcommit db30c5bc76a62fdd47fdd0a2603af9303d4534af[m[33m ([m[1;31morigin/feature/issue-59-integracao-firestore[m[33m, [m[1;31morigin/develop[m[33m, [m[1;32mdevelop[m[33m)[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Sun Apr 12 05:09:49 2026 -0300
+
+    Adicionando atualizações ao github actions pelos arquivos .yml
+
+[33mcommit 8bbf2a4aab47266e7259a5256990c3f96692c6b9[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Sat Apr 11 17:36:37 2026 -0300
+
+    Estrutura inicial Fullstack do projeto
+
+[33mcommit c3634a65658298d8363456d06e74998f359bf738[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Fri Mar 27 17:50:19 2026 -0300
+
+    Inserindo Workflows usando Project Token para mover issues no projects
+
+[33mcommit e54be9a1cb7edaa5fe20f949832d3a31b70cb10c[m
+Merge: 97eaedf8 72ca1211
+Author: viniciuspanutti <83090962+viniciuspanutti@users.noreply.github.com>
+Date:   Fri Mar 27 17:40:21 2026 -0300
+
+    Nova tentativa de Marge
+    
+    Merge pull request #15 from viniciuspanutti/feature/issue-14-estrutura-inicial-do-repositorio
+
+[33mcommit 72ca1211b29933899d2ac0d61c59e785a989472c[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Fri Mar 27 17:07:05 2026 -0300
+
+    Configurante as partes iniciais
+
+[33mcommit 97eaedf889e8a2aaadec26cf3a2c58a8c28d95df[m[33m ([m[1;31morigin/feature/issue-17-implementacao-catalogo-startups[m[33m, [m[1;32mfeature/issue-17-implementacao-catalogo-startups[m[33m)[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Fri Mar 27 16:08:35 2026 -0300
+
+    Adicionando automatização de WorkFlow para o Github Projects
+
+[33mcommit 25eb91d86679a0decb1c29ae29ef437fed1cce67[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Sun Mar 15 19:40:30 2026 -0300
+
+    Atualização do README
+
+[33mcommit 63d03be1f191adb7ee04b27835cd2e3bde1a6cde[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Mon Feb 23 22:28:58 2026 -0300
+
+    Removendo quebras de linhas desnecessárias
+
+[33mcommit 7e4e3ff7162d4b29b93d39f57ca1a5b3ed976428[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Mon Feb 23 22:23:00 2026 -0300
+
+    Seguindo orientações precisas sobre estrutura do README.md file
+
+[33mcommit c08e85b249a535952018611fe196f287a62732e7[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Sun Feb 22 23:35:01 2026 -0300
+
+    Mais formatação
+
+[33mcommit c497f0dc38c7525993840c821b3feb1412ecb006[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Sun Feb 22 23:33:34 2026 -0300
+
+    Adicionando formatação quebra de linha
+
+[33mcommit 7a36ef03d9e7e1bd4db780bc3df6d78967acf15c[m
+Author: vinicius <viniciuspanutti@gmail.com>
+Date:   Sun Feb 22 23:30:26 2026 -0300
+
+    Adicionando o primeiro README, conforme as intruções do aviso 05 CANVAS, turma 102
+
+[33mcommit 02126862f4e17b7de9d34f477f194912195b978d[m
+Author: viniciuspanutti <83090962+viniciuspanutti@users.noreply.github.com>
+Date:   Sun Feb 22 22:52:12 2026 -0300
+
+    Initial commit
