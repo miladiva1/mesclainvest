@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/pages/email_enviado.dart';
+import 'package:mobile/pages/recuperar_senha.dart';
+import 'pages/home.dart';
 import 'pages/login_page.dart';
 
 void main() {
@@ -12,7 +15,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: PaginaInicial(),
+      routes: {
+        '/menu':(context) => PaginaInicial(),
+        '/login':(context) => LoginPage(),
+        '/recuperarsenha':(context) => RecuperarSenha(),
+        '/emailenviado':(context) => EmailEnviado(),
+      }
     );
   }
 }

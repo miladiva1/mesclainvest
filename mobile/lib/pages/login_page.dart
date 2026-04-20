@@ -2,11 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/componentes/botao_login.dart';
 import 'package:mobile/componentes/campo_de_texto.dart';
+import 'package:mobile/componentes/mudar_senha.dart';
+import 'package:mobile/componentes/seta_voltar.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
+
   final passwordController = TextEditingController();
 
   // nao vai fazer nada por agora pq ta sem tela do menu principal
@@ -20,7 +28,12 @@ class LoginPage extends StatelessWidget {
         child: Center( // como o nome diz centraliza no meio
           child: Column(
             children: [
-              SizedBox(height: 80,),
+
+              SetaVoltar(
+                ontap: () {
+                  Navigator.pushNamed(context, '/menu');
+                }
+              ),
 
               Divider(
                 thickness: 0.5,
@@ -37,11 +50,11 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 30,),
+              SizedBox(height: 20,),
 
               Image.asset('lib/images/perfil.png'),
 
-              SizedBox(height: 60,),
+              SizedBox(height: 50,),
 
               Row(
                 children: [
@@ -87,21 +100,10 @@ class LoginPage extends StatelessWidget {
 
               SizedBox(height: 30,),
 
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 30, bottom: 10), 
-                    child: Text(
-                      'Esqueci minha senha',
-                      style: GoogleFonts.lora(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                        decorationThickness: 2.5,
-                      ),
-                    ),
-                  ),
-                ],
+              MudarSenha(
+                onTap: () {
+                  Navigator.pushNamed(context, '/recuperarsenha');
+                }
               ),
 
               SizedBox(height: 50,),
