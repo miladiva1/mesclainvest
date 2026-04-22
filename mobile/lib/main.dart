@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/features/home/pages/email_enviado.dart';
+import 'package:mobile/features/home/pages/home.dart';
+import 'package:mobile/features/home/pages/login.dart';
+import 'package:mobile/features/home/pages/rec_senha.dart';
+//import 'package:mobile/features/perg_e_resp.dart/paginas/perg_e_resp.dart';
 //import 'package:firebase_core/firebase_core.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:cloud_functions/cloud_functions.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
-import 'features/startups/presentation/screen/catalogo_de_startups.dart';
-import 'features/exchange/presentation/screen/wallet_screen.dart';
+//import 'features/startups/presentation/screen/catalogo_de_startups.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +33,13 @@ class MyApp extends StatelessWidget {
       ),
       // A tela inicial agora aponta para o lugar correto
       //home: const CarteiraBalcaoScreen(),
-      home: const CatalogoStartupsPage(),
+      home: const PaginaInicial(),
+      routes: {
+        '/menu':(context) => PaginaInicial(),
+        '/login':(context) => LoginPage(),
+        '/recuperarsenha':(context) => RecuperarSenha(),
+        '/emailenviado':(context) => EmailEnviado(),
+      }
     );
   }
 }
