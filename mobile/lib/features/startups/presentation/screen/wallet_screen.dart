@@ -28,7 +28,7 @@ class CarteiraBalcaoScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context), // Comando para fechar a tela e voltar
         ),
         title: const Text('Voltar', style: TextStyle(color: Colors.black, fontSize: 18)),
-        backgroundColor: Colors.transparent, // Barra transparente para um look moderno
+        backgroundColor: Colors.transparent, // Barra transparente 
         elevation: 0, // Remove a sombra da barra superior
       ),
       // CustomScrollView: Permite criar uma tela onde partes diferentes rolam juntas
@@ -85,7 +85,7 @@ class CarteiraBalcaoScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             // SliverList: A versão da ListView para dentro de um CustomScrollView
             sliver: SliverList(
-              // delegate: O "gerente" que constrói os itens conforme o usuário rola a tela
+              // delegate:   constrói os itens conforme o usuário rola a tela
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final item = transacoes[index]; // Pega os dados da transação atual
