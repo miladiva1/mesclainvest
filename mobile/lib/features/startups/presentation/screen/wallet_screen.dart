@@ -1,174 +1,242 @@
 
 import 'package:flutter/material.dart';
 
-// Definindo a classe da tela como um StatelessWidget (tela que não muda de estado sozinha)
-class CarteiraBalcaoScreen extends StatelessWidget {
+import 'app_storage.dart'; 
+
+class CarteiraBalcaoScreen extends StatefulWidget {
   const CarteiraBalcaoScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Definindo constantes de cores para manter o padrão visual do MesclaInvest
-    const Color roxoMescla = Color(0xFF512DA8);
-    const Color fundoCinza = Color(0xFFF5F5F5);
+  State<CarteiraBalcaoScreen> createState() => _CarteiraBalcaoScreenState();
+}
 
-    // Lista de Mapas: Simula os dados que viriam do Firebase
-    final List<Map<String, dynamic>> transacoes = [
-      {'titulo': 'Transferência', 'sub': 'To: 0x38dc...b037', 'valor': '93 BYD', 'icon': Icons.send},
-      {'titulo': 'Compra', 'sub': 'To: 0x7131...8b6a', 'valor': '23.4 BYD', 'icon': Icons.shopping_cart},
-      {'titulo': 'Recebido', 'sub': 'Address: 0x4d1e...c37C', 'valor': '57 BYD', 'icon': Icons.swap_vert},
-      {'titulo': 'Recebido', 'sub': 'To: 0x38dc...b037', 'valor': '12.2 BYD', 'icon': Icons.send},
-    ];
+class _CarteiraBalcaoScreenState extends State<CarteiraBalcaoScreen> {
+  double _balance = 0;
+  List<Map<String, dynamic>> _transacoes = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final balance = await AppStorage.getWalletBalance();
+    final txs = await AppStorage.getWalletTransactions();
+    if (!mounted) return;
+    setState(() {
+      _balance = balance;
+      _transacoes = txs;
+      _loading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const Color roxoPrincipal = Color(0xFF6B4FD8);
+    const Color fundoBranco = Colors.white;
+
+    if (_loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
-      backgroundColor: fundoCinza, // Define a cor de fundo da tela inteira
+      backgroundColor: fundoBranco,
       appBar: AppBar(
-        // leading: O que aparece no início da barra (botão de voltar)
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context), // Comando para fechar a tela e voltar
+          icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
+          onPressed: () => Navigator.maybePop(context),
         ),
-        title: const Text('Voltar', style: TextStyle(color: Colors.black, fontSize: 18)),
-        backgroundColor: Colors.transparent, // Barra transparente 
-        elevation: 0, // Remove a sombra da barra superior
+        title: const Text(
+          'Voltar',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
-      // CustomScrollView: Permite criar uma tela onde partes diferentes rolam juntas
-      body: CustomScrollView(
-        slivers: [
-          // SliverToBoxAdapter: Permite colocar widgets comuns (como Column) dentro do ScrollView
-          SliverToBoxAdapter(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Column(
-                    children: [
-                      const Align(
-                        alignment: Alignment.centerRight,
-                        child: Text('\$1.297,67  +0.75%',
-                            style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 12)),
-                      ),
-                      const SizedBox(height: 10), // Espaçamento vertical
-                      const Text('BYD', style: TextStyle(fontSize: 40, fontWeight: FontWeight.w900, letterSpacing: 2)),
-                      const SizedBox(height: 10),
-                      const Text('345.71 BYD',
-                          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: roxoMescla)),
-                      Text('R\$ 2.107,34', style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-                    ],
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: RichText(
+                    text: const TextSpan(
+                      style: TextStyle(fontSize: 13),
+                      children: [
+                        TextSpan(text: '\$1.297,67  ', style: TextStyle(color: Colors.black54)),
+                        TextSpan(
+                          text: '+0.75%', 
+                          style: TextStyle(color: Color(0xFF00C896), fontWeight: FontWeight.bold)
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: 30),
-                // Linha com os botões circulares de ação
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Distribui os botões por igual
-                  children: [
-                    _buildCircularAction(Icons.show_chart, 'Comprar'),
-                    _buildCircularAction(Icons.swap_horiz, 'Trocar'),
-                    _buildCircularAction(Icons.send, 'Enviar'),
-                    _buildCircularAction(Icons.file_download, 'Receber'),
-                  ],
-                ),
-                const SizedBox(height: 40),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Hoje', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(height: 15),
+                const Text(
+                  'BYD',
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -1,
                   ),
                 ),
                 const SizedBox(height: 10),
+                Text(
+                  '${_balance.toStringAsFixed(2)} BYD',
+                  style: const TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w600,
+                    color: roxoPrincipal,
+                  ),
+                ),
+                Text(
+                  'R\$ ${(_balance * 6.1).toStringAsFixed(2)}',
+                  style: const TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.w500),
+                ),
               ],
             ),
           ),
-          
-          // SliverPadding: Dá margem para a lista de transações
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            // SliverList: A versão da ListView para dentro de um CustomScrollView
-            sliver: SliverList(
-              // delegate:   constrói os itens conforme o usuário rola a tela
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final item = transacoes[index]; // Pega os dados da transação atual
-                  return Card(
-                    elevation: 1, // Sombra leve embaixo do card
-                    margin: const EdgeInsets.only(bottom: 12), // Espaço entre os cards
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    child: ListTile(
-                      leading: Icon(item['icon'], color: Colors.greenAccent), // Ícone à esquerda
-                      title: Text(item['titulo'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text(item['sub']), // Texto pequeno abaixo do título
-                      trailing: Text(item['valor'], style: const TextStyle(fontWeight: FontWeight.bold)), // Texto à direita
-                      onTap: () {
-                        // Função disparada ao clicar na transação
-                        print("Clicou na transação: ${item['titulo']}");
+          const SizedBox(height: 35),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildCircularAction(Icons.analytics_outlined, 'Investir'),
+              _buildCircularAction(Icons.swap_horiz_rounded, 'Trocar'),
+              _buildCircularAction(Icons.send_rounded, 'Enviar'),
+              _buildCircularAction(Icons.south_west_rounded, 'Receber'),
+            ],
+          ),
+          const SizedBox(height: 35),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Hoje',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black54),
+                  ),
+                  const SizedBox(height: 15),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: _transacoes.length,
+                      separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFF0F0F0)),
+                      itemBuilder: (context, index) {
+                        final item = _transacoes[index];
+                        return _buildTransactionItem(item);
                       },
                     ),
-                  );
-                },
-                childCount: transacoes.length, // Diz ao Flutter quantos itens existem
+                  ),
+                ],
               ),
             ),
           ),
         ],
       ),
-      // Barra de navegação inferior arredondada
-      bottomNavigationBar: _buildBottomNav(roxoMescla),
+      bottomNavigationBar: _buildBottomNav(roxoPrincipal),
     );
   }
 
-  // Função Auxiliar: Cria o botão circular com ícone e texto
   Widget _buildCircularAction(IconData icon, String label) {
-    return InkWell(
-      onTap: () => print("Clicou em $label"), // Efeito visual de clique + ação
-      borderRadius: BorderRadius.circular(50),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(15),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle, // Transforma o Container num círculo
-            ),
-            child: Icon(icon, color: Colors.black, size: 24),
+    return Column(
+      children: [
+        Container(
+          width: 55,
+          height: 55,
+          decoration: const BoxDecoration(
+            color: Color(0xFFF2F2F2),
+            shape: BoxShape.circle,
           ),
-          const SizedBox(height: 8),
-          Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-        ],
-      ),
+          child: Icon(icon, color: Colors.black, size: 24),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black87),
+        ),
+      ],
     );
   }
 
-  // Função Auxiliar: Constrói a barra de navegação personalizada (estilo flutuante)
-  Widget _buildBottomNav(Color activeColor) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 20), // Margens para parecer flutuante
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFF222222), // Fundo quase preto
-        borderRadius: BorderRadius.circular(40), // Bordas bem arredondadas
-      ),
+  Widget _buildTransactionItem(Map<String, dynamic> item) {
+    bool isNeg = item['value'].toString().contains('-');
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Icon(Icons.home_filled, color: Colors.white70),
-          const Icon(Icons.search, color: Colors.white70),
-          // Botão de destaque "Balcão"
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-            decoration: BoxDecoration(
-              color: activeColor,
-              borderRadius: BorderRadius.circular(20),
+          CircleAvatar(
+            backgroundColor: const Color(0xFFE8F5E9),
+            radius: 20,
+            child: Icon(
+              isNeg ? Icons.shopping_cart_outlined : Icons.south_west,
+              size: 18,
+              color: const Color(0xFF2E7D32),
             ),
-            child: const Row(
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.account_balance_wallet, color: Colors.white, size: 20),
-                SizedBox(width: 8),
-                Text('Balcão', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                Text(item['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(
+                  'To: 0x18dcc0e...e2bf7c64...',
+                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
-          const Icon(Icons.person_outline, color: Colors.white70),
+          Text(
+            item['value'],
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNav(Color activeColor) {
+    return SafeArea(
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+        height: 70,
+        decoration: BoxDecoration(
+          color: const Color(0xFF2D2D2D),
+          borderRadius: BorderRadius.circular(35),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            const Icon(Icons.home_filled, color: Colors.white, size: 28),
+            const Icon(Icons.search, color: Colors.white54, size: 28),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFF4C3592),
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.account_balance_wallet, color: Colors.white, size: 20),
+                  SizedBox(width: 8),
+                  Text('Balcão', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+            const CircleAvatar(
+              radius: 14,
+              backgroundColor: Colors.white24,
+              child: Icon(Icons.person_outline, color: Colors.white, size: 20),
+            ),
+          ],
+        ),
       ),
     );
   }
