@@ -11,7 +11,7 @@ class CarteiraBalcaoScreen extends StatelessWidget {
     const Color roxoMescla = Color(0xFF512DA8);
     const Color fundoCinza = Color(0xFFF5F5F5);
 
-    // Lista de Mapas: Simula os dados que viriam do seu Firebase/Backend
+    // Lista de Mapas: Simula os dados que viriam do Firebase
     final List<Map<String, dynamic>> transacoes = [
       {'titulo': 'Transferência', 'sub': 'To: 0x38dc...b037', 'valor': '93 BYD', 'icon': Icons.send},
       {'titulo': 'Compra', 'sub': 'To: 0x7131...8b6a', 'valor': '23.4 BYD', 'icon': Icons.shopping_cart},
