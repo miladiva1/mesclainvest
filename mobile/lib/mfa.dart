@@ -1,95 +1,242 @@
-import 'package:flutter/material.dart'; // Importa o pacote básico de interface do Flutter.
+import 'package:flutter/material.dart';
 
-class MfaScreen extends StatelessWidget { // Define a tela de Verificação de Segurança (MFA).
-  const MfaScreen({super.key}); // Construtor para identificação do widget na árvore.
+import 'app_storage.dart'; 
 
-  @override
-  Widget build(BuildContext context) { // Constrói o visual da tela de autenticação.
-    return Scaffold( // Cria a base da página com suporte a fundo e barras.
-      backgroundColor: Colors.white, // Define a cor de fundo da tela como branco.
-      appBar: AppBar( // Configura a barra superior com o nome do app.
-        backgroundColor: Colors.white, // Deixa a barra superior branca.
-        elevation: 0, // Remove a sombra projetada pela barra superior.
-        title: const Text( // Define o texto do título da barra.
-          'MesclaInvest',
-          style: TextStyle(
-            color: Color(0xFF673AB7), // Aplica o roxo da marca no título.
-            fontWeight: FontWeight.bold, // Deixa o título em negrito.
-          ),
-        ),
-        centerTitle: true, // Centraliza o nome do app na barra superior.
-        bottom: PreferredSize( // Adiciona uma linha fina abaixo da barra superior.
-          preferredSize: const Size.fromHeight(1.0), // Define a altura da linha como 1 pixel.
-          child: Container(color: Colors.grey[300], height: 1.0), // Pinta a linha de cinza claro.
-        ),
-      ),
-      body: Padding( // Adiciona um espaçamento em volta de todo o conteúdo.
-        padding: const EdgeInsets.symmetric(horizontal: 30), // Define 30 pixels de margem nas laterais.
-        child: Column( // Organiza os textos e campos verticalmente.
-          crossAxisAlignment: CrossAxisAlignment.start, // Alinha os textos à esquerda.
-          children: [
-            const SizedBox(height: 40), // Pula um espaço de 40 pixels no topo.
-            const Text( // Texto de instrução principal da tela.
-              'verificação de\nsegurança',
-              style: TextStyle(
-                color: Color(0xFF673AB7), // Texto na cor roxa da identidade visual.
-                fontSize: 24, // Define o tamanho da fonte da instrução.
-                fontWeight: FontWeight.w300, // Deixa a fonte mais fina e elegante.
-              ),
-            ),
-            const SizedBox(height: 30), // Espaço entre o título e a próxima instrução.
-            const Text( // Pequeno rótulo para o campo de código.
-              'insira o código',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 15), // Espaço entre o rótulo e os campos de entrada.
-            Row( // Coloca os quadradinhos de código lado a lado.
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distribui os campos igualmente na largura.
-              children: [
-                _buildCodeBox(), // Cria o primeiro campo do código de 4 dígitos.
-                _buildCodeBox(), // Cria o segundo campo do código.
-                _buildCodeBox(), // Cria o terceiro campo do código.
-                _buildCodeBox(), // Cria o quarto campo do código.
-              ],
-            ),
-            const SizedBox(height: 40), // Espaço antes do botão de confirmação.
-            SizedBox( // Define o tamanho e formato do botão de verificar.
-              width: double.infinity, // Faz o botão ocupar toda a largura disponível.
-              height: 50, // Define a altura do botão.
-              child: ElevatedButton( // Cria o botão pressionável com cor de fundo.
-                onPressed: () {}, // Função que será executada ao clicar (vazia por enquanto).
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4A2A84), // Cor roxa escura para o botão.
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25), // Deixa as pontas do botão arredondadas.
-                  ),
-                ),
-                child: const Text( // Texto dentro do botão.
-                  'Verificar',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+class CarteiraBalcaoScreen extends StatefulWidget {
+  const CarteiraBalcaoScreen({super.key});
 
-  Widget _buildCodeBox() { // Função auxiliar que desenha cada quadrado cinza de entrada.
-    return Container(
-      width: 60, // Largura de cada quadrado de código.
-      height: 70, // Altura de cada quadrado de código.
-      decoration: BoxDecoration(
-        color: Colors.grey[300], // Cor de fundo cinza para o campo.
-        borderRadius: BorderRadius.circular(4), // Arredonda levemente os cantos do quadrado.
-      ),
-      child: const TextField( // Campo onde o usuário digita o número.
-        textAlign: TextAlign.center, // Centraliza o número dentro do quadrado.
-        keyboardType: TextInputType.number, // Abre apenas o teclado numérico no celular.
-        decoration: InputDecoration(border: InputBorder.none), // Remove a linha padrão debaixo do campo.
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), // Estilo do número digitado.
-      ),
-    );
-  }
+  @override
+  State<CarteiraBalcaoScreen> createState() => _CarteiraBalcaoScreenState();
+}
+
+class _CarteiraBalcaoScreenState extends State<CarteiraBalcaoScreen> {
+  double _balance = 0;
+  List<Map<String, dynamic>> _transacoes = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final balance = await AppStorage.getWalletBalance();
+    final txs = await AppStorage.getWalletTransactions();
+    if (!mounted) return;
+    setState(() {
+      _balance = balance;
+      _transacoes = txs;
+      _loading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const Color roxoPrincipal = Color(0xFF6B4FD8);
+    const Color fundoBranco = Colors.white;
+
+    if (_loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    return Scaffold(
+      backgroundColor: fundoBranco,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
+          onPressed: () => Navigator.maybePop(context),
+        ),
+        title: const Text(
+          'Voltar',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: RichText(
+                    text: const TextSpan(
+                      style: TextStyle(fontSize: 13),
+                      children: [
+                        TextSpan(text: '\$1.297,67  ', style: TextStyle(color: Colors.black54)),
+                        TextSpan(
+                          text: '+0.75%', 
+                          style: TextStyle(color: Color(0xFF00C896), fontWeight: FontWeight.bold)
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                const Text(
+                  'BYD',
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -1,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  '${_balance.toStringAsFixed(2)} BYD',
+                  style: const TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w600,
+                    color: roxoPrincipal,
+                  ),
+                ),
+                Text(
+                  'R\$ ${(_balance * 6.1).toStringAsFixed(2)}',
+                  style: const TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 35),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildCircularAction(Icons.analytics_outlined, 'Investir'),
+              _buildCircularAction(Icons.swap_horiz_rounded, 'Trocar'),
+              _buildCircularAction(Icons.send_rounded, 'Enviar'),
+              _buildCircularAction(Icons.south_west_rounded, 'Receber'),
+            ],
+          ),
+          const SizedBox(height: 35),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Hoje',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black54),
+                  ),
+                  const SizedBox(height: 15),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: _transacoes.length,
+                      separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFF0F0F0)),
+                      itemBuilder: (context, index) {
+                        final item = _transacoes[index];
+                        return _buildTransactionItem(item);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: _buildBottomNav(roxoPrincipal),
+    );
+  }
+
+  Widget _buildCircularAction(IconData icon, String label) {
+    return Column(
+      children: [
+        Container(
+          width: 55,
+          height: 55,
+          decoration: const BoxDecoration(
+            color: Color(0xFFF2F2F2),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: Colors.black, size: 24),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black87),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTransactionItem(Map<String, dynamic> item) {
+    bool isNeg = item['value'].toString().contains('-');
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: const Color(0xFFE8F5E9),
+            radius: 20,
+            child: Icon(
+              isNeg ? Icons.shopping_cart_outlined : Icons.south_west,
+              size: 18,
+              color: const Color(0xFF2E7D32),
+            ),
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(item['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(
+                  'To: 0x18dcc0e...e2bf7c64...',
+                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          Text(
+            item['value'],
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNav(Color activeColor) {
+    return SafeArea(
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+        height: 70,
+        decoration: BoxDecoration(
+          color: const Color(0xFF2D2D2D),
+          borderRadius: BorderRadius.circular(35),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            const Icon(Icons.home_filled, color: Colors.white, size: 28),
+            const Icon(Icons.search, color: Colors.white54, size: 28),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFF4C3592),
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.account_balance_wallet, color: Colors.white, size: 20),
+                  SizedBox(width: 8),
+                  Text('Balcão', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+            const CircleAvatar(
+              radius: 14,
+              backgroundColor: Colors.white24,
+              child: Icon(Icons.person_outline, color: Colors.white, size: 20),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
