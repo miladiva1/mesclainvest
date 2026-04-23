@@ -1,204 +1,238 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 
-class MfaScreen extends StatefulWidget {
-  const MfaScreen({super.key});
+import 'app_storage.dart';
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<MfaScreen> createState() => _MfaScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _MfaScreenState extends State<MfaScreen> {
-  static const int _codeLength = 5;
-  static const int _initialSeconds = 30;
-
-  final List<TextEditingController> _controllers = List.generate(
-    _codeLength,
-    (_) => TextEditingController(),
-  );
-  final List<FocusNode> _focusNodes = List.generate(
-    _codeLength,
-    (_) => FocusNode(),
-  );
-
-  Timer? _timer;
-  int _secondsRemaining = _initialSeconds;
-  bool _isVerifying = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _startTimer();
-  }
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _loading = false;
 
   @override
   void dispose() {
-    _timer?.cancel();
-    for (final controller in _controllers) { controller.dispose(); }
-    for (final focusNode in _focusNodes) { focusNode.dispose(); }
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  void _startTimer() {
-    _timer?.cancel();
-    setState(() => _secondsRemaining = _initialSeconds);
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_secondsRemaining == 0) {
-        timer.cancel();
-        return;
-      }
-      setState(() => _secondsRemaining--);
+  Future<void> _login() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() {
+      _loading = true;
     });
-  }
 
-  String get _codeValue => _controllers.map((c) => c.text).join();
+    final email = _emailController.text.trim().toLowerCase();
+    final password = _passwordController.text.trim();
+    final users = await AppStorage.getUsers();
 
-  bool get _canVerify =>
-      _codeValue.length == _codeLength &&
-      _codeValue.runes.every((char) => char >= 48 && char <= 57);
-
-  void _onCodeChanged(int index, String value) {
-    if (value.isNotEmpty && index < _codeLength - 1) {
-      _focusNodes[index + 1].requestFocus();
+    Map<String, dynamic>? user;
+    for (final item in users) {
+      if (item['email'] == email && item['password'] == password) {
+        user = item;
+      }
     }
-    if (value.isEmpty && index > 0) {
-      _focusNodes[index - 1].requestFocus();
-    }
-    setState(() {});
-  }
 
-  Future<void> _verifyCode() async {
-    if (!_canVerify || _isVerifying) return;
-    setState(() => _isVerifying = true);
-    await Future<void>.delayed(const Duration(milliseconds: 900));
     if (!mounted) return;
-    setState(() => _isVerifying = false);
-    Navigator.pushReplacementNamed(context, '/wallet');
+    setState(() {
+      _loading = false;
+    });
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('E-mail ou senha invalidos')),
+      );
+      return;
+    }
+
+    await AppStorage.setCurrentEmail(email);
+    await AppStorage.setMfaEnabled(user['mfaEnabled'] == true);
+
+    if (!mounted) return;
+    if (user['mfaEnabled'] == true) {
+      Navigator.pushReplacementNamed(context, '/mfa');
+    } else {
+      Navigator.pushReplacementNamed(context, '/wallet');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    const Color roxoEscuro = Color(0xFF1F1435);
-    const Color roxoDestaque = Color(0xFF4A2A84);
-    const Color cinzaFundo = Color(0xFF6B6B6B);
-
     return Scaffold(
-      backgroundColor: cinzaFundo,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+      appBar: AppBar(title: const Text('Login')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircleAvatar(radius: 4, backgroundColor: roxoEscuro),
-                  Container(width: 40, height: 1, color: roxoEscuro),
-                  const CircleAvatar(radius: 4, backgroundColor: roxoEscuro),
-                ],
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'E-mail'),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Informe o e-mail';
+                  }
+                  if (!value.contains('@')) return 'E-mail invalido';
+                  return null;
+                },
               ),
-              const SizedBox(height: 30),
-              const Text(
-                'CRIE SUA CONTA',
-                style: TextStyle(
-                  color: roxoEscuro,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: 1.5,
-                ),
+              TextFormField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Senha'),
+                validator: (value) {
+                  if (value == null || value.length < 6) {
+                    return 'Senha minima de 6 caracteres';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 35),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'VERIFICAÇÃO DE\nSEGURANÇA',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: roxoDestaque,
-                          fontSize: 32,
-                          fontWeight: FontWeight.w300,
-                          height: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Insira o código de 5 dígitos',
-                        style: TextStyle(color: Colors.black54, fontSize: 16),
-                      ),
-                      const SizedBox(height: 40),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: List.generate(
-                            _codeLength,
-                            (index) => _buildCodeField(index),
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: _canVerify ? _verifyCode : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: roxoDestaque,
-                            // AQUI: Usando withValues em vez de withOpacity
-                            disabledBackgroundColor: roxoDestaque.withValues(alpha: 0.5),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: _isVerifying
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                                  ),
-                                )
-                              : const Text(
-                                  'Acessar Conta',
-                                  style: TextStyle(color: Colors.white, fontSize: 18),
-                                ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 18),
               SizedBox(
                 width: double.infinity,
-                height: 55,
                 child: ElevatedButton(
-                  onPressed: _secondsRemaining == 0 ? () {} : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF13092D),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: Text(
-                    _secondsRemaining == 0
-                        ? 'Concluir o Cadastro'
-                        : 'Concluir o Cadastro (${_secondsRemaining}s)',
-                    style: TextStyle(
-                      color: _secondsRemaining == 0 ? Colors.white : Colors.white54,
-                      fontSize: 16,
-                    ),
-                  ),
+                  onPressed: _loading ? null : _login,
+                  child: _loading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Entrar'),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pushNamed(context, '/forgot'),
+                child: const Text('Esqueci minha senha'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pushNamed(context, '/register'),
+                child: const Text('Criar conta'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _cpfController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _cpfController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _register() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final users = await AppStorage.getUsers();
+    final email = _emailController.text.trim().toLowerCase();
+
+    for (final user in users) {
+      if (user['email'] == email) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('E-mail ja cadastrado')));
+        return;
+      }
+    }
+
+    users.add({
+      'name': _nameController.text.trim(),
+      'email': email,
+      'cpf': _cpfController.text.trim(),
+      'phone': _phoneController.text.trim(),
+      'password': _passwordController.text.trim(),
+      'mfaEnabled': false,
+    });
+
+    await AppStorage.saveUsers(users);
+    await AppStorage.setCurrentEmail(null);
+    await AppStorage.setMfaEnabled(false);
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Cadastro concluido. Faca login para continuar.')),
+    );
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Cadastro')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              _field(_nameController, 'Nome completo', (value) {
+                if (value == null || value.trim().split(' ').length < 2) {
+                  return 'Informe nome completo';
+                }
+                return null;
+              }),
+              _field(_emailController, 'E-mail', (value) {
+                if (value == null || !value.contains('@'))
+                  return 'E-mail invalido';
+                return null;
+              }),
+              _field(_cpfController, 'CPF', (value) {
+                final clean = (value ?? '').replaceAll(RegExp(r'[^0-9]'), '');
+                if (clean.length != 11) return 'CPF deve ter 11 digitos';
+                return null;
+              }),
+              _field(_phoneController, 'Telefone celular', (value) {
+                final clean = (value ?? '').replaceAll(RegExp(r'[^0-9]'), '');
+                if (clean.length < 10) return 'Telefone invalido';
+                return null;
+              }),
+              TextFormField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Senha'),
+                validator: (value) {
+                  if (value == null || value.length < 6) {
+                    return 'Senha minima de 6 caracteres';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _register,
+                  child: const Text('Cadastrar'),
                 ),
               ),
             ],
@@ -208,36 +242,90 @@ class _MfaScreenState extends State<MfaScreen> {
     );
   }
 
-  Widget _buildCodeField(int index) {
-    return SizedBox(
-      width: 45,
-      height: 55,
-      child: TextField(
-        controller: _controllers[index],
-        focusNode: _focusNodes[index],
-        textAlign: TextAlign.center,
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        style: const TextStyle(
-          color: Color(0xFF4A2A84),
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
+  Widget _field(
+    TextEditingController controller,
+    String label,
+    String? Function(String?) validator,
+  ) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(labelText: label),
+      validator: validator,
+    );
+  }
+}
+
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
+
+  @override
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
+
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _sendInstructions() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final email = _emailController.text.trim().toLowerCase();
+    final users = await AppStorage.getUsers();
+    var found = false;
+    for (final user in users) {
+      if (user['email'] == email) {
+        found = true;
+      }
+    }
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          found
+              ? 'Instrucoes enviadas para o e-mail cadastrado'
+              : 'E-mail nao encontrado',
         ),
-        decoration: InputDecoration(
-          counterText: '',
-          contentPadding: EdgeInsets.zero,
-          filled: true,
-          fillColor: const Color(0xFFEFEFEF),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
-            borderSide: const BorderSide(color: Color(0xFF7D48CB), width: 1.5),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
-            borderSide: const BorderSide(color: Color(0xFF4A2A84), width: 2),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Recuperar senha')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'E-mail'),
+                validator: (value) {
+                  if (value == null || !value.contains('@'))
+                    return 'E-mail invalido';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _sendInstructions,
+                  child: const Text('Enviar instrucoes'),
+                ),
+              ),
+            ],
           ),
         ),
-        onChanged: (value) => _onCodeChanged(index, value),
       ),
     );
   }
