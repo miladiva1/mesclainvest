@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-// Classe principal da sua tela de catálogo
+// Tela de Catálogo de Startups
+// Esta tela exibe a listagem de projetos disponíveis para investimento conforme o escopo do projeto.
 class CatalogoStartupsPage extends StatefulWidget {
   const CatalogoStartupsPage({super.key});
 
@@ -9,116 +10,230 @@ class CatalogoStartupsPage extends StatefulWidget {
 }
 
 class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
-  // Lista mockada com os requisitos: Nome, Descrição e Estágio
+  // Estado para controlar qual filtro está selecionado
+  String _filtroSelecionado = 'Todas';
+
+  //Lista de 5 startups com descrições simplificadas
   final List<Map<String, String>> startups = [
-    {'nome': 'EcoFlow', 'desc': 'Soluções de energia renovável.', 'estagio': 'Expansão'},
-    {'nome': 'HealthTech', 'desc': 'IA para diagnósticos rápidos.', 'estagio': 'Operação'},
-    {'nome': 'FinanciaApp', 'desc': 'Gestão financeira pessoal.', 'estagio': 'Nova'},
-    {'nome': 'AgroSmart', 'desc': 'Monitoramento de safras via satélite.', 'estagio': 'Expansão'},
+    {
+      'nome': 'EcoCycle',
+      'desc': 'Gamificação de reciclagem na PUC com créditos na cantina.',
+      'estagio': 'Nova'
+    },
+    {
+      'nome': 'DevMatch',
+      'desc': 'Conecta alunos de TI a projetos e startups do Mescla.',
+      'estagio': 'Em operação'
+    },
+    {
+      'nome': 'HealthBit',
+      'desc': 'Monitoramento IoT de postura com alertas no celular.',
+      'estagio': 'Em expansão'
+    },
+    {
+      'nome': 'AgriSense',
+      'desc': 'Sensores de umidade de baixo custo para pequenos produtores.',
+      'estagio': 'Em operação'
+    },
+    {
+      'nome': 'SmartCampus',
+      'desc': 'Reserva de salas e labs via QR Code em tempo real.',
+      'estagio': 'Nova'
+    },
   ];
+
+  // Função para abrir o Diálogo de filtros no MEIO da tela (Stakeholder Requirement)
+  void _abrirFiltros() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text(
+            "Filtrar por Estágio",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: ['Todas', 'Nova', 'Em operação', 'Em expansão'].map((label) {
+                  final bool isSelected = _filtroSelecionado == label;
+                  return ChoiceChip(
+                    label: Text(label),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        _filtroSelecionado = label;
+                      });
+                      Navigator.pop(context); // Fecha o diálogo após selecionar
+                    },
+                    selectedColor: const Color(0xFF512DA8),
+                    labelStyle: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Fechar", style: TextStyle(color: Colors.grey)),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Filtra a lista de startups baseada na escolha do usuário
+    final listaFiltrada = _filtroSelecionado == 'Todas'
+        ? startups
+        : startups.where((s) => s['estagio'] == _filtroSelecionado).toList();
+
     return Scaffold(
-      backgroundColor: Colors.white, // Define o fundo branco conforme o Figma
-      body: SafeArea( // Garante que o conteúdo não fique sob o notch/barra de status
+      backgroundColor: Colors.white, // Fundo branco seguindo o design do Figma
+      body: SafeArea(
         child: Column(
           children: [
-            // Header com ícone de ajuste (Figma) e título centralizado
+            // Cabeçalho: Voltar à esquerda, Título centralizado e Filtro à direita.
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(Icons.tune, color: Colors.black), // Ícone de filtros à esquerda
-                  const Text("Startups", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), // Título
-                  const Icon(Icons.search, color: Colors.black), // Decisão: Lupa de busca à direita
+                  // Botão de Voltar (Canto superior Esquerdo)
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    onPressed: () {
+                      // Navigator.pop(context); // Preparado para o Navigator
+                    },
+                  ),
+                  // Título central da página
+                  const Text(
+                    "Startups MesclaInvest",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  // Botão Filtrar (Canto superior Direito) - Agora abre o Diálogo Central
+                  IconButton(
+                    icon: const Icon(Icons.tune, color: Colors.black),
+                    onPressed: _abrirFiltros,
+                  ),
                 ],
               ),
             ),
 
-            // Filtros horizontais (Requisito: Botões de filtro)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal, // Permite rolar os botões lateralmente
-                padding: const EdgeInsets.only(left: 20),
+            // Título indicando o filtro atual
+            if (_filtroSelecionado != 'Todas')
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                 child: Row(
-                  children: ['Todas', 'Nova', 'Operação', 'Expansão'].map((label) {
-                    return Container(
-                      margin: const EdgeInsets.only(right: 10),
-                      child: ActionChip( // Chip arredondado seguindo o estilo do protótipo
-                        label: Text(label, style: const TextStyle(fontSize: 12)),
-                        onPressed: () {}, // Lógica de filtro será implementada aqui
-                        backgroundColor: Colors.white,
-                        shape: StadiumBorder(side: BorderSide(color: Colors.grey.shade300)),
-                      ),
-                    );
-                  }).toList(),
+                  children: [
+                    Text(
+                      "Filtrado por: ",
+                      style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                    ),
+                    Chip(
+                      label: Text(_filtroSelecionado, style: const TextStyle(fontSize: 10)),
+                      onDeleted: () => setState(() => _filtroSelecionado = 'Todas'),
+                    ),
+                  ],
                 ),
               ),
-            ),
 
-            // Lista de Cards (Requisito: Nome + Descrição + Estágio)
+            // Listagem principal das Startups
             Expanded(
-              child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: startups.length,
-                separatorBuilder: (_, __) => Divider(color: Colors.grey.shade100, height: 1), // Divisória discreta
-                itemBuilder: (context, index) {
-                  final item = startups[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: Row(
-                      children: [
-                        // Avatar circular para o logo (similar ao estilo das criptos na imagem)
-                        CircleAvatar(
-                          radius: 22,
-                          backgroundColor: Colors.grey.shade100,
-                          child: const Icon(Icons.rocket_launch, size: 20, color: Color(0xFF512DA8)),
-                        ),
-                        const SizedBox(width: 15),
-                        // Informações textuais da Startup
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+              child: listaFiltrada.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.search_off, size: 64, color: Colors.grey.shade300),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Nenhuma startup encontrada\nneste estágio.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: listaFiltrada.length,
+                      separatorBuilder: (_, __) => Divider(color: Colors.grey.shade100, height: 1),
+                      itemBuilder: (context, index) {
+                        final item = listaFiltrada[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          child: Row(
                             children: [
-                              Text(item['nome']!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                              Text(item['desc']!, style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
+                              CircleAvatar(
+                                radius: 22,
+                                backgroundColor: Colors.grey.shade100,
+                                child: const Icon(Icons.rocket_launch, size: 20, color: Color(0xFF512DA8)),
+                              ),
+                              const SizedBox(width: 15),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item['nome']!,
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                    ),
+                                    Text(
+                                      item['desc']!,
+                                      style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    item['estagio']!,
+                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                                  ),
+                                  const Text(
+                                    "ATIVA",
+                                    style: TextStyle(fontSize: 9, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                        ),
-                        // Estágio da Startup (Alinhado à direita conforme o Figma)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(item['estagio']!, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                            const Text("ESTÁGIO: ATIVA", style: TextStyle(fontSize: 9, color: Colors.grey)),
-                          ],
-                        ),
-                      ],
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),
       ),
 
-      // Bottom Navigation Bar customizada para parecer uma pílula flutuante (conforme imagem)
+      // Menu inferior (Bottom Navigation Bar) em estilo pílula escura
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(20, 0, 20, 20), // Margens para o efeito flutuante
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         height: 70,
         decoration: BoxDecoration(
-          color: const Color(0xFF222222), // Cor escura do protótipo
+          color: const Color(0xFF222222),
           borderRadius: BorderRadius.circular(35),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             const Icon(Icons.home_outlined, color: Colors.white),
-            // Botão "Explorar" destacado com fundo roxo
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
@@ -129,7 +244,10 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
                 children: [
                   Icon(Icons.search, color: Colors.white, size: 18),
                   SizedBox(width: 8),
-                  Text("Explorar", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  Text(
+                    "Explorar",
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
+                  ),
                 ],
               ),
             ),

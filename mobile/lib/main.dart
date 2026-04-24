@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 //import 'package:cloud_functions/cloud_functions.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'features/startups/presentation/screen/catalogo_de_startups.dart';
-import 'features/exchange/presentation/screen/wallet_screen.dart';
+//import 'features/startups/presentation/screen/startup_detail_screen.dart';
+//import 'features/startups/presentation/screen/cadastros_screen.dart';
+//import 'features/exchange/presentation/screen/wallet_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
