@@ -12,7 +12,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // O comando comentado abaixo precisará ser configurado depois:
-  // await Firebase.initializeApp();
+  //await Firebase.initializeApp();
 
   runApp(const MyApp());
 }

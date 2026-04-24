@@ -1,3 +1,7 @@
+/*Vinícius
+* Explicação do código ->
+* */
+
 import 'package:flutter/material.dart';
 
 // Tela de Catálogo de Startups
@@ -13,32 +17,37 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
   // Estado para controlar qual filtro está selecionado
   String _filtroSelecionado = 'Todas';
 
-  //Lista de 5 startups com descrições simplificadas
+  //Lista de 5 startups com os logotipos png.
   final List<Map<String, String>> startups = [
     {
       'nome': 'EcoCycle',
       'desc': 'Gamificação de reciclagem na PUC com créditos na cantina.',
-      'estagio': 'Nova'
+      'estagio': 'Nova',
+      'logo': 'assets/images/logos/logotipoEcoCycle.png'
     },
     {
       'nome': 'DevMatch',
       'desc': 'Conecta alunos de TI a projetos e startups do Mescla.',
-      'estagio': 'Em operação'
+      'estagio': 'Em operação',
+      'logo': 'assets/images/logos/logotipoDevMatch.png'
     },
     {
       'nome': 'HealthBit',
       'desc': 'Monitoramento IoT de postura com alertas no celular.',
-      'estagio': 'Em expansão'
+      'estagio': 'Em expansão',
+      'logo': 'assets/images/logos/logotipoHealthBit.png'
     },
     {
       'nome': 'AgriSense',
       'desc': 'Sensores de umidade de baixo custo para pequenos produtores.',
-      'estagio': 'Em operação'
+      'estagio': 'Em operação',
+      'logo': 'assets/images/logos/logotipoAgriSense.png'
     },
     {
       'nome': 'SmartCampus',
       'desc': 'Reserva de salas e labs via QR Code em tempo real.',
-      'estagio': 'Nova'
+      'estagio': 'Nova',
+      'logo': 'assets/images/logos/logotipoSmartCampus.png'
     },
   ];
 
@@ -175,10 +184,24 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
                           padding: const EdgeInsets.symmetric(vertical: 15),
                           child: Row(
                             children: [
-                              CircleAvatar(
-                                radius: 22,
-                                backgroundColor: Colors.grey.shade100,
-                                child: const Icon(Icons.rocket_launch, size: 20, color: Color(0xFF512DA8)),
+                              // 1 - Exibição da Logo PNG da Startup
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.asset(
+                                    item['logo']!,
+                                    fit: BoxFit.contain,
+                                    // Placeholder caso a imagem demore ou falhe
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        const Icon(Icons.business, color: Color(0xFF512DA8)),
+                                  ),
+                                ),
                               ),
                               const SizedBox(width: 15),
                               Expanded(
