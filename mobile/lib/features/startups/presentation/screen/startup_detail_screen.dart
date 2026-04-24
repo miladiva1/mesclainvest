@@ -15,7 +15,7 @@ class StartupDetailScreen extends StatelessWidget {
   // O parâmetro 'startup' torna a tela dinâmica.
   final StartupDetail startup;
 
-  const StartupDetailScreen({Key? key, required this.startup}) : super(key: key);
+  const StartupDetailScreen({super.key, required this.startup});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,11 @@ class StartupDetailScreen extends StatelessWidget {
         ),
         title: const Text(
           'Detalhes da Startup',
-          style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
       ),
@@ -41,19 +45,19 @@ class StartupDetailScreen extends StatelessWidget {
           children: [
             // 1. Cabeçalho: Imagem e Título (Isolado em widget próprio)
             StartupHeaderWidget(startup: startup),
-            
+
             const SizedBox(height: 24),
-            
+
             // 2. Mídias: Sumário, Vídeos e FAQ (Isolado em widget próprio)
             StartupMediaWidget(startup: startup),
-            
+
             const SizedBox(height: 32),
-            
+
             // 3. Sociedade: Sócios e Capital (Isolado em widget próprio)
             StartupSocietyWidget(startup: startup),
-            
+
             const SizedBox(height: 40),
-            
+
             // Botão de Investimento (Placeholder para funcionalidade futura)
             SizedBox(
               width: double.infinity,
@@ -62,7 +66,9 @@ class StartupDetailScreen extends StatelessWidget {
                 onPressed: () {
                   // Futura implementação de compra de tokens
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Funcionalidade de Investimento em breve!')),
+                    const SnackBar(
+                      content: Text('Funcionalidade de Investimento em breve!'),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -73,7 +79,10 @@ class StartupDetailScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'INVESTIR NESTA STARTUP',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

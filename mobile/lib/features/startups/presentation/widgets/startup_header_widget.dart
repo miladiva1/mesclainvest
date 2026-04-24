@@ -10,7 +10,7 @@ import '../../domain/startup.dart';
 class StartupHeaderWidget extends StatelessWidget {
   final StartupDetail startup;
 
-  const StartupHeaderWidget({Key? key, required this.startup}) : super(key: key);
+  const StartupHeaderWidget({super.key, required this.startup});
 
   @override
   Widget build(BuildContext context) {
@@ -20,22 +20,21 @@ class StartupHeaderWidget extends StatelessWidget {
         // Imagem de Capa
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: startup.coverImageUrl != null && startup.coverImageUrl!.isNotEmpty
+          child:
+              startup.coverImageUrl != null && startup.coverImageUrl!.isNotEmpty
               ? Image.network(
                   startup.coverImageUrl!,
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+                  errorBuilder: (context, error, stackTrace) =>
+                      _buildPlaceholder(),
                 )
               : _buildPlaceholder(),
         ),
         const SizedBox(height: 16),
         // Nome da Startup
-        Text(
-          startup.name,
-          style: AppTypography.heading1,
-        ),
+        Text(startup.name, style: AppTypography.heading1),
         const SizedBox(height: 8),
         // Estágio da Startup (Tag)
         Container(

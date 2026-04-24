@@ -1,8 +1,3 @@
-/*Vinícius ->
-* Explicação do código:
-* RESTAURADO: Design original do Catálogo com a funcionalidade de navegação integrada.
-* Exibe as 5 startups oficiais do MesclaInvest usando o padrão de cliques InkWell.*/
-
 import 'package:flutter/material.dart';
 import '../../data/startup_mock.dart';
 import '../../domain/startup.dart';
@@ -18,7 +13,6 @@ class CatalogoStartupsPage extends StatefulWidget {
 class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
   String _filtroSelecionado = 'Todas';
 
-  // Usando a lista oficial de 5 startups do Mock
   final List<StartupDetail> startups = StartupMock.allStartups;
 
   void _abrirFiltros() {
@@ -26,7 +20,9 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text(
             "Filtrar por Estágio",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -38,7 +34,9 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
-                children: ['Todas', 'Nova', 'Em operação', 'Em expansão'].map((label) {
+                children: ['Todas', 'Nova', 'Em operação', 'Em expansão'].map((
+                  label,
+                ) {
                   final bool isSelected = _filtroSelecionado == label;
                   return ChoiceChip(
                     label: Text(label),
@@ -80,7 +78,7 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Cabeçalho Original Restaurado
+            // Cabeçalho Restaurado: Voltar, Título e Filtro
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               child: Row(
@@ -88,7 +86,9 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.maybePop(context);
+                    },
                   ),
                   const Text(
                     "Startups MesclaInvest",
@@ -104,100 +104,152 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
 
             if (_filtroSelecionado != 'Todas')
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 5,
+                ),
                 child: Row(
                   children: [
-                    Text("Filtrado por: ", style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                    Text(
+                      "Filtrado por: ",
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    ),
                     Chip(
-                      label: Text(_filtroSelecionado, style: const TextStyle(fontSize: 10)),
-                      onDeleted: () => setState(() => _filtroSelecionado = 'Todas'),
+                      label: Text(
+                        _filtroSelecionado,
+                        style: const TextStyle(fontSize: 10),
+                      ),
+                      onDeleted: () =>
+                          setState(() => _filtroSelecionado = 'Todas'),
                     ),
                   ],
                 ),
               ),
 
-            // Listagem com Design Original + Navegação
+            // Listagem customizada com "ATIVA"
             Expanded(
-              child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: listaFiltrada.length,
-                separatorBuilder: (_, __) => Divider(color: Colors.grey.shade100, height: 1),
-                itemBuilder: (context, index) {
-                  final item = listaFiltrada[index];
-                  return InkWell( // Adicionado para navegação
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => StartupDetailScreen(startup: item),
-                        ),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      child: Row(
+              child: listaFiltrada.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.asset(
-                                item.coverImageUrl ?? '', // Usando o path do mock
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(Icons.business, color: Color(0xFF512DA8)),
-                              ),
+                          Icon(
+                            Icons.search_off,
+                            size: 64,
+                            color: Colors.grey.shade300,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Nenhuma startup encontrada\nneste estágio.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 16,
                             ),
                           ),
-                          const SizedBox(width: 15),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                        ],
+                      ),
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: listaFiltrada.length,
+                      separatorBuilder: (_, _) =>
+                          Divider(color: Colors.grey.shade100, height: 1),
+                      itemBuilder: (context, index) {
+                        final item = listaFiltrada[index];
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    StartupDetailScreen(startup: item),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            child: Row(
                               children: [
-                                Text(
-                                  item.name,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.asset(
+                                      item.coverImageUrl ?? '',
+                                      fit: BoxFit.contain,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const Icon(
+                                                Icons.business,
+                                                color: Color(0xFF512DA8),
+                                              ),
+                                    ),
+                                  ),
                                 ),
-                                Text(
-                                  item.shortDescription,
-                                  style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                                const SizedBox(width: 15),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item.name,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Text(
+                                        item.shortDescription,
+                                        style: TextStyle(
+                                          color: Colors.grey.shade500,
+                                          fontSize: 13,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      item.stage,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const Text(
+                                      "ATIVA",
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                item.stage,
-                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                              ),
-                              const Text(
-                                "ATIVA",
-                                style: TextStyle(fontSize: 9, color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),
       ),
-
-      // Menu Inferior Original Restaurado
       bottomNavigationBar: Container(
         margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         height: 70,
@@ -219,7 +271,13 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
                 children: [
                   Icon(Icons.search, color: Colors.white, size: 18),
                   SizedBox(width: 8),
-                  Text("Explorar", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  Text(
+                    "Explorar",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             ),

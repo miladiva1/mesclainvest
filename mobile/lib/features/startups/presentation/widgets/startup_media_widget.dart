@@ -1,75 +1,77 @@
-/*Vinícius ->
-* Explicação do código:
-* Widget responsável por exibir o conteúdo de mídia e informações textuais da startup.
-* Otimizado com NeverScrollableScrollPhysics para não travar o scroll da tela principal.*/
-
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../domain/startup.dart';
+import '../../domain/startup.dart'; 
 
 class StartupMediaWidget extends StatelessWidget {
   final StartupDetail startup;
 
-  const StartupMediaWidget({Key? key, required this.startup}) : super(key: key);
+  const StartupMediaWidget({super.key, required this.startup});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Sumário Executivo
-        Text('Sumário Executivo', style: AppTypography.heading2),
-        const SizedBox(height: 8),
+        const Text(
+          "Sumário Executivo",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF512DA8)),
+        ),
+        const SizedBox(height: 10),
         Text(
-          startup.executiveSummary,
-          style: AppTypography.body,
+          startup.executiveSummary.isNotEmpty ? startup.executiveSummary : 'Nenhum sumário disponível no momento.',
+          style: TextStyle(fontSize: 14, color: Colors.grey.shade700, height: 1.5),
+          textAlign: TextAlign.justify,
         ),
-        
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
 
-        // Área de Vídeos (Placeholder visual)
-        Text('Vídeos e Pitch', style: AppTypography.heading2),
-        const SizedBox(height: 12),
-        Container(
-          height: 180,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.black12,
-            borderRadius: BorderRadius.circular(12),
+        if (startup.videoUrl != null && startup.videoUrl!.isNotEmpty) ...[
+          const Text(
+            "Apresentação",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          child: const Center(
-            child: Icon(Icons.play_circle_fill, size: 64, color: Colors.grey),
+          const SizedBox(height: 10),
+          Container(
+            height: 180,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.black87,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: const Center(
+              child: Icon(Icons.play_circle_fill, color: Colors.white, size: 60),
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Assista ao pitch de apresentação da startup.',
-          style: AppTypography.caption,
-        ),
+          const SizedBox(height: 20),
+        ],
 
-        const SizedBox(height: 24),
-
-        // Perguntas e Respostas Públicas
-        Text('Perguntas Públicas', style: AppTypography.heading2),
-        const SizedBox(height: 12),
-        if (startup.publicQuestions.isEmpty)
-          Text('Nenhuma pergunta pública disponível.', style: AppTypography.bodySecondary)
-        else
-          // Usando Column em vez de ListView para não conflitar com o scroll global
-          Column(
-            children: startup.publicQuestions.map((q) {
-              return ExpansionTile(
-                tilePadding: EdgeInsets.zero,
-                title: Text(q['question'] ?? '', style: AppTypography.body.copyWith(fontWeight: FontWeight.bold)),
+        if (startup.faq.isNotEmpty) ...[
+          const Text(
+            "Perguntas Frequentes",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF512DA8)),
+          ),
+          const SizedBox(height: 10),
+          ...startup.faq.map((pergunta) {
+            return Card(
+              elevation: 0,
+              color: Colors.grey.shade50,
+              shape: RoundedRectangleBorder(
+                side: BorderSide(color: Colors.grey.shade300, width: 1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ExpansionTile(
+                title: Text(pergunta['question'] ?? '', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(q['answer'] ?? 'Aguardando resposta.', style: AppTypography.body),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      pergunta['answer'] ?? '',
+                      style: TextStyle(color: Colors.grey.shade700),
+                    ),
                   ),
                 ],
-              );
-            }).toList(),
-          ),
+              ),
+            );
+          }),
+        ]
       ],
     );
   }
