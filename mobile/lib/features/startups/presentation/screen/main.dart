@@ -1,3 +1,4 @@
+// feito por camila fernandes costacurta RA:25012949 
 import 'package:flutter/material.dart';
 import 'features/startups/presentation/screens/auth_screens.dart';
 import 'features/startups/presentation/screens/balcao_screen.dart';
