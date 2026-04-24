@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:mobile/features/startups/presentation/screen/list/catalogo_de_startups.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +26,6 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF512DA8)),
         useMaterial3: true,
       ),
-      home: const CatalogoStartupsPage(),
     );
   }
 }
