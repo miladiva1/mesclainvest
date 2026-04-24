@@ -1,11 +1,13 @@
-/*Vinícius
-* Explicação do código ->
-* */
+/*Vinícius ->
+* Explicação do código:
+* RESTAURADO: Design original do Catálogo com a funcionalidade de navegação integrada.
+* Exibe as 5 startups oficiais do MesclaInvest usando o padrão de cliques InkWell.*/
 
 import 'package:flutter/material.dart';
+import '../../data/startup_mock.dart';
+import '../../domain/startup.dart';
+import 'startup_detail_screen.dart';
 
-// Tela de Catálogo de Startups
-// Esta tela exibe a listagem de projetos disponíveis para investimento conforme o escopo do projeto.
 class CatalogoStartupsPage extends StatefulWidget {
   const CatalogoStartupsPage({super.key});
 
@@ -14,44 +16,11 @@ class CatalogoStartupsPage extends StatefulWidget {
 }
 
 class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
-  // Estado para controlar qual filtro está selecionado
   String _filtroSelecionado = 'Todas';
 
-  //Lista de 5 startups com os logotipos png.
-  final List<Map<String, String>> startups = [
-    {
-      'nome': 'EcoCycle',
-      'desc': 'Gamificação de reciclagem na PUC com créditos na cantina.',
-      'estagio': 'Nova',
-      'logo': 'assets/images/logos/logotipoEcoCycle.png'
-    },
-    {
-      'nome': 'DevMatch',
-      'desc': 'Conecta alunos de TI a projetos e startups do Mescla.',
-      'estagio': 'Em operação',
-      'logo': 'assets/images/logos/logotipoDevMatch.png'
-    },
-    {
-      'nome': 'HealthBit',
-      'desc': 'Monitoramento IoT de postura com alertas no celular.',
-      'estagio': 'Em expansão',
-      'logo': 'assets/images/logos/logotipoHealthBit.png'
-    },
-    {
-      'nome': 'AgriSense',
-      'desc': 'Sensores de umidade de baixo custo para pequenos produtores.',
-      'estagio': 'Em operação',
-      'logo': 'assets/images/logos/logotipoAgriSense.png'
-    },
-    {
-      'nome': 'SmartCampus',
-      'desc': 'Reserva de salas e labs via QR Code em tempo real.',
-      'estagio': 'Nova',
-      'logo': 'assets/images/logos/logotipoSmartCampus.png'
-    },
-  ];
+  // Usando a lista oficial de 5 startups do Mock
+  final List<StartupDetail> startups = StartupMock.allStartups;
 
-  // Função para abrir o Diálogo de filtros no MEIO da tela (Stakeholder Requirement)
   void _abrirFiltros() {
     showDialog(
       context: context,
@@ -78,7 +47,7 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
                       setState(() {
                         _filtroSelecionado = label;
                       });
-                      Navigator.pop(context); // Fecha o diálogo após selecionar
+                      Navigator.pop(context);
                     },
                     selectedColor: const Color(0xFF512DA8),
                     labelStyle: TextStyle(
@@ -102,35 +71,29 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Filtra a lista de startups baseada na escolha do usuário
     final listaFiltrada = _filtroSelecionado == 'Todas'
         ? startups
-        : startups.where((s) => s['estagio'] == _filtroSelecionado).toList();
+        : startups.where((s) => s.stage == _filtroSelecionado).toList();
 
     return Scaffold(
-      backgroundColor: Colors.white, // Fundo branco seguindo o design do Figma
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-            // Cabeçalho: Voltar à esquerda, Título centralizado e Filtro à direita.
+            // Cabeçalho Original Restaurado
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Botão de Voltar (Canto superior Esquerdo)
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () {
-                      // Navigator.pop(context); // Preparado para o Navigator
-                    },
+                    onPressed: () {},
                   ),
-                  // Título central da página
                   const Text(
                     "Startups MesclaInvest",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  // Botão Filtrar (Canto superior Direito) - Agora abre o Diálogo Central
                   IconButton(
                     icon: const Icon(Icons.tune, color: Colors.black),
                     onPressed: _abrirFiltros,
@@ -139,16 +102,12 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
               ),
             ),
 
-            // Título indicando o filtro atual
             if (_filtroSelecionado != 'Todas')
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                 child: Row(
                   children: [
-                    Text(
-                      "Filtrado por: ",
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-                    ),
+                    Text("Filtrado por: ", style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
                     Chip(
                       label: Text(_filtroSelecionado, style: const TextStyle(fontSize: 10)),
                       onDeleted: () => setState(() => _filtroSelecionado = 'Todas'),
@@ -157,95 +116,88 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
                 ),
               ),
 
-            // Listagem principal das Startups
+            // Listagem com Design Original + Navegação
             Expanded(
-              child: listaFiltrada.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: listaFiltrada.length,
+                separatorBuilder: (_, __) => Divider(color: Colors.grey.shade100, height: 1),
+                itemBuilder: (context, index) {
+                  final item = listaFiltrada[index];
+                  return InkWell( // Adicionado para navegação
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => StartupDetailScreen(startup: item),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      child: Row(
                         children: [
-                          Icon(Icons.search_off, size: 64, color: Colors.grey.shade300),
-                          const SizedBox(height: 16),
-                          Text(
-                            "Nenhuma startup encontrada\nneste estágio.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.asset(
+                                item.coverImageUrl ?? '', // Usando o path do mock
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.business, color: Color(0xFF512DA8)),
+                              ),
+                            ),
                           ),
-                        ],
-                      ),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: listaFiltrada.length,
-                      separatorBuilder: (_, __) => Divider(color: Colors.grey.shade100, height: 1),
-                      itemBuilder: (context, index) {
-                        final item = listaFiltrada[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          child: Row(
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.name,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                                Text(
+                                  item.shortDescription,
+                                  style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              // 1 - Exibição da Logo PNG da Startup
-                              Container(
-                                width: 44,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.asset(
-                                    item['logo']!,
-                                    fit: BoxFit.contain,
-                                    // Placeholder caso a imagem demore ou falhe
-                                    errorBuilder: (context, error, stackTrace) =>
-                                        const Icon(Icons.business, color: Color(0xFF512DA8)),
-                                  ),
-                                ),
+                              Text(
+                                item.stage,
+                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                               ),
-                              const SizedBox(width: 15),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item['nome']!,
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                    ),
-                                    Text(
-                                      item['desc']!,
-                                      style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    item['estagio']!,
-                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                                  ),
-                                  const Text(
-                                    "ATIVA",
-                                    style: TextStyle(fontSize: 9, color: Colors.grey),
-                                  ),
-                                ],
+                              const Text(
+                                "ATIVA",
+                                style: TextStyle(fontSize: 9, color: Colors.grey),
                               ),
                             ],
                           ),
-                        );
-                      },
+                        ],
+                      ),
                     ),
+                  );
+                },
+              ),
             ),
           ],
         ),
       ),
 
-      // Menu inferior (Bottom Navigation Bar) em estilo pílula escura
+      // Menu Inferior Original Restaurado
       bottomNavigationBar: Container(
         margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         height: 70,
@@ -267,10 +219,7 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
                 children: [
                   Icon(Icons.search, color: Colors.white, size: 18),
                   SizedBox(width: 8),
-                  Text(
-                    "Explorar",
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
-                  ),
+                  Text("Explorar", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
