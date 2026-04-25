@@ -1,10 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/core/routes/app_routes.dart';
 import 'package:mobile/features/home/pages/login.dart';
-import 'package:mobile/features/home/pages/rec_senha.dart';
-import 'package:mobile/features/home/pages/email_enviado.dart';
-import 'package:mobile/features/home/pages/cadastros_screen.dart';
-import 'package:mobile/features/startups/presentation/screen/list/catalogo_de_startups.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -27,16 +24,10 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF512DA8)),
       ),
-      // Iniciando diretamente na LoginPage conforme solicitado
+      // Ponto de entrada da navegação
       home: const LoginPage(),
-      // Definindo as rotas para que os botões da LoginPage funcionem sem crashar
-      routes: {
-        '/login': (context) => const LoginPage(),
-        '/cadastro': (context) => const SignUpPage(),
-        '/recuperarsenha': (context) => const RecuperarSenha(),
-        '/emailenviado': (context) => const EmailEnviado(),
-        '/catalogo': (context) => const CatalogoStartupsPage(),
-      },
+      // Todas as rotas nomeadas centralizadas em AppRoutes
+      routes: AppRoutes.routes,
     );
   }
 }

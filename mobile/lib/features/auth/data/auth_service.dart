@@ -1,12 +1,17 @@
 // ── auth_service.dart ─────────────────────────────────────────────────
 // Camada Data — integração real com Firebase Auth.
 // Substitui a autenticação local (SharedPreferences) por sessão na nuvem.
+//
+// Após login/cadastro bem-sucedido, garante a existência do documento
+// do usuário na coleção `users` do Firestore (via UserService).
 // ──────────────────────────────────────────────────────────────────────
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile/features/auth/data/user_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final UserService _userService = UserService();
 
   // ────────────────────────────────────────────────────────────────────
   // Stream de estado de autenticação
@@ -28,10 +33,13 @@ class AuthService {
     required String password,
   }) async {
     try {
-      return await _auth.signInWithEmailAndPassword(
+      final credential = await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
+      // Garante que o documento Firestore existe para este usuário
+      await _userService.ensureUserDocument(credential.user!);
+      return credential;
     } on FirebaseAuthException catch (e) {
       throw _mapAuthException(e);
     }
@@ -45,10 +53,13 @@ class AuthService {
     required String password,
   }) async {
     try {
-      return await _auth.createUserWithEmailAndPassword(
+      final credential = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
+      // Cria o documento do usuário no Firestore na primeira vez
+      await _userService.ensureUserDocument(credential.user!);
+      return credential;
     } on FirebaseAuthException catch (e) {
       throw _mapAuthException(e);
     }
