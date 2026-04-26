@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import '../../../data/startup_service.dart';
 import '../../../domain/startup.dart';
 import 'startup_detail_screen.dart';
+import 'package:mobile/features/auth/data/user_service.dart';
+import 'package:mobile/features/auth/presentation/screen/mfa.dart';
 
 class CatalogoStartupsPage extends StatefulWidget {
   const CatalogoStartupsPage({super.key});
@@ -28,6 +30,25 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
   void initState() {
     super.initState();
     _startupsFuture = _startupService.getStartups();
+  }
+
+  String _normalize(String text) {
+    var withDia = 'áàãâäéèêëíìîïóòõôöúùûüçÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÔÖÚÙÛÜÇ';
+    var withoutDia = 'aaaaaeeeeiiiiooooouuuucAAAAAEEEEIIIIOOOOOUUUUC'; 
+    var result = text;
+    for (int i = 0; i < withDia.length; i++) {
+      result = result.replaceAll(withDia[i], withoutDia[i]);
+    }
+    return result.toLowerCase().replaceAll(' ', '_');
+  }
+
+  String _formatStage(String stage) {
+    switch (stage.toLowerCase()) {
+      case 'nova': return 'Nova';
+      case 'em_operacao': return 'Em operação';
+      case 'em_expansao': return 'Em expansão';
+      default: return stage;
+    }
   }
 
   void _abrirFiltros() {
@@ -203,7 +224,7 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
                   final listaFiltrada = _filtroSelecionado == 'Todas'
                       ? startups
                       : startups
-                            .where((s) => s.stage == _filtroSelecionado)
+                            .where((s) => _normalize(s.stage) == _normalize(_filtroSelecionado))
                             .toList();
 
                   if (listaFiltrada.isEmpty) {
@@ -239,10 +260,6 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
                       final item = listaFiltrada[index];
                       return InkWell(
                         onTap: () {
-                          // ── Navegação mantida ──────────────────────
-                          // O objeto StartupDetail real do Firestore é
-                          // passado diretamente para a tela de detalhes.
-                          // ───────────────────────────────────────────
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -301,7 +318,7 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
-                                    item.stage,
+                                    _formatStage(item.stage),
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14,
@@ -384,8 +401,9 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
     }
 
     // Caso contrário, tenta carregar como asset local
+    final fileName = imageUrl.split('/').last;
     return Image.asset(
-      imageUrl,
+      'assets/images/logos/$fileName',
       fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) =>
           const Icon(Icons.business, color: Color(0xFF512DA8)),

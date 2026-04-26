@@ -56,7 +56,7 @@ class StartupSocietyWidget extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        '${socio['percentage']}%',
+                        '${socio['equityPercent'] ?? socio['percentage'] ?? 0}%',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -66,7 +66,19 @@ class StartupSocietyWidget extends StatelessWidget {
                     ],
                   ),
                 );
-              }),
+              })
+            else
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: Text(
+                  'Informações societárias em atualização.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade700,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
 
             const SizedBox(height: 15),
 

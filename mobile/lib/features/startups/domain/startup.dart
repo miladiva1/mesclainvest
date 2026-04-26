@@ -7,6 +7,7 @@ class StartupListItem {
   final int totalTokensIssued;
   final int currentTokenPriceCents;
   final String? coverImageUrl;
+  final String? headerImageUrl;
   final List<String> tags;
 
   StartupListItem({
@@ -18,6 +19,7 @@ class StartupListItem {
     required this.totalTokensIssued,
     required this.currentTokenPriceCents,
     this.coverImageUrl,
+    this.headerImageUrl,
     required this.tags,
   });
 
@@ -31,6 +33,7 @@ class StartupListItem {
       totalTokensIssued: json['totalTokensIssued'] ?? 0,
       currentTokenPriceCents: json['currentTokenPriceCents'] ?? 0,
       coverImageUrl: json['coverImageUrl'],
+      headerImageUrl: json['headerImageUrl'],
       tags: List<String>.from(json['tags'] ?? []),
     );
   }
@@ -53,6 +56,7 @@ class StartupDetail extends StartupListItem {
     required super.totalTokensIssued,
     required super.currentTokenPriceCents,
     super.coverImageUrl,
+    super.headerImageUrl,
     required super.tags,
     required this.description,
     required this.executiveSummary,
@@ -72,20 +76,22 @@ class StartupDetail extends StartupListItem {
       totalTokensIssued: json['totalTokensIssued'] ?? 0,
       currentTokenPriceCents: json['currentTokenPriceCents'] ?? 0,
       coverImageUrl: json['coverImageUrl'],
+      headerImageUrl: json['headerImageUrl'],
       tags: List<String>.from(json['tags'] ?? []),
       description: json['description'] ?? '',
       executiveSummary: json['executiveSummary'] ?? '',
-      faq:
-          (json['faq'] as List?)
-              ?.map((item) => Map<String, String>.from(item))
-              .toList() ??
-          [],
-      videoUrl: json['videoUrl'],
-      society:
-          (json['society'] as List?)
-              ?.map((item) => Map<String, dynamic>.from(item))
-              .toList() ??
-          [],
+      faq: (json['faq'] as List?)?.map((item) {
+        final map = Map<String, dynamic>.from(item as Map? ?? {});
+        return map.map((key, value) => MapEntry(key, value?.toString() ?? ''));
+      }).toList() ?? [],
+      videoUrl: (json['demoVideos'] as List?)?.isNotEmpty == true 
+          ? (json['demoVideos'] as List).first.toString() 
+          : json['videoUrl'],
+      society: (json['founders'] as List?)?.map((item) {
+        return Map<String, dynamic>.from(item as Map? ?? {});
+      }).toList() ?? (json['society'] as List?)?.map((item) {
+        return Map<String, dynamic>.from(item as Map? ?? {});
+      }).toList() ?? [],
       access: json['access'] ?? {},
     );
   }
