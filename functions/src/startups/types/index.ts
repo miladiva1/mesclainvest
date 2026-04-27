@@ -54,7 +54,9 @@ export type StartupDocument = {
   demoVideos: string[];
   pitchDeckUrl?: string;
   coverImageUrl?: string;
+  headerImageUrl?: string;
   tags: string[];
+  faq?: { text: string; answer: string }[];
   createdAt?: Timestamp;
   updatedAt?: Timestamp;
 };

@@ -1,17 +1,17 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:mobile/features/home/pages/email_enviado.dart';
-import 'package:mobile/features/home/pages/home.dart';
+import 'package:flutter/material.dart';
+import 'package:mobile/core/routes/app_routes.dart';
 import 'package:mobile/features/home/pages/login.dart';
-import 'package:mobile/features/home/pages/rec_senha.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
-//lib/features/home/images/cartao.png
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -19,13 +19,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const PaginaInicial(),
-      routes: {
-        '/menu': (context) => const PaginaInicial(),
-        '/login': (context) => const LoginPage(),
-        '/recuperarsenha': (context) => const RecuperarSenha(),
-        '/emailenviado': (context) => const EmailEnviado(),
-      },
+      title: 'MesclaInvest',
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF512DA8)),
+      ),
+      // Ponto de entrada da navegação
+      home: const LoginPage(),
+      // Todas as rotas nomeadas centralizadas em AppRoutes
+      routes: AppRoutes.routes,
     );
   }
 }

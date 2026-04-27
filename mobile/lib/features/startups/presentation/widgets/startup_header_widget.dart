@@ -12,25 +12,35 @@ class StartupHeaderWidget extends StatelessWidget {
 
   const StartupHeaderWidget({super.key, required this.startup});
 
+  String _formatStage(String stage) {
+    switch (stage.toLowerCase()) {
+      case 'nova': return 'Nova';
+      case 'em_operacao': return 'Em operação';
+      case 'em_expansao': return 'Em expansão';
+      default: return stage;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final headerUrl = startup.headerImageUrl?.isNotEmpty == true 
+        ? startup.headerImageUrl! 
+        : 'https://source.unsplash.com/featured/?${startup.tags.isNotEmpty ? startup.tags.first : 'startup'}';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Imagem de Capa
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child:
-              startup.coverImageUrl != null && startup.coverImageUrl!.isNotEmpty
-              ? Image.network(
-                  startup.coverImageUrl!,
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      _buildPlaceholder(),
-                )
-              : _buildPlaceholder(),
+          child: Image.network(
+            headerUrl,
+            height: 200,
+            width: double.infinity,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                _buildPlaceholder(),
+          ),
         ),
         const SizedBox(height: 16),
         // Nome da Startup
@@ -44,7 +54,7 @@ class StartupHeaderWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            startup.stage.toUpperCase(),
+            _formatStage(startup.stage).toUpperCase(),
             style: AppTypography.caption.copyWith(
               color: Colors.blue,
               fontWeight: FontWeight.bold,

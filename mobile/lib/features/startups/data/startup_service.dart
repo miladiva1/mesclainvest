@@ -53,4 +53,20 @@ class StartupService {
       throw Exception('Erro ao buscar detalhes da startup: $e');
     }
   }
+
+  // ────────────────────────────────────────────────────────────────────
+  // createStartupQuestion(startupId, text)
+  // Adiciona uma nova pergunta na subcoleção "questions".
+  // ────────────────────────────────────────────────────────────────────
+  Future<void> createStartupQuestion(String startupId, String text) async {
+    try {
+      await _startupsRef.doc(startupId).collection('questions').add({
+        'text': text,
+        'visibility': 'publica',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      throw Exception('Erro ao enviar pergunta: $e');
+    }
+  }
 }
