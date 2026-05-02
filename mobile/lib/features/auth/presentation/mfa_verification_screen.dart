@@ -1,4 +1,4 @@
-// ── mfa.dart ───────────────────────────────────────────────────────────
+// ── mfa_verification_screen.dart ───────────────────────────────────────
 // Camada Presentation — Tela de Verificação MFA (tela de bloqueio).
 //
 // Responsabilidades:

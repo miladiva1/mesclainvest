@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/features/home/componentes/btn_cadastrar.dart';
-import 'package:mobile/features/home/componentes/btn_login.dart';
+import 'package:mobile/widgets/custom_register_button_widget.dart';
+import 'package:mobile/widgets/custom_secondary_login_button_widget.dart';
 
 class PaginaInicial extends StatefulWidget {
   const PaginaInicial({super.key});
@@ -21,7 +21,7 @@ class _PaginaInicialState extends State<PaginaInicial> {
             children: [
               SizedBox(height: 130),
 
-              Image.asset('lib/features/home/images/cartao.png'),
+              Image.asset('assets/images/cartao.png'),
 
               SizedBox(height: 40),
 

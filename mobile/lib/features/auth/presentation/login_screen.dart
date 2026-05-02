@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/features/auth/data/auth_service.dart';
-import 'package:mobile/features/home/componentes/btn_home.dart';
-import 'package:mobile/features/home/componentes/btn_login_senha.dart';
-import 'package:mobile/features/home/componentes/campo_de_texto.dart';
-import 'package:mobile/features/home/componentes/seta_voltar.dart';
+import 'package:mobile/services/auth_service.dart';
+import 'package:mobile/widgets/custom_login_button_widget.dart';
+import 'package:mobile/widgets/custom_forgot_password_button_widget.dart';
+import 'package:mobile/widgets/custom_text_field_widget.dart';
+import 'package:mobile/widgets/custom_back_arrow_widget.dart';
 import 'package:mobile/features/startups/presentation/screen/list/catalogo_de_startups.dart';
 
 class LoginPage extends StatefulWidget {
@@ -55,13 +55,7 @@ class _LoginPageState extends State<LoginPage> {
       // pushAndRemoveUntil remove toda a pilha de telas anteriores,
       // impedindo que o botão "Voltar" do Android retorne ao login.
       // ──────────────────────────────────────────────────────────────
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const CatalogoStartupsPage(),
-        ),
-        (route) => false,
-      );
+      Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
     } catch (e) {
       if (!mounted) return;
       _showError(e.toString().replaceFirst('Exception: ', ''));
@@ -117,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 20,),
 
                 Image.asset(
-                  'lib/features/home/images/perfil.png',
+                  'assets/images/perfil.png',
                   height: 120, // Altura fixa para ajudar no layout
                 ),
 
@@ -180,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                     Padding(
                       padding: const EdgeInsets.only(left: 30),
                       child: Image.asset(
-                        'lib/features/home/images/Checkmark.png',
+                        'assets/images/Checkmark.png',
                         width: 25,
                       ),
                     ),

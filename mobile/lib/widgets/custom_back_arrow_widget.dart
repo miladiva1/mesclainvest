@@ -17,7 +17,7 @@ class SetaVoltar extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(left: 20, top: 30),
             child: Image.asset(
-              'lib/features/home/images/seta.png',
+              'assets/images/seta.png',
               width: 40,
               height: 40,
             ),

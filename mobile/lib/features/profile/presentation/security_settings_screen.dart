@@ -1,4 +1,4 @@
-// ── profile_security.dart ──────────────────────────────────────────────
+// ── security_settings_screen.dart ──────────────────────────────────────
 // Camada Presentation — Tela de configuração de segurança do perfil.
 //
 // Responsabilidades:

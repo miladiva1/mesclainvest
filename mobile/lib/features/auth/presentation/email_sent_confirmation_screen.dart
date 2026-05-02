@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/features/home/componentes/btn_email_enviado.dart';
-import 'package:mobile/features/home/componentes/seta_voltar.dart';
+import 'package:mobile/widgets/custom_back_to_menu_button_widget.dart';
+import 'package:mobile/widgets/custom_back_arrow_widget.dart';
 
 class EmailEnviado extends StatefulWidget {
   const EmailEnviado({super.key});
@@ -47,7 +47,7 @@ class _EmailEnviadoState extends State<EmailEnviado> {
                               child: Column(
                                 children: [
 
-                                  Image.asset('lib/features/home/images/feito.png'),
+                                  Image.asset('assets/images/feito.png'),
 
                                   SizedBox(height: 20,),
 

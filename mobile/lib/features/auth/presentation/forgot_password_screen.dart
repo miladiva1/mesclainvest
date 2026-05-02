@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/features/auth/data/auth_service.dart';
-import 'package:mobile/features/home/componentes/btn_rec_senha.dart';
-import 'package:mobile/features/home/componentes/seta_voltar.dart';
-import 'package:mobile/features/home/componentes/txt_rec_senha.dart';
+import 'package:mobile/services/auth_service.dart';
+import 'package:mobile/widgets/custom_continue_button_widget.dart';
+import 'package:mobile/widgets/custom_back_arrow_widget.dart';
+import 'package:mobile/widgets/custom_email_field_widget.dart';
 
 class RecuperarSenha extends StatefulWidget {
   const RecuperarSenha({super.key});

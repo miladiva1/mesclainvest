@@ -7,7 +7,7 @@ import '../../../data/startup_service.dart';
 import '../../../domain/startup.dart';
 import 'startup_detail_screen.dart';
 import 'package:mobile/features/auth/data/user_service.dart';
-import 'package:mobile/features/auth/presentation/screen/mfa.dart';
+import 'package:mobile/features/auth/presentation/mfa_verification_screen.dart';
 
 class CatalogoStartupsPage extends StatefulWidget {
   const CatalogoStartupsPage({super.key});
@@ -342,42 +342,6 @@ class _CatalogoStartupsPageState extends State<CatalogoStartupsPage> {
                 },
               ),
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-        height: 70,
-        decoration: BoxDecoration(
-          color: const Color(0xFF222222),
-          borderRadius: BorderRadius.circular(35),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const Icon(Icons.home_outlined, color: Colors.white),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF512DA8),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.search, color: Colors.white, size: 18),
-                  SizedBox(width: 8),
-                  Text(
-                    "Explorar",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.grid_view, color: Colors.white),
-            const Icon(Icons.person_outline, color: Colors.white),
           ],
         ),
       ),

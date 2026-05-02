@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BotaoLogin extends StatelessWidget {
+class FazerLogin extends StatelessWidget {
   final Function()? onTap;
 
-  const BotaoLogin({super.key, required this.onTap});
+  const FazerLogin({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -14,14 +14,14 @@ class BotaoLogin extends StatelessWidget {
         padding: EdgeInsets.all(15),
         margin: EdgeInsets.symmetric(horizontal: 25),
         decoration: BoxDecoration(
-          color: Colors.purple[900],
+          color: Colors.deepPurple[50],
           borderRadius: BorderRadius.circular(30),
         ),
         child: Center(
           child: Text(
-            'Entrar na conta',
+            'Fazer o Login',
             style: GoogleFonts.lora(
-              color: Colors.white,
+              color: Colors.purple[900],
               fontSize: 20,
             ),
           ),

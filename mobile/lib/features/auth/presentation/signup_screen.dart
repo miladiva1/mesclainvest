@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/features/auth/data/auth_service.dart';
+import 'package:mobile/services/auth_service.dart';
 import 'package:mobile/features/startups/presentation/screen/list/catalogo_de_startups.dart';
 
 const _brandPurple = Color(0xFF5A3296);
@@ -75,13 +75,7 @@ class _SignUpPageState extends State<SignUpPage> {
       // ── Navegação pós-cadastro ─────────────────────────────────────
       // Vai direto ao catálogo, removendo toda a pilha de navegação.
       // ──────────────────────────────────────────────────────────────
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const CatalogoStartupsPage(),
-        ),
-        (route) => false,
-      );
+      Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
     } catch (e) {
       if (!mounted) return;
       _showError(e.toString().replaceFirst('Exception: ', ''));
