@@ -4,6 +4,7 @@ import 'package:mobile/services/auth_service.dart';
 import 'package:mobile/widgets/custom_continue_button_widget.dart';
 import 'package:mobile/widgets/custom_back_arrow_widget.dart';
 import 'package:mobile/widgets/custom_email_field_widget.dart';
+import 'package:mobile/features/auth/presentation/email_sent_confirmation_screen.dart';
 
 class RecuperarSenha extends StatefulWidget {
   const RecuperarSenha({super.key});
@@ -37,12 +38,15 @@ class _RecuperarSenhaState extends State<RecuperarSenha> {
     setState(() => _isLoading = true);
 
     try {
-      await _authService.resetPassword(email: email);
+      await _authService.resetPassword(emailController.text);
 
       if (!mounted) return;
 
       // Navega para a tela de confirmação
-      Navigator.pushNamed(context, '/emailenviado');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const EmailEnviado()),
+      );
     } catch (e) {
       if (!mounted) return;
       _showError(e.toString().replaceFirst('Exception: ', ''));

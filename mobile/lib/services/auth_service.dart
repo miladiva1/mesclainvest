@@ -68,7 +68,7 @@ class AuthService {
   // ────────────────────────────────────────────────────────────────────
   // Reset Password
   // ────────────────────────────────────────────────────────────────────
-  Future<void> resetPassword({required String email}) async {
+  Future<void> resetPassword(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email.trim());
     } on FirebaseAuthException catch (e) {
