@@ -6,6 +6,9 @@ class StartupListItem {
   final int capitalRaisedCents;
   final int totalTokensIssued;
   final int currentTokenPriceCents;
+  final int? investmentValueCents;
+  final double? weeklyVariationPercent;
+  final bool featuredThisWeek;
   final String? coverImageUrl;
   final String? headerImageUrl;
   final List<String> tags;
@@ -18,6 +21,9 @@ class StartupListItem {
     required this.capitalRaisedCents,
     required this.totalTokensIssued,
     required this.currentTokenPriceCents,
+    this.investmentValueCents,
+    this.weeklyVariationPercent,
+    this.featuredThisWeek = false,
     this.coverImageUrl,
     this.headerImageUrl,
     required this.tags,
@@ -32,6 +38,9 @@ class StartupListItem {
       capitalRaisedCents: json['capitalRaisedCents'] ?? 0,
       totalTokensIssued: json['totalTokensIssued'] ?? 0,
       currentTokenPriceCents: json['currentTokenPriceCents'] ?? 0,
+      investmentValueCents: _optionalInt(json['investmentValueCents']),
+      weeklyVariationPercent: _optionalDouble(json['weeklyVariationPercent']),
+      featuredThisWeek: _optionalBool(json['featuredThisWeek']),
       coverImageUrl: json['coverImageUrl'],
       headerImageUrl: json['headerImageUrl'],
       tags: List<String>.from(json['tags'] ?? []),
@@ -55,6 +64,9 @@ class StartupDetail extends StartupListItem {
     required super.capitalRaisedCents,
     required super.totalTokensIssued,
     required super.currentTokenPriceCents,
+    super.investmentValueCents,
+    super.weeklyVariationPercent,
+    super.featuredThisWeek,
     super.coverImageUrl,
     super.headerImageUrl,
     required super.tags,
@@ -75,6 +87,9 @@ class StartupDetail extends StartupListItem {
       capitalRaisedCents: json['capitalRaisedCents'] ?? 0,
       totalTokensIssued: json['totalTokensIssued'] ?? 0,
       currentTokenPriceCents: json['currentTokenPriceCents'] ?? 0,
+      investmentValueCents: _optionalInt(json['investmentValueCents']),
+      weeklyVariationPercent: _optionalDouble(json['weeklyVariationPercent']),
+      featuredThisWeek: _optionalBool(json['featuredThisWeek']),
       coverImageUrl: json['coverImageUrl'],
       headerImageUrl: json['headerImageUrl'],
       tags: List<String>.from(json['tags'] ?? []),
@@ -95,4 +110,31 @@ class StartupDetail extends StartupListItem {
       access: json['access'] ?? {},
     );
   }
+}
+
+int? _optionalInt(dynamic value) {
+  if (value is int) return value;
+  if (value is num) return value.round();
+  if (value is String) return int.tryParse(value);
+  return null;
+}
+
+double? _optionalDouble(dynamic value) {
+  if (value is double) return value;
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value.replaceAll(',', '.'));
+  return null;
+}
+
+bool _optionalBool(dynamic value) {
+  if (value is bool) return value;
+  if (value is num) return value != 0;
+  if (value is String) {
+    final normalized = value.toLowerCase().trim();
+    return normalized == 'true' ||
+        normalized == '1' ||
+        normalized == 'sim' ||
+        normalized == 'yes';
+  }
+  return false;
 }
