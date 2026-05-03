@@ -1,4 +1,4 @@
-/**Vinícius
+/** Vinícius
  * Explicação do código ->
  */
 
@@ -13,7 +13,7 @@ export const buyTokens = functions.https.onCall(async (request) => {
 
   const userId = request.auth.uid;
   // Os dados do body também vêm de dentro de 'request.data'
-  const { startupId, tokenQuantity } = request.data;
+  const {startupId, tokenQuantity} = request.data;
   const db = admin.firestore();
 
   try {
@@ -24,7 +24,7 @@ export const buyTokens = functions.https.onCall(async (request) => {
       const startupSnap = await t.get(startupRef);
       if (!startupSnap.exists) throw new Error("Startup não encontrada.");
 
-      const price = startupSnap.data()?.currentTokenPrice; 
+      const price = startupSnap.data()?.currentTokenPrice;
       const totalCost = price * tokenQuantity;
 
       const walletSnap = await t.get(walletRef);
@@ -36,10 +36,10 @@ export const buyTokens = functions.https.onCall(async (request) => {
 
       t.set(walletRef, {
         balance: balance - totalCost,
-        portfolio: { [startupId]: currentTokens + tokenQuantity }
-      }, { merge: true });
+        portfolio: {[startupId]: currentTokens + tokenQuantity},
+      }, {merge: true});
     });
-    return { status: "success" };
+    return {status: "success"};
   } catch (error: any) {
     throw new functions.https.HttpsError("failed-precondition", error.message);
   }

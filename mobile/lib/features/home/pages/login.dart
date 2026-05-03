@@ -4,6 +4,8 @@ import 'package:mobile/features/home/componentes/btn_home.dart';
 import 'package:mobile/features/home/componentes/btn_login_senha.dart';
 import 'package:mobile/features/home/componentes/campo_de_texto.dart';
 import 'package:mobile/features/home/componentes/seta_voltar.dart';
+import 'package:mobile/features/home/data/validacao_login.dart';
+import 'package:mobile/features/home/pages/home.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,8 +19,45 @@ class _LoginPageState extends State<LoginPage> {
 
   final passwordController = TextEditingController();
 
-  // nao vai fazer nada por agora pq ta sem tela do menu principal
-  void loginUser() {}
+  // ta pegando os dados e enviando para a funcao que envia os dados para o backend
+  Future<void> loginUser() async {
+    String username = usernameController.text;
+    String password = passwordController.text;
+
+    try {
+      // recebeu o resultado da validacao e ta mandando para o login.dart
+      final resultado = await EnviarDados().fazerLogin(username, password);
+
+      // esse mounted caso esteja demorando pro servidor responder e
+      // a pessoa saiu da pagina ele meio que fala pra nao terminar o processo
+      if (!mounted) return;
+
+      // se sucesso for verdade quer dizer que teve uma conta com esse email e senha
+      if (resultado['success'] == true) {
+
+        // se teve uma conta com essa conta tem que ser direcionada a pagina princial
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const PaginaInicial()
+          ), // Troque pelo nome da sua tela
+        );
+      } else {
+        // como nao foi encontrado tem que avisar ao usuario
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              resultado['message'],
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } catch (_) {
+
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

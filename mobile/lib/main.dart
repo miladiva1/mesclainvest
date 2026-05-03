@@ -1,8 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/features/exchange/presentation/screen/wallet_screen.dart';
 import 'package:mobile/features/home/pages/email_enviado.dart';
 import 'package:mobile/features/home/pages/home.dart';
 import 'package:mobile/features/home/pages/login.dart';
 import 'package:mobile/features/home/pages/rec_senha.dart';
+import 'package:mobile/features/startups/presentation/screen/cadastros_screen.dart';
+import 'package:mobile/firebase_options.dart';
 //import 'package:mobile/features/perg_e_resp.dart/paginas/perg_e_resp.dart';
 //import 'package:firebase_core/firebase_core.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,9 +16,10 @@ import 'package:mobile/features/home/pages/rec_senha.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // O comando comentado abaixo precisará ser configurado depois:
-  // await Firebase.initializeApp();
+  
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(const MyApp());
 }
@@ -39,6 +44,8 @@ class MyApp extends StatelessWidget {
         '/login':(context) => LoginPage(),
         '/recuperarsenha':(context) => RecuperarSenha(),
         '/emailenviado':(context) => EmailEnviado(),
+        '/carteira':(context) => CarteiraBalcaoScreen(),
+        '/startups':(context) => SignUpPage(),
       }
     );
   }

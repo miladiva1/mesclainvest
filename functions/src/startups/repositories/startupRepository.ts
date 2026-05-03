@@ -1,4 +1,4 @@
-/**Vinicius 
+/** Vinicius
  * * Descrição ->  usfuiaswe fiuv
 */
 
@@ -24,12 +24,12 @@ const demoStartups: Array<StartupDocument & {id: string}> = [
     totalTokensIssued: 100000,
     currentTokenPriceCents: 125,
     founders: [
-      { name: "Ana Ribeiro", role: "CEO", equityPercent: 48, bio: "Responsavel por estrategia e parcerias academicas." },
-      { name: "Lucas Moreira", role: "CTO", equityPercent: 37, bio: "Responsavel por hardware e integracao mobile." },
-      { name: "Mescla Labs", role: "Reserva estrategica", equityPercent: 15 }
+      {name: "Ana Ribeiro", role: "CEO", equityPercent: 48, bio: "Responsavel por estrategia e parcerias academicas."},
+      {name: "Lucas Moreira", role: "CTO", equityPercent: 37, bio: "Responsavel por hardware e integracao mobile."},
+      {name: "Mescla Labs", role: "Reserva estrategica", equityPercent: 15},
     ],
     externalMembers: [
-      { name: "Dra. Helena Costa", role: "Mentora", organization: "PUC-Campinas" }
+      {name: "Dra. Helena Costa", role: "Mentora", organization: "PUC-Campinas"},
     ],
     demoVideos: ["https://example.com/videos/biochip-campus-demo"],
     pitchDeckUrl: "https://example.com/decks/biochip-campus.pdf",
@@ -47,14 +47,14 @@ const demoStartups: Array<StartupDocument & {id: string}> = [
     totalTokensIssued: 250000,
     currentTokenPriceCents: 310,
     founders: [
-      { name: "Beatriz Santos", role: "CEO", equityPercent: 42 },
-      { name: "Rafael Almeida", role: "COO", equityPercent: 28 },
-      { name: "Carla Nogueira", role: "CTO", equityPercent: 20 },
-      { name: "Reserva de incentivos", role: "Pool", equityPercent: 10 }
+      {name: "Beatriz Santos", role: "CEO", equityPercent: 42},
+      {name: "Rafael Almeida", role: "COO", equityPercent: 28},
+      {name: "Carla Nogueira", role: "CTO", equityPercent: 20},
+      {name: "Reserva de incentivos", role: "Pool", equityPercent: 10},
     ],
     externalMembers: [
-      { name: "Marcos Lima", role: "Conselheiro", organization: "Mescla" },
-      { name: "Patricia Gomes", role: "Mentora", organization: "Rede de Logistica" }
+      {name: "Marcos Lima", role: "Conselheiro", organization: "Mescla"},
+      {name: "Patricia Gomes", role: "Mentora", organization: "Rede de Logistica"},
     ],
     demoVideos: ["https://example.com/videos/rota-verde-demo"],
     pitchDeckUrl: "https://example.com/decks/rota-verde.pdf",
@@ -72,19 +72,19 @@ const demoStartups: Array<StartupDocument & {id: string}> = [
     totalTokensIssued: 500000,
     currentTokenPriceCents: 525,
     founders: [
-      { name: "Diego Martins", role: "CEO", equityPercent: 36 },
-      { name: "Juliana Vieira", role: "CPO", equityPercent: 24 },
-      { name: "Felipe Andrade", role: "CTO", equityPercent: 25 },
-      { name: "Investidores simulados", role: "Participacao externa", equityPercent: 15 }
+      {name: "Diego Martins", role: "CEO", equityPercent: 36},
+      {name: "Juliana Vieira", role: "CPO", equityPercent: 24},
+      {name: "Felipe Andrade", role: "CTO", equityPercent: 25},
+      {name: "Investidores simulados", role: "Participacao externa", equityPercent: 15},
     ],
     externalMembers: [
-      { name: "Sofia Pereira", role: "Conselheira", organization: "Ecossistema Mescla" }
+      {name: "Sofia Pereira", role: "Conselheira", organization: "Ecossistema Mescla"},
     ],
     demoVideos: ["https://example.com/videos/mentorai-demo"],
     pitchDeckUrl: "https://example.com/decks/mentorai.pdf",
     coverImageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978",
     tags: ["edtech", "ia", "mentoria"],
-  }
+  },
 ];
 
 function toListItem(id: string, startup: StartupDocument): StartupListItem {

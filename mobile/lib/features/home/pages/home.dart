@@ -57,7 +57,9 @@ class _PaginaInicialState extends State<PaginaInicial> {
               SizedBox(height: 20,),
 
               BotaoCadastrar(
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, '/carteira');
+                },
               ),
 
               SizedBox(height: 20,),
