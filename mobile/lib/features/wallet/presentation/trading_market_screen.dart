@@ -140,12 +140,7 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
           },
         ),
         title: Text('Balcao de Negociacao', style: GoogleFonts.lora()),
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/profile-security'),
-            icon: const Icon(Icons.security_outlined),
-          ),
-        ],
+        actions: [],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

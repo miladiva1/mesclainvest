@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/startups/presentation/screen/list/catalogo_de_startups.dart';
 import 'package:mobile/features/wallet/presentation/trading_market_screen.dart';
-import 'package:mobile/features/profile/presentation/security_settings_screen.dart';
+import 'package:mobile/features/profile/presentation/profile_screen.dart';
 import 'package:mobile/features/wallet/presentation/wallet_dashboard_screen.dart';
 
 class MainWrapperScreen extends StatefulWidget {
@@ -18,7 +18,7 @@ class _MainWrapperScreenState extends State<MainWrapperScreen> {
     const WalletDashboardScreen(),
     const CatalogoStartupsPage(),
     const BalcaoNegociacaoPage(),
-    const ProfileSecurityScreen(),
+    const ProfileScreen(),
   ];
 
   @override
