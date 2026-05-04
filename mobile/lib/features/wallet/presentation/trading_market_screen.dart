@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:mobile/services/local_storage_service.dart';
-
+import 'package:mobile/core/routes/app_routes.dart';
 class BalcaoNegociacaoPage extends StatefulWidget {
   const BalcaoNegociacaoPage({super.key});
 
@@ -129,6 +129,16 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushNamedAndRemoveUntil(
+              context, 
+              AppRoutes.mainRoute, 
+              (route) => false,
+            );
+          },
+        ),
         title: Text('Balcao de Negociacao', style: GoogleFonts.lora()),
         actions: [
           IconButton(

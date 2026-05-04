@@ -46,7 +46,19 @@ class MyApp extends StatelessWidget {
       onUnknownRoute: (settings) {
         return MaterialPageRoute(
           builder: (_) => Scaffold(
-            appBar: AppBar(title: const Text('Em Desenvolvimento')),
+            appBar: AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context, 
+                    AppRoutes.mainRoute, 
+                    (route) => false,
+                  );
+                },
+              ),
+              title: const Text('Em Desenvolvimento'),
+            ),
             body: const Center(
               child: Text('Esta funcionalidade ainda não foi implementada pela equipe.'),
             ),

@@ -103,6 +103,16 @@ class RoutePlaceholderPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushNamedAndRemoveUntil(
+              context, 
+              AppRoutes.mainRoute, 
+              (route) => false,
+            );
+          },
+        ),
         backgroundColor: Colors.white,
         foregroundColor: primaryPurple,
         elevation: 0,
