@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/features/wallet/presentation/wallet_dashboard_screen.dart';
 import 'package:mobile/features/startups/presentation/screen/list/catalogo_de_startups.dart';
 import 'package:mobile/features/wallet/presentation/trading_market_screen.dart';
 import 'package:mobile/features/profile/presentation/security_settings_screen.dart';
@@ -15,7 +14,7 @@ class _MainWrapperScreenState extends State<MainWrapperScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const WalletDashboardPage(),
+    const BalcaoNegociacaoPage(),
     const CatalogoStartupsPage(),
     const BalcaoNegociacaoPage(),
     const ProfileSecurityScreen(),
@@ -24,11 +23,8 @@ class _MainWrapperScreenState extends State<MainWrapperScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      // ── BARRA DE NAVEGAÇÃO GLOBAL ─────────────────────────────────────────
+      body: IndexedStack(index: _currentIndex, children: _screens),
+      // â”€â”€ BARRA DE NAVEGAÃ‡ÃƒO GLOBAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       bottomNavigationBar: Container(
         margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         height: 70,
@@ -49,7 +45,7 @@ class _MainWrapperScreenState extends State<MainWrapperScreen> {
             ),
             GestureDetector(
               onTap: () => setState(() => _currentIndex = 2),
-              child: _buildNavItem(Icons.grid_view, "Balcão", 2),
+              child: _buildNavItem(Icons.grid_view, "BalcÃ£o", 2),
             ),
             GestureDetector(
               onTap: () => setState(() => _currentIndex = 3),
