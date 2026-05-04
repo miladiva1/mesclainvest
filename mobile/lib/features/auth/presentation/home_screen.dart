@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Bem-vindo(a) ao EcoCycle',
+              'Bem-vindo(a) ao MesclaInvest',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -34,7 +34,8 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             OutlinedButton(
-              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.cadastro),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.cadastro),
               child: const Text('Cadastrar'),
             ),
           ],
