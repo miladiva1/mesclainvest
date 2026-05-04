@@ -17,7 +17,6 @@ import 'package:mobile/features/dashboard/main_wrapper_screen.dart';
 
 class AppRoutes {
   // ── Constantes de rota ─────────────────────────────────────────────
-  static const String home = '/';
   static const String mainWrapper = '/main';
   static const String menu = '/menu';
   static const String login = '/login';
@@ -25,7 +24,6 @@ class AppRoutes {
   static const String recuperarSenha = '/recuperarsenha';
   static const String emailEnviado = '/emailenviado';
   static const String catalogo = '/catalogo';
-  static const String mfa = '/mfa';
   static const String profileSecurity = '/profile-security';
   static const String startupDetalhes = '/startup-detalhes';
   static const String balcao = '/balcao';

@@ -3,14 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/widgets/custom_register_button_widget.dart';
 import 'package:mobile/widgets/custom_secondary_login_button_widget.dart';
 
-class PaginaInicial extends StatefulWidget {
+class PaginaInicial extends StatelessWidget {
   const PaginaInicial({super.key});
 
-  @override
-  State<PaginaInicial> createState() => _PaginaInicialState();
-}
-
-class _PaginaInicialState extends State<PaginaInicial> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
