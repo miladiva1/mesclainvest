@@ -4,7 +4,7 @@ import 'package:mobile/features/auth/presentation/forgot_password_screen.dart';
 import 'package:mobile/features/auth/presentation/home_screen.dart';
 import 'package:mobile/features/auth/presentation/login_screen.dart';
 import 'package:mobile/features/auth/presentation/signup_screen.dart';
-import 'package:mobile/features/profile/presentation/security_settings_screen.dart';
+import 'package:mobile/features/auth/presentation/mfa_verification_screen.dart';
 import 'package:mobile/features/startups/presentation/screen/list/catalogo_de_startups.dart';
 import 'package:mobile/features/wallet/presentation/trading_market_screen.dart';
 import 'package:mobile/features/dashboard/main_wrapper_screen.dart';
@@ -39,7 +39,6 @@ class AppRoutes {
     recuperarSenha: (_) => const RecuperarSenha(),
     emailEnviado: (_) => const EmailEnviado(),
     catalogo: (_) => const CatalogoStartupsPage(),
-    profileSecurity: (_) => const ProfileSecurityScreen(),
     startupDetalhes: (_) => const RoutePlaceholderPage(
       title: 'Detalhes da startup',
       subtitle: 'Use a lista para abrir uma startup real.',
@@ -76,11 +75,10 @@ class AppRoutes {
       subtitle: 'Rota pronta para integrar a central de notificacoes.',
       icon: Icons.notifications_none,
     ),
-    mfa: (_) => const RoutePlaceholderPage(
-      title: 'MFA',
-      subtitle: 'Use o fluxo de autenticacao para abrir a verificacao.',
-      icon: Icons.security,
-    ),
+    mfa: (context) {
+      final code = ModalRoute.of(context)?.settings.arguments as String? ?? '';
+      return MfaVerificationScreen(expectedCode: code);
+    },
   };
 }
 

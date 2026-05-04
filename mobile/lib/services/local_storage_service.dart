@@ -1,6 +1,7 @@
 // feito por camila fernandes costacurta RA:25012949
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppStorage {
@@ -30,7 +31,7 @@ class AppStorage {
         },
       ];
     }
-    final decoded = jsonDecode(raw) as List<dynamic>;
+    final decoded = await compute(jsonDecode, raw) as List<dynamic>;
     return decoded
         .map((item) => Map<String, dynamic>.from(item as Map))
         .toList();
@@ -40,6 +41,7 @@ class AppStorage {
     List<Map<String, dynamic>> transactions,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_walletTransactionsKey, jsonEncode(transactions));
+    final encoded = await compute(jsonEncode, transactions);
+    await prefs.setString(_walletTransactionsKey, encoded);
   }
 }

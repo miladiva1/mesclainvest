@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/core/routes/app_routes.dart';
-import 'package:mobile/features/auth/presentation/login_screen.dart';
 import 'package:mobile/features/auth/presentation/home_screen.dart';
 import 'package:mobile/features/dashboard/main_wrapper_screen.dart';
 import 'firebase_options.dart';
