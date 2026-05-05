@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         '/recuperarsenha':(context) => RecuperarSenha(),
         '/emailenviado':(context) => EmailEnviado(),
         '/carteira':(context) => CarteiraBalcaoScreen(),
-        '/startups':(context) => SignUpPage(), // falta saber qual e essa rota
+        '/cadastro':(context) => SignUpPage(),
         '/register': (context) => const SignUpPage(), // falta saber qual e essa rota
         '/forgot': (context) => const RecuperarSenha(), // falta saber qual e essa rota
         '/mfa': (context) => const MfaScreen(),

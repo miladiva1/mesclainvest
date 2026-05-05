@@ -3,7 +3,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/features/startups/presentation/screen/storage.dart';
-import 'app_storage.dart';
 
 class WalletDashboardPage extends StatefulWidget {
   const WalletDashboardPage({super.key});

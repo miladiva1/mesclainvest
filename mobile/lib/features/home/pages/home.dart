@@ -58,7 +58,7 @@ class _PaginaInicialState extends State<PaginaInicial> {
 
               BotaoCadastrar(
                 onTap: () {
-                  Navigator.pushNamed(context, '/carteira');
+                  Navigator.pushNamed(context, '/cadastro');
                 },
               ),
 
