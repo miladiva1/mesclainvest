@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/core/routes/app_routes.dart';
@@ -124,7 +125,8 @@ class _DefaultProfileAvatar extends StatelessWidget {
   }
 }
 
-class WalletCard extends StatelessWidget {
+// ── ALTERADO: StatelessWidget → StatefulWidget para buscar saldo ──
+class WalletCard extends StatefulWidget {
   const WalletCard({
     super.key,
     required this.primaryPurple,
@@ -139,7 +141,43 @@ class WalletCard extends StatelessWidget {
   final VoidCallback onMoreTap;
 
   @override
+  State<WalletCard> createState() => _WalletCardState();
+}
+
+class _WalletCardState extends State<WalletCard> {
+  double _saldo = 0;
+  bool _carregando = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _buscarSaldo();
+  }
+
+  Future<void> _buscarSaldo() async {
+    try {
+      final functions = FirebaseFunctions.instanceFor(region: 'us-central1');
+      final resultado = await functions.httpsCallable('buscarSaldo').call();
+      if (resultado.data['success'] == true) {
+        setState(() {
+          _saldo = (resultado.data['saldo'] as num).toDouble();
+          _carregando = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Erro buscarSaldo: $e');
+      setState(() => _carregando = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final saldoTexto = _carregando
+        ? 'Carregando...'
+        : widget.showBalance
+            ? 'R\$ ${_saldo.toStringAsFixed(2)}'
+            : 'R\$ ******';
+
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
       decoration: BoxDecoration(
@@ -151,7 +189,7 @@ class WalletCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: primaryPurple.withValues(alpha: 0.18),
+            color: widget.primaryPurple.withValues(alpha: 0.18),
             blurRadius: 22,
             offset: const Offset(0, 12),
           ),
@@ -175,7 +213,7 @@ class WalletCard extends StatelessWidget {
                 ),
               ),
               Text(
-                showBalance ? 'R\$ 1.922,34' : 'R\$ ******',
+                saldoTexto, // ── ALTERADO: era 'R\$ 1.922,34'
                 style: const TextStyle(
                   color: Colors.white,
                   fontFamily: 'Georgia',
@@ -210,11 +248,11 @@ class WalletCard extends StatelessWidget {
               _CardActionChip(
                 label: 'Carteira',
                 icon: CupertinoIcons.creditcard_fill,
-                onTap: onCardTap,
+                onTap: widget.onCardTap,
               ),
               const Spacer(),
               _TapTarget(
-                onTap: onMoreTap,
+                onTap: widget.onMoreTap,
                 child: Container(
                   width: 24,
                   height: 24,
