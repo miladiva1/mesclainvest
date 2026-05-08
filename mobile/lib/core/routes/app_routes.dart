@@ -6,6 +6,8 @@ import 'package:mobile/features/auth/presentation/login_screen.dart';
 import 'package:mobile/features/auth/presentation/signup_screen.dart';
 import 'package:mobile/features/profile/presentation/security_settings_screen.dart';
 import 'package:mobile/features/startups/presentation/screen/list/catalogo_de_startups.dart';
+import 'package:mobile/features/wallet/presentation/depositar_screen.dart';
+import 'package:mobile/features/wallet/presentation/sacar_screen.dart';
 import 'package:mobile/features/wallet/presentation/trading_market_screen.dart';
 
 class AppRoutes {
@@ -52,21 +54,13 @@ class AppRoutes {
     vender: (_) => const BalcaoNegociacaoPage(),
     carteira: (_) => const BalcaoNegociacaoPage(),
     dashboard: (_) => const BalcaoNegociacaoPage(),
-    depositar: (_) => const RoutePlaceholderPage(
-      title: 'Depositar',
-      subtitle: 'Rota pronta para integrar a tela de deposito.',
-      icon: Icons.arrow_upward,
-    ),
+    depositar: (_) => const DepositarScreen(),
     enviar: (_) => const RoutePlaceholderPage(
       title: 'Depositar',
       subtitle: 'Rota legada apontando para a funcao de deposito.',
       icon: Icons.arrow_upward,
     ),
-    sacar: (_) => const RoutePlaceholderPage(
-      title: 'Sacar',
-      subtitle: 'Rota pronta para integrar a tela de saque.',
-      icon: Icons.arrow_downward,
-    ),
+    sacar: (_) => const SacarScreen(),
     receber: (_) => const RoutePlaceholderPage(
       title: 'Sacar',
       subtitle: 'Rota legada apontando para a funcao de saque.',
