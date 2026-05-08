@@ -6,7 +6,9 @@
 // do usuário na coleção `users` do Firestore (via UserService).
 // ──────────────────────────────────────────────────────────────────────
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:mobile/features/auth/data/user_service.dart';
 
 class AuthService {
@@ -32,11 +34,20 @@ class AuthService {
     required String email,
     required String password,
   }) async {
+    debugPrint('>>> entrou no signInWithEmailAndPassword');
     try {
       final credential = await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
+    final functions = FirebaseFunctions.instanceFor(region: 'us-central1');
+      // Garante que o documento Firestore existe para este usuário
+    try {
+      final resultado = await functions.httpsCallable('criarCarteira-criarCarteira').call();
+      debugPrint('Resultado criarCarteira: ${resultado.data}');
+    } catch (e) {
+      debugPrint('Erro criarCarteira: $e');
+    }
       // Garante que o documento Firestore existe para este usuário
       await _userService.ensureUserDocument(credential.user!);
       return credential;
