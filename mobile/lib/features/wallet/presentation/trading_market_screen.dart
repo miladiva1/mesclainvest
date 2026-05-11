@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:mobile/services/local_storage_service.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:mobile/core/routes/app_routes.dart';
 import 'package:mobile/features/wallet/presentation/trade_market.dart' as camila_market;
 
@@ -39,19 +39,23 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
   }
 
   Future<void> _loadCarteira() async {
-    final saldo = await AppStorage.getWalletBalance();
-    final txs = await AppStorage.getWalletTransactions();
-    if (!mounted) return;
-    setState(() {
-      _saldoByd = saldo;
-      _transacoes = txs;
-      _loading = false;
-    });
-  }
-
-  Future<void> _persistCarteira() async {
-    await AppStorage.setWalletBalance(_saldoByd);
-    await AppStorage.setWalletTransactions(_transacoes);
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('buscarSaldo');
+      final result = await callable.call();
+      if (!mounted) return;
+      setState(() {
+        _saldoByd = (result.data['saldo'] as num).toDouble();
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro ao buscar saldo')),
+      );
+    }
   }
 
   Future<void> _registrarOrdem({
@@ -78,7 +82,6 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
         'createdAt': DateTime.now().toIso8601String(),
       });
     });
-    await _persistCarteira();
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
