@@ -228,16 +228,43 @@ export async function createQuestion(
     .add(question);
   return questionRef.id;
 }
+/**Inserção de uma nova coleção no nosso banco de dados, rodado com npm run build e
+ * firebase deploy --only functions,
+ * E então:
+ * curl -X POST https://seedstartupcatalog-sc2mrqrvtq-uc.a.run.app -H "Content-Type: application/json" -d '{"data": {}}'*/
+const exchangeSeedData: Record<string, { tokensDisponiveis: number; capitalArrecadado: number; precoAtual: number }> = {
+  agrisense: { tokensDisponiveis: 10000, capitalArrecadado: 50000.0, precoAtual: 5.0 },
+  devmatch: { tokensDisponiveis: 50000, capitalArrecadado: 75000.0, precoAtual: 11.5 },
+  ecocycle: { tokensDisponiveis: 20000, capitalArrecadado: 60000.0, precoAtual: 7.5 },
+  healthbit: { tokensDisponiveis: 5000, capitalArrecadado: 40000.0, precoAtual: 8.0 },
+  smartcampus: { tokensDisponiveis: 100000, capitalArrecadado: 100000.0, precoAtual: 10.0 }
+};
+
 export async function seedDemoStartups(): Promise<string[]> {
   const batch = db.batch();
+  const exchangeCollection = db.collection("exchange");
+
   for (const startup of demoStartups) {
     const startupRef = startupsCollection.doc(startup.id);
     const { id, ...data } = startup;
+
+    // Set startup data
     batch.set(startupRef, {
       ...data,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     }, { merge: true });
+
+    // Set exchange data
+    const exchangeData = exchangeSeedData[startup.id];
+    if (exchangeData) {
+      const exchangeRef = exchangeCollection.doc(startup.id);
+      batch.set(exchangeRef, {
+        ...exchangeData,
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      }, { merge: true });
+    }
   }
   await batch.commit();
   return demoStartups.map((startup) => startup.id);
