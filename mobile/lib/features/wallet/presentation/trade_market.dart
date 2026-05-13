@@ -344,7 +344,9 @@ class AssetDetailsScreen extends StatefulWidget {
 class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
   String _selectedPeriod = 'Diário';
   final TextEditingController _quantidadeController = TextEditingController();
+  final TextEditingController _quantidadeVendaController = TextEditingController();
   bool _isLoading = false;
+  bool _isSelling = false;
 
   // --- ESTRUTURA PARA O BACKEND ---
   // Seu amigo vai substituir essas listas estáticas por dados do Firebase/API
@@ -366,6 +368,7 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
   @override
   void dispose() {
     _quantidadeController.dispose();
+    _quantidadeVendaController.dispose();
     super.dispose();
   }
 
@@ -494,6 +497,133 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                               )
                             : const Text(
                                 "Confirmar Compra",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _abrirModalVender() {
+    _quantidadeVendaController.clear();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (bottomSheetContext) {
+        return StatefulBuilder(
+          builder: (builderContext, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Vender ${widget.startup['ticker']}",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: _quantidadeVendaController,
+                      decoration: InputDecoration(
+                        labelText: "Quantidade de Tokens",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        prefixIcon: const Icon(Icons.remove_circle_outline),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                        ),
+                        onPressed: _isSelling
+                            ? null
+                            : () async {
+                                final quantidadeTexto = _quantidadeVendaController.text.replaceAll(',', '.');
+                                final quantidade = int.tryParse(quantidadeTexto) ?? 0;
+
+                                if (quantidade <= 0) {
+                                  ScaffoldMessenger.of(builderContext).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Informe uma quantidade válida (número inteiro > 0).'),
+                                      backgroundColor: Colors.orange,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                setModalState(() => _isSelling = true);
+
+                                try {
+                                  final startupId = _getStartupId(widget.startup['ticker']);
+                                  final callable = FirebaseFunctions.instance
+                                      .httpsCallable('exchange-sellTokens');
+                                  await callable.call({
+                                    'startupId': startupId,
+                                    'quantidade': quantidade,
+                                  });
+
+                                  if (!mounted) return;
+                                  Navigator.pop(builderContext);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Ordem de venda executada com sucesso!'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                } on FirebaseFunctionsException catch (e) {
+                                  setModalState(() => _isSelling = false);
+                                  if (!mounted) return;
+                                  ScaffoldMessenger.of(builderContext).showSnackBar(
+                                    SnackBar(
+                                      content: Text(e.message ?? e.details?.toString() ?? 'Erro na transação.'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                } catch (e) {
+                                  setModalState(() => _isSelling = false);
+                                  if (!mounted) return;
+                                  ScaffoldMessenger.of(builderContext).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Erro inesperado: $e'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              },
+                        child: _isSelling
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                "Confirmar Venda",
                                 style: TextStyle(color: Colors.white),
                               ),
                       ),
@@ -676,7 +806,13 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                   "Investir",
                   _abrirModalInvestir,
                 ),
-                const SizedBox(width: 40),
+                const SizedBox(width: 20),
+                _buildActionButton(
+                  Icons.sell,
+                  "Vender",
+                  _abrirModalVender,
+                ),
+                const SizedBox(width: 20),
                 _buildActionButton(
                   Icons.swap_horiz,
                   "Trocar",
