@@ -232,12 +232,12 @@ export async function createQuestion(
  * firebase deploy --only functions,
  * E então:
  * curl -X POST https://seedstartupcatalog-sc2mrqrvtq-uc.a.run.app -H "Content-Type: application/json" -d '{"data": {}}'*/
-const exchangeSeedData: Record<string, { tokensDisponiveis: number; capitalArrecadado: number; precoAtual: number }> = {
-  agrisense: { tokensDisponiveis: 10000, capitalArrecadado: 50000.0, precoAtual: 5.0 },
-  devmatch: { tokensDisponiveis: 50000, capitalArrecadado: 75000.0, precoAtual: 11.5 },
-  ecocycle: { tokensDisponiveis: 20000, capitalArrecadado: 60000.0, precoAtual: 7.5 },
-  healthbit: { tokensDisponiveis: 5000, capitalArrecadado: 40000.0, precoAtual: 8.0 },
-  smartcampus: { tokensDisponiveis: 100000, capitalArrecadado: 100000.0, precoAtual: 10.0 }
+const exchangeSeedData: Record<string, { tokensDisponiveis: number; capitalArrecadado: number; precoAtual: number; variacao: number }> = {
+  agrisense: { tokensDisponiveis: 10000, capitalArrecadado: 50000.0, precoAtual: 5.0, variacao: 0 },
+  devmatch: { tokensDisponiveis: 50000, capitalArrecadado: 75000.0, precoAtual: 11.5, variacao: 0 },
+  ecocycle: { tokensDisponiveis: 20000, capitalArrecadado: 60000.0, precoAtual: 7.5, variacao: 0 },
+  healthbit: { tokensDisponiveis: 5000, capitalArrecadado: 40000.0, precoAtual: 8.0, variacao: 0 },
+  smartcampus: { tokensDisponiveis: 100000, capitalArrecadado: 100000.0, precoAtual: 10.0, variacao: 0 }
 };
 
 export async function seedDemoStartups(): Promise<string[]> {

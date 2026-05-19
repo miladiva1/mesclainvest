@@ -62,6 +62,8 @@ export const sellTokens = functions.https.onCall(async (request) => {
         ? Number((novoCapitalArrecadado / novosTokensDisponiveis).toFixed(4))
         : precoAtual;
 
+      const variacao = ((novoPreco - precoAtual) / precoAtual) * 100;
+
       t.set(carteiraRef, { saldo: novoSaldo }, { merge: true });
 
       const valorPagoAtual = invData?.valorPago || 0;
@@ -76,7 +78,8 @@ export const sellTokens = functions.https.onCall(async (request) => {
       t.update(exchangeRef, {
         tokensDisponiveis: novosTokensDisponiveis,
         capitalArrecadado: novoCapitalArrecadado,
-        precoAtual: novoPreco
+        precoAtual: novoPreco,
+        variacao: variacao
       });
 
       const dataAtualObj = new Date();

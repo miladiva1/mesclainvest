@@ -61,6 +61,8 @@ export const buyTokens = functions.https.onCall(async (request) => {
         ? Number((novoCapitalArrecadado / novosTokensDisponiveis).toFixed(4)) 
         : precoAtual;
 
+      const variacao = ((novoPreco - precoAtual) / precoAtual) * 100;
+
       t.set(carteiraRef, { saldo: novoSaldo }, { merge: true });
 
       const invData = investimentoSnap.exists ? investimentoSnap.data() : {};
@@ -75,7 +77,8 @@ export const buyTokens = functions.https.onCall(async (request) => {
       t.update(exchangeRef, {
         tokensDisponiveis: novosTokensDisponiveis,
         capitalArrecadado: novoCapitalArrecadado,
-        precoAtual: novoPreco
+        precoAtual: novoPreco,
+        variacao: variacao
       });
 
       const dataAtualObj = new Date();
