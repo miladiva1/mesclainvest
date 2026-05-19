@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile/features/wallet/presentation/token.dart' as token_page;
 
 class BalcaoNegociacaoPage extends StatefulWidget {
@@ -17,53 +18,7 @@ class BalcaoNegociacaoPage extends StatefulWidget {
 class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
   String _filtroSelecionado = 'Todas';
 
-  final List<Map<String, dynamic>> _startups = [
-    {
-      'nome': 'AgriSense',
-      'ticker': 'AGRI3',
-      'logo': 'assets/images/logos/logotipoAgriSense.png',
-      'preco': 1.75,
-      'valorizacao': '+10.0%',
-      'qtd': 500,
-      'setor': 'Agronegócio',
-    },
-    {
-      'nome': 'DevMatch',
-      'ticker': 'DEVM3',
-      'logo': 'assets/images/logos/logotipoDevMatch.png',
-      'preco': 1.20,
-      'valorizacao': '+5.4%',
-      'qtd': 1200,
-      'setor': 'Tecnologia',
-    },
-    {
-      'nome': 'EcoCycle',
-      'ticker': 'ECYC1',
-      'logo': 'assets/images/logos/logotipoEcoCycle.png',
-      'preco': 0.50,
-      'valorizacao': '+12.1%',
-      'qtd': 3000,
-      'setor': 'Sustentabilidade',
-    },
-    {
-      'nome': 'HealthBit',
-      'ticker': 'HBIT3',
-      'logo': 'assets/images/logos/logotipoHealthBit.png',
-      'preco': 2.10,
-      'valorizacao': '+8.2%',
-      'qtd': 850,
-      'setor': 'Saúde',
-    },
-    {
-      'nome': 'SmartCampus',
-      'ticker': 'SCMP3',
-      'logo': 'assets/images/logos/logotipoSmartCampus.png',
-      'preco': 0.95,
-      'valorizacao': '+3.5%',
-      'qtd': 1500,
-      'setor': 'Educação',
-    },
-  ];
+
   /// Usando o Filtro de Catálogo que faltou de implementar
 
   void _abrirFiltros() {
@@ -125,13 +80,7 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    // Aplica o filtro sobre a lista
-    final listaFiltrada = _filtroSelecionado == 'Todas'
-        ? _startups
-        : _startups.where((s) => s['setor'] == _filtroSelecionado).toList();
-
-    return Scaffold(
+  Widget build(BuildContext context) {    return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -176,157 +125,239 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
               ),
             ),
           Expanded(
-            child: listaFiltrada.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.search_off,
-                          size: 64,
-                          color: Colors.grey.shade300,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          "Nenhuma startup encontrada\nneste setor.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(20),
-                    itemCount: listaFiltrada.length,
-                    itemBuilder: (context, index) {
-                      final startup = listaFiltrada[index];
-                      final double total = startup['preco'] * startup['qtd'];
+            child: FutureBuilder<QuerySnapshot>(
+              future: FirebaseFirestore.instance.collection('startups').get(),
+              builder: (context, startupsSnap) {
+                if (!startupsSnap.hasData) return const Center(child: CircularProgressIndicator());
 
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AssetDetailsScreen(startup: startup),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.04),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 48,
-                                    height: 48,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[50],
-                                      borderRadius: BorderRadius.circular(12),
+                return StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection('exchange').snapshots(),
+                  builder: (context, exchangeSnap) {
+                    if (!exchangeSnap.hasData) return const Center(child: CircularProgressIndicator());
+
+                    final userId = FirebaseAuth.instance.currentUser?.uid;
+                    final investStream = userId != null
+                        ? FirebaseFirestore.instance.collection('users').doc(userId).collection('investimentos').snapshots()
+                        : const Stream<QuerySnapshot>.empty();
+
+                    return StreamBuilder<QuerySnapshot>(
+                      stream: investStream,
+                      builder: (context, investSnap) {
+                        final startupsDocs = startupsSnap.data!.docs;
+                        final exchangeDocs = exchangeSnap.data!.docs;
+                        final investDocs = investSnap.data?.docs ?? [];
+
+                        final List<Map<String, dynamic>> combinedList = [];
+
+                        for (var s in startupsDocs) {
+                          final sData = s.data() as Map<String, dynamic>;
+                          final ex = exchangeDocs.where((e) => e.id == s.id).firstOrNull?.data() as Map<String, dynamic>?;
+                          final inv = investDocs.where((i) => i.id == s.id).firstOrNull?.data() as Map<String, dynamic>?;
+
+                          final preco = ex?['precoAtual'] ?? (sData['currentTokenPriceCents'] ?? 0) / 100.0;
+                          final qtd = inv?['tokensComprados'] ?? 0;
+                          final double variacao = (ex?['variacao'] ?? 0.0).toDouble();
+
+                          String ticker = s.id.toUpperCase();
+                          switch (s.id) {
+                            case 'agrisense': ticker = 'AGRI3'; break;
+                            case 'devmatch': ticker = 'DEVM3'; break;
+                            case 'ecocycle': ticker = 'ECYC1'; break;
+                            case 'healthbit': ticker = 'HBIT3'; break;
+                            case 'smartcampus': ticker = 'SCMP3'; break;
+                          }
+
+                          combinedList.add({
+                            'nome': sData['name'] ?? 'Desconhecido',
+                            'ticker': ticker,
+                            'logo': sData['coverImageUrl'] ?? 'assets/images/logos/logotipoAgriSense.png',
+                            'preco': preco.toDouble(),
+                            'valorizacao': variacao > 0 ? '+${variacao.toStringAsFixed(1)}%' : '${variacao.toStringAsFixed(1)}%',
+                            'qtd': qtd,
+                            'setor': sData['tags']?.isNotEmpty == true ? sData['tags'][0] : 'Desconhecido',
+                            'id': s.id,
+                          });
+                        }
+
+                        final listaFiltrada = _filtroSelecionado == 'Todas'
+                            ? combinedList
+                            : combinedList.where((s) {
+                                final setor = (s['setor'] as String).toLowerCase();
+                                final filtro = _filtroSelecionado.toLowerCase();
+                                // Aproximação de filtro pois os dados do firebase são tags em inglês/outros
+                                if (filtro == 'agronegócio' && setor.contains('agro')) return true;
+                                if (filtro == 'tecnologia' && setor.contains('tech')) return true;
+                                if (filtro == 'sustentabilidade' && (setor.contains('clean') || setor.contains('green'))) return true;
+                                if (filtro == 'saúde' && setor.contains('health')) return true;
+                                if (filtro == 'educação' && setor.contains('edtech')) return true;
+                                return s['setor'] == _filtroSelecionado;
+                              }).toList();
+
+                        return listaFiltrada.isEmpty
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.search_off,
+                                      size: 64,
+                                      color: Colors.grey.shade300,
                                     ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Image.asset(
-                                        startup['logo'],
-                                        fit: BoxFit.contain,
-                                        errorBuilder:
-                                            (context, error, stackTrace) =>
-                                                const Icon(
-                                                  Icons.business,
-                                                  color: Colors.grey,
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      "Nenhuma startup encontrada\nneste setor.",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : ListView.builder(
+                                padding: const EdgeInsets.all(20),
+                                itemCount: listaFiltrada.length,
+                                itemBuilder: (context, index) {
+                                  final startup = listaFiltrada[index];
+                                  final double total = startup['preco'] * startup['qtd'];
+
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              AssetDetailsScreen(startup: startup),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(bottom: 16),
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(20),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(alpha: 0.04),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 48,
+                                                height: 48,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey[50],
+                                                  borderRadius: BorderRadius.circular(12),
                                                 ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          startup['ticker'],
-                                          style: GoogleFonts.montserrat(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(12),
+                                                  child: startup['logo'].toString().startsWith('http')
+                                                      ? Image.network(
+                                                          startup['logo'],
+                                                          fit: BoxFit.contain,
+                                                          errorBuilder: (context, error, stackTrace) =>
+                                                              const Icon(Icons.business, color: Colors.grey),
+                                                        )
+                                                      : Image.asset(
+                                                          'assets/images/logos/${startup['logo']}',
+                                                          fit: BoxFit.contain,
+                                                          errorBuilder: (context, error, stackTrace) =>
+                                                              Image.asset(
+                                                                startup['logo'],
+                                                                fit: BoxFit.contain,
+                                                                errorBuilder: (context, error, stackTrace) =>
+                                                                    const Icon(Icons.business, color: Colors.grey),
+                                                              ),
+                                                        ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      startup['ticker'],
+                                                      style: GoogleFonts.montserrat(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      startup['nome'],
+                                                      style: GoogleFonts.montserrat(
+                                                        fontSize: 12,
+                                                        color: Colors.grey[600],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    'R\$ ${startup['preco'].toStringAsFixed(2)}',
+                                                    style: GoogleFonts.montserrat(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    startup['valorizacao'],
+                                                    style: GoogleFonts.montserrat(
+                                                      fontSize: 12,
+                                                      color: Colors.green,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                        Text(
-                                          startup['nome'],
-                                          style: GoogleFonts.montserrat(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
+                                          const Divider(height: 24),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Qtd: ${startup['qtd']}',
+                                                style: GoogleFonts.montserrat(
+                                                  fontSize: 12,
+                                                  color: Colors.grey[600],
+                                                ),
+                                              ),
+                                              Text(
+                                                'Total: R\$ ${total.toStringAsFixed(2)}',
+                                                style: GoogleFonts.montserrat(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: const Color(0xFF512DA8),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'R\$ ${startup['preco'].toStringAsFixed(2)}',
-                                        style: GoogleFonts.montserrat(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
+                                        ],
                                       ),
-                                      Text(
-                                        startup['valorizacao'],
-                                        style: GoogleFonts.montserrat(
-                                          fontSize: 12,
-                                          color: Colors.green,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              const Divider(height: 24),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Qtd: ${startup['qtd']}',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 12,
-                                      color: Colors.grey[600],
                                     ),
-                                  ),
-                                  Text(
-                                    'Total: R\$ ${total.toStringAsFixed(2)}',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF512DA8),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                                  );
+                                },
+                              );
+                      }
+                    );
+                  }
+                );
+              }
+            ),
           ),
         ],
       ),
@@ -658,13 +689,29 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
           children: [
             const SizedBox(height: 20),
             // Valor grande do Token
-            Text(
-              "${widget.startup['qtd']} ${widget.startup['ticker']}",
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF512DA8),
-              ),
+            StreamBuilder<DocumentSnapshot>(
+              stream: FirebaseAuth.instance.currentUser != null
+                  ? FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection('investimentos')
+                      .doc(widget.startup['id'] ?? _getStartupId(widget.startup['ticker']))
+                      .snapshots()
+                  : const Stream.empty(),
+              builder: (context, snapshot) {
+                final qtdReal = snapshot.data?.data() != null
+                    ? (snapshot.data!.data() as Map<String, dynamic>)['tokensComprados'] ?? 0
+                    : widget.startup['qtd']; // Fallback
+
+                return Text(
+                  "$qtdReal ${widget.startup['ticker']}",
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF512DA8),
+                  ),
+                );
+              }
             ),
             const SizedBox(height: 30),
 
