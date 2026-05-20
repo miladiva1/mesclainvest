@@ -1,11 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/features/startups/data/startup_service.dart';
 import 'package:mobile/features/startups/domain/startup.dart';
 
 class FirestoreInvestmentSections extends StatelessWidget {
   const FirestoreInvestmentSections({
     super.key,
-    required this.startupsFuture,
+    required this.userId,
     required this.backgroundColor,
     required this.statusColor,
     required this.growthColor,
@@ -15,7 +17,7 @@ class FirestoreInvestmentSections extends StatelessWidget {
     required this.onMoreTap,
   });
 
-  final Future<List<StartupDetail>> startupsFuture;
+  final String? userId;
   final Color backgroundColor;
   final Color statusColor;
   final Color growthColor;
@@ -26,20 +28,25 @@ class FirestoreInvestmentSections extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<StartupDetail>>(
-      future: startupsFuture,
+    if (userId == null) {
+      return _buildSection(
+        investments: const [],
+        message: 'Voc\u00ea ainda n\u00e3o possui investimentos em carteira. '
+            'Explore o cat\u00e1logo!',
+      );
+    }
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('investimentos')
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return _InvestmentSectionsBody(
-            backgroundColor: backgroundColor,
-            statusColor: statusColor,
-            growthColor: growthColor,
+          return _buildSection(
             investments: const [],
-            weeklyCompanies: const [],
-            investmentsMessage: 'Carregando empresas do Firestore...',
-            weeklyMessage: 'Carregando empresas da semana...',
-            onViewAllTap: onViewAllTap,
-            onMoreTap: onMoreTap,
+            message: 'Carregando investimentos...',
           );
         }
 
@@ -47,18 +54,9 @@ class FirestoreInvestmentSections extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _InvestmentSectionsBody(
-                backgroundColor: backgroundColor,
-                statusColor: statusColor,
-                growthColor: growthColor,
+              _buildSection(
                 investments: const [],
-                weeklyCompanies: const [],
-                investmentsMessage:
-                    'N\u00e3o foi poss\u00edvel carregar as empresas.',
-                weeklyMessage:
-                    'Configure o Firebase ou tente novamente em instantes.',
-                onViewAllTap: onViewAllTap,
-                onMoreTap: onMoreTap,
+                message: 'N\u00e3o foi poss\u00edvel carregar seus investimentos.',
               ),
               const SizedBox(height: 10),
               Align(
@@ -73,91 +71,88 @@ class FirestoreInvestmentSections extends StatelessWidget {
           );
         }
 
-        final startups = snapshot.data ?? [];
-        final investments = startups
-            .take(3)
-            .map(_InvestmentItemData.fromStartup)
-            .toList(growable: false);
-        final weeklyCompanies = _featuredStartups(
-          startups,
-        ).take(3).map(_InvestmentItemData.fromStartup).toList(growable: false);
+        final docs = snapshot.data?.docs ?? [];
+        final investedIds = docs
+            .where((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              return (data['tokensComprados'] ?? 0) > 0;
+            })
+            .map((doc) => doc.id)
+            .toList();
 
-        return _InvestmentSectionsBody(
-          backgroundColor: backgroundColor,
-          statusColor: statusColor,
-          growthColor: growthColor,
-          investments: investments,
-          weeklyCompanies: weeklyCompanies,
-          investmentsMessage: 'Nenhuma empresa cadastrada.',
-          weeklyMessage: 'Nenhuma empresa da semana cadastrada.',
-          onViewAllTap: onViewAllTap,
-          onMoreTap: onMoreTap,
-          onItemTap: (item) {
-            final startup = item.startup;
-            if (startup != null) onStartupTap(startup);
+        if (investedIds.isEmpty) {
+          return _buildSection(
+            investments: const [],
+            message: 'Voc\u00ea ainda n\u00e3o possui investimentos em carteira. '
+                'Explore o cat\u00e1logo!',
+          );
+        }
+
+        return FutureBuilder<List<StartupDetail>>(
+          future: _fetchInvestedStartups(investedIds),
+          builder: (context, startupSnap) {
+            if (startupSnap.connectionState == ConnectionState.waiting) {
+              return _buildSection(
+                investments: const [],
+                message: 'Carregando detalhes dos investimentos...',
+              );
+            }
+
+            final startups = startupSnap.data ?? [];
+            final investments = startups
+                .take(3)
+                .map(_InvestmentItemData.fromStartup)
+                .toList(growable: false);
+
+            return _buildSection(
+              investments: investments,
+              message: 'Nenhum investimento encontrado.',
+            );
           },
         );
       },
     );
   }
-}
 
-class _InvestmentSectionsBody extends StatelessWidget {
-  const _InvestmentSectionsBody({
-    required this.backgroundColor,
-    required this.statusColor,
-    required this.growthColor,
-    required this.investments,
-    required this.weeklyCompanies,
-    required this.investmentsMessage,
-    required this.weeklyMessage,
-    required this.onViewAllTap,
-    required this.onMoreTap,
-    this.onItemTap,
-  });
-
-  final Color backgroundColor;
-  final Color statusColor;
-  final Color growthColor;
-  final List<_InvestmentItemData> investments;
-  final List<_InvestmentItemData> weeklyCompanies;
-  final String investmentsMessage;
-  final String weeklyMessage;
-  final VoidCallback onViewAllTap;
-  final VoidCallback onMoreTap;
-  final ValueChanged<_InvestmentItemData>? onItemTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _InvestmentSection(
-          title: 'Seus Investimentos',
-          backgroundColor: backgroundColor,
-          statusColor: statusColor,
-          growthColor: growthColor,
-          showMoreButton: true,
-          showViewAll: investments.isNotEmpty,
-          emptyMessage: investmentsMessage,
-          onMoreTap: onMoreTap,
-          onViewAllTap: onViewAllTap,
-          onItemTap: onItemTap,
-          items: investments,
-        ),
-        const SizedBox(height: 22),
-        _InvestmentSection(
-          title: 'Empresas da Semana',
-          backgroundColor: backgroundColor,
-          statusColor: statusColor,
-          growthColor: growthColor,
-          emptyMessage: weeklyMessage,
-          onItemTap: onItemTap,
-          items: weeklyCompanies,
-        ),
-      ],
+  Widget _buildSection({
+    required List<_InvestmentItemData> investments,
+    required String message,
+  }) {
+    return _InvestmentSection(
+      title: 'Seus Investimentos',
+      backgroundColor: backgroundColor,
+      statusColor: statusColor,
+      growthColor: growthColor,
+      showMoreButton: true,
+      showViewAll: investments.isNotEmpty,
+      emptyMessage: message,
+      onMoreTap: onMoreTap,
+      onViewAllTap: onViewAllTap,
+      onItemTap: (item) {
+        final startup = item.startup;
+        if (startup != null) onStartupTap(startup);
+      },
+      items: investments,
     );
   }
 }
+
+Future<List<StartupDetail>> _fetchInvestedStartups(
+  List<String> startupIds,
+) async {
+  final service = StartupService();
+  final List<StartupDetail> result = [];
+  for (final id in startupIds) {
+    try {
+      result.add(await service.getStartupDetails(id));
+    } catch (_) {
+      // Startup n\u00e3o encontrada no cat\u00e1logo, ignora
+    }
+  }
+  return result;
+}
+
+
 
 class _SectionTapTarget extends StatelessWidget {
   const _SectionTapTarget({required this.onTap, required this.child});
@@ -521,23 +516,7 @@ class _LogoFallback extends StatelessWidget {
   }
 }
 
-List<StartupDetail> _featuredStartups(List<StartupDetail> startups) {
-  final featured = startups
-      .where((startup) {
-        if (startup.featuredThisWeek) return true;
-        return startup.tags.any((tag) {
-          final normalized = tag.toLowerCase().trim();
-          return normalized == 'semana' ||
-              normalized == 'destaque' ||
-              normalized == 'featured' ||
-              normalized == 'week';
-        });
-      })
-      .toList(growable: false);
 
-  if (featured.isNotEmpty) return featured;
-  return startups.take(1).toList(growable: false);
-}
 
 String _formatCurrencyCents(int cents) {
   final value = (cents / 100).toStringAsFixed(2).replaceAll('.', ',');
