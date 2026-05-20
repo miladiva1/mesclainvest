@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/core/theme/app_colors.dart';
 import 'package:mobile/features/startups/domain/startup.dart';
@@ -5,6 +7,7 @@ import 'package:mobile/features/startups/presentation/screen/list/private_questi
 import 'package:mobile/features/startups/presentation/widgets/startup_header_widget.dart';
 import 'package:mobile/features/startups/presentation/widgets/startup_society_widget.dart';
 import 'package:mobile/features/startups/presentation/widgets/startup_media_widget.dart';
+import 'package:mobile/features/wallet/presentation/trade_market.dart';
 
 enum _QuestionSheetStep { options, publicQuestion, privateQuestion }
 
@@ -52,9 +55,29 @@ class StartupDetailScreen extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Funcionalidade de Investimento em breve!'),
+                  String ticker = startup.id.toUpperCase();
+                  switch (startup.id) {
+                    case 'agrisense': ticker = 'AGRI3'; break;
+                    case 'devmatch': ticker = 'DEVM3'; break;
+                    case 'ecocycle': ticker = 'ECYC1'; break;
+                    case 'healthbit': ticker = 'HBIT3'; break;
+                    case 'smartcampus': ticker = 'SCMP3'; break;
+                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AssetDetailsScreen(
+                        startup: {
+                          'id': startup.id,
+                          'nome': startup.name,
+                          'ticker': ticker,
+                          'logo': startup.coverImageUrl ?? '',
+                          'preco': startup.currentTokenPriceCents / 100.0,
+                          'valorizacao': '+0.0%',
+                          'qtd': 0,
+                          'setor': startup.tags.isNotEmpty ? startup.tags.first : '',
+                        },
+                      ),
                     ),
                   );
                 },
@@ -93,6 +116,26 @@ class _StartupQuestionSection extends StatefulWidget {
 
 class _StartupQuestionSectionState extends State<_StartupQuestionSection> {
   final List<_PublicQuestion> _publicQuestions = [];
+
+  Future<bool> _checkIfInvestor(String startupId) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return false;
+
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('investimentos')
+          .doc(startupId)
+          .get();
+
+      if (!doc.exists) return false;
+      final data = doc.data() as Map<String, dynamic>?;
+      return (data?['tokensComprados'] ?? 0) > 0;
+    } catch (_) {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -240,11 +283,33 @@ class _StartupQuestionSectionState extends State<_StartupQuestionSection> {
                                 currentStep = _QuestionSheetStep.publicQuestion;
                               });
                             },
-                            onPrivateTap: () {
-                              modalSetState(() {
-                                currentStep =
-                                    _QuestionSheetStep.privateQuestion;
-                              });
+                            onPrivateTap: () async {
+                              final navigator = Navigator.of(sheetContext);
+                              final messenger = ScaffoldMessenger.of(context);
+
+                              final isInvestor = await _checkIfInvestor(
+                                widget.startup.id,
+                              );
+                              if (!mounted) return;
+
+                              if (isInvestor) {
+                                modalSetState(() {
+                                  currentStep =
+                                      _QuestionSheetStep.privateQuestion;
+                                });
+                              } else {
+                                navigator.pop();
+                                messenger.showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Acesso Restrito: Voc\u00ea precisa ser '
+                                      'investidor desta startup para enviar '
+                                      'perguntas privadas aos fundadores.',
+                                    ),
+                                    backgroundColor: Color(0xFF512DA8),
+                                  ),
+                                );
+                              }
                             },
                           )
                         else if (currentStep ==

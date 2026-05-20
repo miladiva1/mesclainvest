@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:mobile/core/routes/app_routes.dart';
 import 'package:mobile/features/dashboard/widgets/home_investiment_sections.dart';
 import 'package:mobile/features/dashboard/widgets/home_navigation_widgets.dart';
-import 'package:mobile/features/startups/data/startup_service.dart';
 import 'package:mobile/features/startups/domain/startup.dart';
 import 'package:mobile/features/startups/presentation/screen/list/startup_detail_screen.dart';
 
@@ -59,9 +58,6 @@ class WalletDashboardScreen extends StatefulWidget {
 }
 
 class _WalletDashboardScreenState extends State<WalletDashboardScreen> {
-  final StartupService _startupService = StartupService();
-  late Future<List<StartupDetail>> _startupsFuture;
-
   bool _showBalance = true;
   bool _didReadRouteUser = false;
   String _userName = 'Usu\u00e1rio';
@@ -72,12 +68,6 @@ class _WalletDashboardScreenState extends State<WalletDashboardScreen> {
   static const _statusBlue = Color(0xFF4169FF);
   static const _positiveGreen = Color(0xFF18A71B);
   static const _softCard = Color(0xFFF7F7FA);
-
-  @override
-  void initState() {
-    super.initState();
-    _startupsFuture = _loadStartups();
-  }
 
   @override
   void didChangeDependencies() {
@@ -120,8 +110,8 @@ class _WalletDashboardScreenState extends State<WalletDashboardScreen> {
     );
   }
 
-  void _reloadStartups() {
-    setState(() => _startupsFuture = _loadStartups());
+  void _reloadInvestments() {
+    setState(() {});
   }
 
   void _applyRouteUserData(Object? arguments) {
@@ -168,18 +158,7 @@ class _WalletDashboardScreenState extends State<WalletDashboardScreen> {
     });
   }
 
-  Future<List<StartupDetail>> _loadStartups() async {
-    final initialized = await _initializeFirebaseIfConfigured().timeout(
-      const Duration(seconds: 6),
-      onTimeout: () => false,
-    );
-    if (!initialized) return const [];
 
-    return _startupService.getStartups().timeout(
-      const Duration(seconds: 10),
-      onTimeout: () => const [],
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -227,11 +206,11 @@ class _WalletDashboardScreenState extends State<WalletDashboardScreen> {
                         QuickActions(onRouteTap: _openRoute),
                         const SizedBox(height: 24),
                         FirestoreInvestmentSections(
-                          startupsFuture: _startupsFuture,
+                          userId: FirebaseAuth.instance.currentUser?.uid,
                           backgroundColor: _softCard,
                           statusColor: _statusBlue,
                           growthColor: _positiveGreen,
-                          onRetry: _reloadStartups,
+                          onRetry: _reloadInvestments,
                           onViewAllTap: () =>
                               _openRoute(AppRoutes.catalogo),
                           onStartupTap: _openStartupDetails,
