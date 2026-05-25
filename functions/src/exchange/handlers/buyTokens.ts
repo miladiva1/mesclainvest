@@ -101,6 +101,7 @@ export const buyTokens = functions.https.onCall(async (request) => {
         data: admin.firestore.Timestamp.now(),
         status: "Sucesso",
         tipo: "Compra",
+        uid: request.auth?.uid,
       });
     });
 

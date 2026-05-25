@@ -7,6 +7,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile/features/wallet/presentation/token.dart' as token_page;
+import 'package:intl/intl.dart';
 
 class BalcaoNegociacaoPage extends StatefulWidget {
   const BalcaoNegociacaoPage({super.key});
@@ -377,6 +378,7 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
   String _selectedPeriod = 'Diário';
   final TextEditingController _quantidadeController = TextEditingController();
   bool _isLoading = false;
+  bool _verTodos = false;
 
   // --- ESTRUTURA PARA O BACKEND ---
   // Seu amigo vai substituir essas listas estáticas por dados do Firebase/API
@@ -1006,22 +1008,70 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
 
   // Widget de Histórico que usa a lista _historicoFake
   Widget _buildDynamicHistory() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Histórico",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
-          ),
-          const SizedBox(height: 10),
-          // Passando o item completo do Map para a função
-          ..._historicoFake.map((item) => _buildTransactionTile(item)),
-        ],
-      ),
-    );
-  }
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  final startupId = widget.startup['id'] ??
+      _getStartupId(widget.startup['ticker']);
+
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Histórico",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+        ),
+        const SizedBox(height: 10),
+        StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('startups')
+              .doc(startupId)
+              .collection('Histórico')
+              .where('uid', isEqualTo: uid)
+              .orderBy('data', descending: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final docs = snapshot.data?.docs ?? [];
+
+            if (docs.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Text(
+                  'Nenhuma transação encontrada.',
+                  style: TextStyle(color: Colors.grey, fontSize: 13),
+                ),
+              );
+            }
+
+            // mostra só 4, ou todos se _verTodos for true
+            final exibir = _verTodos ? docs : docs.take(2).toList();
+
+            return Column(
+              children: [
+                ...exibir.map((doc) {
+                  final data = doc.data() as Map<String, dynamic>;
+                  return _buildTransactionTile(data);
+                }),
+                if (docs.length > 2)
+                  TextButton(
+                    onPressed: () => setState(() => _verTodos = !_verTodos),
+                    child: Text(
+                      _verTodos ? 'Ver menos' : 'Ver mais',
+                      style: const TextStyle(color: Color(0xFF512DA8)),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+      ],
+    ),
+  );
+}
 
 
 
@@ -1084,11 +1134,19 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
     );
   }
 
-  Widget _buildTransactionTile(Map<String, dynamic> item) {
-    // Mudei para receber o Map inteiro
+Widget _buildTransactionTile(Map<String, dynamic> item) {
+    final tipo = item['tipo'] ?? 'Compra';
+    final isCompra = tipo == 'Compra';
+    final color = isCompra ? Colors.green : Colors.red;
+    final icon = isCompra ? Icons.shopping_cart : Icons.sell;
+
+    final dataFormatada = item['data'] != null
+        ? DateFormat('MMM dd, hh:mm a')
+            .format((item['data'] as Timestamp).toDate())
+        : '';
+
     return ListTile(
       onTap: () {
-        // Aqui acontece a mágica: navega para a tela de detalhes
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -1103,41 +1161,39 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.green.withValues(alpha: 0.1),
+          color: color.withValues(alpha: 0.1),
           shape: BoxShape.circle,
         ),
-        child: Icon(item['icon'], color: Colors.green, size: 18),
+        child: Icon(icon, color: color, size: 18),
       ),
       title: Text(
-        item['titulo'],
+        tipo,
         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
       ),
       subtitle: Text(
-        item['sub'],
+        dataFormatada,
         style: const TextStyle(fontSize: 11, color: Colors.grey),
       ),
       trailing: Row(
-        mainAxisSize:
-            MainAxisSize.min, // Garante que a Row não ocupe a tela toda
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline
-            .alphabetic, // Alinha os textos pela base (linha de escrita)
+        textBaseline: TextBaseline.alphabetic,
         children: [
           Text(
-            "${item['valor']}",
+            "${item['Tokens Comprados'] ?? item['Tokens Vendidos'] ?? 0}",
             style: const TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 16, // Valor um pouco maior
+              fontSize: 16,
               color: Colors.black87,
             ),
           ),
-          const SizedBox(width: 4), // Espacinho entre o número e o ticker
+          const SizedBox(width: 4),
           Text(
             "${widget.startup['ticker']}",
             style: const TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: 12, // Ticker menor
-              color: Colors.grey, // Cor diferente para separar visualmente
+              fontSize: 12,
+              color: Colors.grey,
             ),
           ),
         ],
@@ -1158,6 +1214,11 @@ class TransactionDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dataFormatada = transacao['data'] != null
+        ? DateFormat('MMM dd, hh:mm a')
+            .format((transacao['data'] as Timestamp).toDate())
+        : 'Data não disponível';
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -1175,17 +1236,17 @@ class TransactionDetailsScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
             Text(
-              "${transacao['valor']} $ticker",
+              "${transacao['Tokens Comprados'] ?? transacao['Tokens Vendidos'] ?? 0} $ticker",
               style: const TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF512DA8),
               ),
             ),
-            const Text(
-              "R\$ 2.102,34",
-              style: TextStyle(color: Colors.grey),
-            ), // Valor simulado
+            Text(
+              "R\$ ${(transacao['Preco Pago'] as num?)?.toStringAsFixed(2) ?? '0.00'}",
+              style: const TextStyle(color: Colors.grey),
+            ),
             const SizedBox(height: 40),
             Container(
               padding: const EdgeInsets.all(20),
@@ -1195,19 +1256,12 @@ class TransactionDetailsScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _buildDetailRow("Data", "May 05, 01:07 PM"),
-                  _buildDetailRow("Status", "Sucesso", isStatus: true),
-                  _buildDetailRow("Hash", "0x56bc...d82f"),
-                  _buildDetailRow("Taxa", "0.001 ETH"),
+                  _buildDetailRow("Data", dataFormatada),
+                  _buildDetailRow("Status", transacao['status'] ?? '-', isStatus: true),
+                  _buildDetailRow("Preço Pago", "R\$ ${(transacao['Preco Pago'] as num?)?.toStringAsFixed(2) ?? '0.00'}"),
+                  _buildDetailRow("Tokens Comprados", "${transacao['Tokens Comprados'] ?? transacao['Tokens Vendidos'] ?? 0}"),
+                  _buildDetailRow("Valor do Token", "R\$ ${(transacao['Valor Token'] as num?)?.toStringAsFixed(2) ?? '0.00'}"),
                 ],
-              ),
-            ),
-            const SizedBox(height: 30),
-            TextButton(
-              onPressed: () {},
-              child: const Text(
-                "Ver no explorador",
-                style: TextStyle(color: Color(0xFF512DA8)),
               ),
             ),
           ],

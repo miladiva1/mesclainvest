@@ -102,6 +102,7 @@ export const sellTokens = functions.https.onCall(async (request) => {
         data: admin.firestore.Timestamp.now(),
         status: "Sucesso",
         tipo: "Venda",
+        uid: request.auth?.uid,
       });
     });
 
