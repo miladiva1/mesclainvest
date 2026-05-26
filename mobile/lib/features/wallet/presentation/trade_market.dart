@@ -892,23 +892,124 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                 }
               }
 
-              final spots = finalDocs.asMap().entries.map((entry) {
-                final index = entry.key;
-                final doc = entry.value;
+              // 1. Mapeamento Temporal — X = milissegundos do Timestamp
+              final spots = finalDocs.map((doc) {
+                final data = (doc['data'] as Timestamp).toDate();
                 final preco = (doc['preco'] as num).toDouble();
-                return FlSpot(index.toDouble(), preco);
+                return FlSpot(data.millisecondsSinceEpoch.toDouble(), preco);
               }).toList();
 
+              if (spots.isEmpty) {
+                return const SizedBox(
+                  height: 200,
+                  child: Center(child: Text("Sem dados para o período")),
+                );
+              }
+
+              // 2. Cálculo de Escala — Padding de 5% no eixo Y
+              final precos = spots.map((s) => s.y).toList();
+              final precoMin = precos.reduce((a, b) => a < b ? a : b);
+              final precoMax = precos.reduce((a, b) => a > b ? a : b);
+              final margemY = (precoMax - precoMin) * 0.05;
+              final double chartMinY = (precoMin - margemY).clamp(0, double.infinity);
+              final double chartMaxY = precoMax + margemY;
+
+              // Limites do eixo X a partir dos dados reais
+              final double chartMinX = spots.first.x;
+              final double chartMaxX = spots.last.x;
+
               return SizedBox(
-                height: 200,
+                height: 220,
                 child: LineChart(
                   LineChartData(
-                    gridData: const FlGridData(show: false),
-                    titlesData: const FlTitlesData(show: false),
+                    minX: chartMinX,
+                    maxX: chartMaxX,
+                    minY: chartMinY,
+                    maxY: chartMaxY,
+
+                    // 5. Grid Visual Limpo — apenas linhas horizontais
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: false,
+                      drawHorizontalLine: true,
+                      horizontalInterval: (chartMaxY - chartMinY) / 4,
+                      getDrawingHorizontalLine: (value) => FlLine(
+                        color: Colors.grey.withValues(alpha: 0.15),
+                        strokeWidth: 0.5,
+                      ),
+                    ),
+
+                    // 3 & 4. Eixos X (bottom) e Y (left) dinâmicos
+                    titlesData: FlTitlesData(
+                      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+
+                      // Eixo X — Formatação contextual por _selectedPeriod
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 28,
+                          interval: (chartMaxX - chartMinX) / 4,
+                          getTitlesWidget: (value, meta) {
+                            // Evitar rótulos nas bordas extremas que cortam
+                            if (value == meta.min || value == meta.max) {
+                              return const SizedBox.shrink();
+                            }
+                            final dt = DateTime.fromMillisecondsSinceEpoch(value.toInt());
+                            String label;
+                            if (_selectedPeriod == 'Diário') {
+                              // Hora:minuto para a janela mais curta
+                              label = DateFormat('HH:mm').format(dt);
+                            } else if (_selectedPeriod == '6 meses' || _selectedPeriod == 'YTD') {
+                              // Mês abreviado para janelas longas
+                              label = DateFormat('MMM', 'pt_BR').format(dt);
+                            } else {
+                              // dia/mês para janelas intermediárias (Semanal, Mensal)
+                              label = DateFormat('dd/MM').format(dt);
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: Text(
+                                label,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey.shade500,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                      // Eixo Y — Preço formatado em R$
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 45,
+                          interval: (chartMaxY - chartMinY) / 4,
+                          getTitlesWidget: (value, meta) {
+                            if (value == meta.min || value == meta.max) {
+                              return const SizedBox.shrink();
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 4),
+                              child: Text(
+                                'R\$${value.toStringAsFixed(2)}',
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  color: Colors.grey.shade500,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+
                     borderData: FlBorderData(show: false),
                     lineBarsData: [
                       LineChartBarData(
-                        spots: spots.isEmpty ? [const FlSpot(0, 0)] : spots,
+                        spots: spots,
                         isCurved: true,
                         color: const Color(0xFF512DA8),
                         barWidth: 3,
