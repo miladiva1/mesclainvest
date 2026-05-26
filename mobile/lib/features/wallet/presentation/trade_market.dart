@@ -542,131 +542,131 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
     );
   }
 
-  void _abrirModalTroca() {
+  // Integração real com a Cloud Function exchange-sellTokens (AMM)
+  void _abrirModalVender() {
+    _quantidadeController.clear();
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Permite que o modal suba com o teclado
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(
-            context,
-          ).viewInsets.bottom, // Ajusta para o teclado
-          top: 24,
-          left: 24,
-          right: 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Troca Rápida (Swap)",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              "Converta seus ativos instantaneamente.",
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 20),
-
-            // Campo "DE"
-            _buildSwapField(
-              label: "De",
-              ticker: widget.startup['ticker'],
-              value: "10.0",
-            ),
-
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Icon(Icons.arrow_downward, color: Color(0xFF512DA8)),
+      builder: (bottomSheetContext) {
+        return StatefulBuilder(
+          builder: (builderContext, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
               ),
-            ),
-
-            // Campo "PARA"
-            _buildSwapField(label: "Para", ticker: "REAIS", value: "200.00"),
-
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF512DA8),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Troca realizada com sucesso!"),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Vender ${widget.startup['ticker']}",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  );
-                },
-                child: const Text(
-                  "Confirmar Conversão",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: _quantidadeController,
+                      decoration: InputDecoration(
+                        labelText: "Quantidade de Tokens",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        prefixIcon: const Icon(Icons.sell),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red[700],
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                        ),
+                        onPressed: _isLoading
+                            ? null
+                            : () async {
+                                final quantidadeTexto = _quantidadeController.text.replaceAll(',', '.');
+                                final quantidade = int.tryParse(quantidadeTexto) ?? 0;
 
-  // Widget auxiliar para os campos de troca
-  Widget _buildSwapField({
-    required String label,
-    required String ticker,
-    required String value,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                                if (quantidade <= 0) {
+                                  ScaffoldMessenger.of(builderContext).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Informe uma quantidade válida (número inteiro > 0).'),
+                                      backgroundColor: Colors.orange,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                setModalState(() => _isLoading = true);
+
+                                try {
+                                  final startupId = _getStartupId(widget.startup['ticker']);
+                                  final callable = FirebaseFunctions.instance
+                                      .httpsCallable('exchange-sellTokens');
+                                  await callable.call({
+                                    'startupId': startupId,
+                                    'quantidade': quantidade,
+                                  });
+
+                                  if (!mounted) return;
+                                  Navigator.pop(builderContext);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Venda realizada com sucesso!'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                } on FirebaseFunctionsException catch (e) {
+                                  setModalState(() => _isLoading = false);
+                                  if (!mounted) return;
+                                  ScaffoldMessenger.of(builderContext).showSnackBar(
+                                    SnackBar(
+                                      content: Text(e.message ?? e.details?.toString() ?? 'Erro na transação.'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                } catch (e) {
+                                  setModalState(() => _isLoading = false);
+                                  if (!mounted) return;
+                                  ScaffoldMessenger.of(builderContext).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Erro inesperado: $e'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              },
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                "Confirmar Venda",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              ticker,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
-      ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -728,9 +728,9 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                 ),
                 const SizedBox(width: 40),
                 _buildActionButton(
-                  Icons.swap_horiz,
-                  "Trocar",
-                  _abrirModalTroca,
+                  Icons.sell,
+                  "Vender",
+                  _abrirModalVender,
                 ),
               ],
             ),
