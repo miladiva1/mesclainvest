@@ -5,12 +5,14 @@ import 'package:mobile/core/routes/app_routes.dart';
 import 'package:mobile/features/auth/presentation/home_screen.dart';
 import 'package:mobile/features/dashboard/main_wrapper_screen.dart';
 import 'firebase_options.dart';
+import 'package:intl/date_symbol_data_local.dart';
 //testing
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await initializeDateFormatting('pt_BR', null);
   runApp(const MyApp());
 }
 
