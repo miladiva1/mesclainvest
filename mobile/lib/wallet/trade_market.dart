@@ -1,128 +1,100 @@
-```dart
-import 'package:flutter/material.dart';
-// import -> importa bibliotecas
-// material.dart -> biblioteca principal de widgets visuais do Flutter
+// feito por camila fernandes costacurta RA:25012949
 
-import 'package:google_fonts/google_fonts.dart';
-// google_fonts -> biblioteca para usar fontes personalizadas
+import 'package:flutter/material.dart'; // Biblioteca base do Flutter (permite usar widgets como Scaffold, AppBar, Column).
+import 'package:google_fonts/google_fonts.dart'; // Biblioteca de fontes (permite usar GoogleFonts.montserrat).
+import 'package:cloud_firestore/cloud_firestore.dart'; // Biblioteca do Banco de Dados (permite usar FirebaseFirestore, snapshots).
+import 'package:firebase_auth/firebase_auth.dart'; // Biblioteca de Autenticação (permite usar FirebaseAuth, uid).
+import 'widgets/startup_card.dart'; // Importa o componente do card (permite usar o widget StartupCard).
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-// cloud_firestore -> biblioteca do Firebase Firestore
+/**
+ * CLASSE: BalcaoNegociacaoPage
+ * TIPO: StatefulWidget (Widget com Estado)
+ * O QUE FAZ: Esta é a tela principal do Balcão de Negociações. Ela é um StatefulWidget porque 
+ * precisa reagir a mudanças (como quando o usuário clica em um filtro e a lista precisa atualizar).
+ */
+class BalcaoNegociacaoPage extends StatefulWidget { // Declaração da classe como um widget que pode mudar de estado.
+  const BalcaoNegociacaoPage({super.key}); // Construtor da classe com chave padrão.
 
-import 'package:firebase_auth/firebase_auth.dart';
-// firebase_auth -> biblioteca de autenticação do Firebase
-
-import 'widgets/startup_card.dart';
-// importa o componente personalizado StartupCard
-
-class BalcaoNegociacaoPage extends StatefulWidget {
-// class -> cria uma classe
-// StatefulWidget -> widget com estado dinâmico
-
-  const BalcaoNegociacaoPage({super.key});
-
-  @override
-  State<BalcaoNegociacaoPage> createState() {
-// State -> controla o estado do widget
-// createState() -> cria o estado da página
-
-    return _BalcaoNegociacaoPageState();
-  }
+  /**
+   * MÉTODO: createState
+   * O QUE FAZ: Cria a "alma" (o Estado) desta página. É aqui que os dados que mudam ficam guardados.
+   */
+  @override // Indica que estamos substituindo o método original.
+  State<BalcaoNegociacaoPage> createState() => _BalcaoNegociacaoPageState(); // Cria o estado para este widget.
 }
 
-class _BalcaoNegociacaoPageState
-    extends State<BalcaoNegociacaoPage> {
-// State -> classe responsável pelas mudanças da interface
+/**
+ * CLASSE: _BalcaoNegociacaoPageState
+ * TIPO: State (Estado da Página)
+ * O QUE FAZ: Aqui é onde a mágica acontece. Ela guarda as variáveis, as funções de lógica 
+ * e define como a interface (UI) deve ser desenhada baseada nos dados.
+ */
+class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> { // Classe que contém o estado e a interface.
+  
+  // VARIÁVEL: _filtroSelecionado
+  // O QUE FAZ: Armazena o nome do setor que o usuário escolheu para filtrar (ex: 'Tecnologia').
+  // Por padrão, começa com 'Todas' para mostrar todas as empresas.
+  String _filtroSelecionado = 'Todas'; // Variável que armazena qual categoria de empresa está selecionada no filtro.
 
-  String _filtroSelecionado = 'Todas';
-
-  void _abrirFiltros() {
-// void -> função sem retorno
-// _abrirFiltros() -> função que abre a janela de filtros
-
-    showDialog(
-// showDialog() -> abre uma janela modal
-
-      context: context,
-
-      builder: (context) {
-// builder -> constrói widgets dinamicamente
-
-        return AlertDialog(
-// AlertDialog -> caixa de diálogo pronta do Flutter
-
-          shape: RoundedRectangleBorder(
-// RoundedRectangleBorder -> cria bordas arredondadas
-
-            borderRadius: BorderRadius.circular(20),
+  /**
+   * MÉTODO / FUNÇÃO: _abrirFiltros
+   * O QUE FAZ: Abre uma janela flutuante (AlertDialog) para o usuário escolher um setor.
+   * LÓGICA: 
+   * 1. Usa o 'showDialog' para criar a janela.
+   * 2. Usa um 'Wrap' para organizar os botões (ChoiceChips) de forma que eles pulem de linha se necessário.
+   * 3. Quando o usuário clica (onSelected), o 'setState' avisa o app que o filtro mudou e fecha a janela (Navigator.pop).
+   */
+  void _abrirFiltros() { // Função que abre a janela de filtros.
+    showDialog( // Comando do Flutter para mostrar um alerta ou pop-up na tela.
+      context: context, // Passa o contexto da tela para saber onde desenhar o pop-up.
+      builder: (context) { // Função que constrói o conteúdo do pop-up.
+        return AlertDialog( // Widget de caixa de diálogo padrão do Material Design.
+          shape: RoundedRectangleBorder( // Define o formato das bordas da caixa.
+            borderRadius: BorderRadius.circular(20), // Deixa os cantos arredondados com raio 20.
           ),
-
-          title: const Text("Filtrar por Setor"),
-
-          content: Column(
-// Column -> organiza widgets verticalmente
-
-            mainAxisSize: MainAxisSize.min,
-
-            children: [
-              const SizedBox(height: 10),
-
-              Wrap(
-// Wrap -> organiza widgets quebrando linha automaticamente
-
-                spacing: 10,
-                runSpacing: 10,
-
-                children: [
+          title: const Text( // Título da caixa de diálogo.
+            "Filtrar por Setor", // Texto do título.
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold), // Define o tamanho e negrito.
+          ),
+          content: Column( // Organiza os elementos dentro do pop-up em uma coluna.
+            mainAxisSize: MainAxisSize.min, // Faz a janela ser do tamanho exato do seu conteúdo.
+            children: [ // Lista de widgets filhos da coluna.
+              const SizedBox(height: 10), // Adiciona um espaço vazio de 10 pixels no topo.
+              Wrap( // Organiza os botões em linha e "quebra" para a próxima se não couberem.
+                spacing: 10, // Espaço horizontal entre os botões.
+                runSpacing: 10, // Espaço vertical entre as linhas de botões.
+                children: [ // Lista de categorias que serão transformadas em botões.
                   'Todas',
                   'Agronegócio',
                   'Tecnologia',
                   'Sustentabilidade',
                   'Saúde',
                   'Educação',
-                ].map((label) {
-// map() -> percorre lista transformando elementos
-
-                  final bool isSelected =
-                      _filtroSelecionado == label;
-// bool -> valor verdadeiro ou falso
-// isSelected -> verifica se o item está selecionado
-
-                  return ChoiceChip(
-// ChoiceChip -> botão de seleção
-
-                    label: Text(label),
-
-                    selected: isSelected,
-
-                    onSelected: (selected) {
-// onSelected -> executa ao selecionar
-
-                      setState(() {
-// setState() -> atualiza a interface
-
-                        _filtroSelecionado = label;
+                ].map((label) { // Pega cada texto da lista e o transforma em um ChoiceChip.
+                  // ESTA FUNÇÃO CONSTRÓI O BOTÃO DE FILTRO (CHIP) PARA CADA CATEGORIA DA LISTA.
+                  final bool isSelected = _filtroSelecionado == label; // Verifica se este botão é o que já está selecionado.
+                  return ChoiceChip( // Widget de botão de escolha arredondado com seleção.
+                    label: Text(label), // Define o texto que aparece no botão.
+                    selected: isSelected, // Diz ao Flutter se o botão deve aparecer como selecionado.
+                    onSelected: (selected) { // Ação ao clicar no botão.
+                      setState(() { // Avisa ao Flutter para redesenhar a tela com a nova escolha.
+                        _filtroSelecionado = label; // Atualiza a variável do filtro.
                       });
-
-                      Navigator.pop(context);
-// Navigator.pop() -> fecha a janela atual
+                      Navigator.pop(context); // Fecha a janelinha de filtro após a escolha.
                     },
-
-                    selectedColor: const Color(0xFF512DA8),
+                    selectedColor: const Color(0xFF512DA8), // Cor roxa para quando o botão estiver selecionado.
+                    labelStyle: TextStyle( // Estilo do texto dentro do botão.
+                      color: isSelected ? Colors.white : Colors.black, // Branco se selecionado, preto se não.
+                    ),
                   );
-                }).toList(),
-// toList() -> converte resultado em lista
+                }).toList(), // Converte o mapeamento em uma lista real de widgets.
               ),
             ],
           ),
-
-          actions: [
-            TextButton(
-// TextButton -> botão simples de texto
-
-              onPressed: () => Navigator.pop(context),
-
-              child: const Text("Fechar"),
+          actions: [ // Botões de ação na parte inferior do pop-up.
+            TextButton( // Botão apenas com texto, sem fundo.
+              onPressed: () => Navigator.pop(context), // Fecha o pop-up sem fazer nada.
+              child: const Text("Fechar", style: TextStyle(color: Colors.grey)), // Texto do botão em cinza.
             ),
           ],
         );
@@ -130,361 +102,234 @@ class _BalcaoNegociacaoPageState
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-// Widget -> elemento visual
-// build() -> constrói a interface da tela
-// BuildContext -> contexto da árvore de widgets
-
-    return Scaffold(
-// Scaffold -> estrutura base da tela
-
-      backgroundColor: const Color(0xFFF8F9FB),
-
-      appBar: AppBar(
-// AppBar -> barra superior da aplicação
-
-        title: Text(
-          'BALCÃO DE NEGOCIAÇÕES',
-
-          style: GoogleFonts.montserrat(
-// GoogleFonts.montserrat() -> aplica fonte Montserrat
+  /**
+   * MÉTODO: build
+   * O QUE FAZ: Define a estrutura visual da página (o que o usuário vê).
+   * ESTRUTURA:
+   * - Scaffold: A base da tela (fundo).
+   * - AppBar: A barra do topo com o título e o ícone de filtro.
+   * - Column: Organiza os elementos um embaixo do outro.
+   * - Expanded + Builders: Busca os dados no banco de dados e desenha a lista.
+   */
+  @override // Sobrescreve o método build original.
+  Widget build(BuildContext context) { // Função principal de construção do layout.
+    return Scaffold( // Estrutura básica de uma tela no Flutter.
+      backgroundColor: const Color(0xFFF8F9FB), // Define uma cor de fundo cinza bem clarinha.
+      appBar: AppBar( // Barra de título no topo da tela.
+        backgroundColor: Colors.white, // Fundo da barra em branco.
+        elevation: 0, // Remove a sombra embaixo da barra de título.
+        centerTitle: true, // Centraliza o texto do título.
+        title: Text( // Texto que aparece no centro da barra.
+          'BALCÃO DE NEGOCIAÇÕES', // Nome da tela.
+          style: GoogleFonts.montserrat( // Usa a fonte Montserrat do Google Fonts.
+            fontSize: 14, // Tamanho da letra.
+            fontWeight: FontWeight.bold, // Texto em negrito.
+            letterSpacing: 1.2, // Espaçamento entre as letras.
+            color: Colors.black, // Cor preta para o texto.
           ),
         ),
-
-        actions: [
-          IconButton(
-// IconButton -> botão com ícone
-
-            icon: const Icon(Icons.tune),
-
-            onPressed: _abrirFiltros,
+        actions: [ // Lista de ícones ou botões à direita da barra.
+          IconButton( // Botão com um ícone de "ajuste" (filtros).
+            icon: const Icon(Icons.tune, color: Colors.black), // Ícone de filtro na cor preta.
+            onPressed: _abrirFiltros, // Chama a função de abrir o pop-up de filtros ao clicar.
           ),
         ],
       ),
-
-      body: Column(
-// Column -> organiza widgets verticalmente
-
-        children: [
+      body: Column( // Organiza o conteúdo principal em uma coluna vertical.
+        children: [ // Lista de widgets dentro da coluna.
+          // LÓGICA: Se o filtro não for 'Todas', mostra uma etiqueta (Chip) dizendo qual filtro está ativo.
           if (_filtroSelecionado != 'Todas')
-// if -> condição
-
-            Padding(
-// Padding -> adiciona espaçamento interno
-
-              child: Row(
-// Row -> organiza widgets horizontalmente
-
+            Padding( // Adiciona margem ao redor da indicação do filtro ativo.
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5), // Margem lateral de 20 e vertical de 5.
+              child: Row( // Organiza o texto e o "chip" do filtro em uma linha horizontal.
                 children: [
-                  Text("Filtrado por:"),
-
-                  Chip(
-// Chip -> etiqueta visual
-
-                    label: Text(_filtroSelecionado),
-
-                    onDeleted: () =>
-                        setState(() {
-// onDeleted -> executa ao remover chip
-
-                      _filtroSelecionado = 'Todas';
-                    }),
+                  Text( // Texto explicativo.
+                    "Filtrado por: ", // Conteúdo do texto.
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12), // Cinza médio e tamanho 12.
+                  ),
+                  Chip( // Widget de "etiqueta" para mostrar o filtro ativo.
+                    label: Text( // Texto dentro da etiqueta.
+                      _filtroSelecionado, // Mostra o nome do setor selecionado.
+                      style: const TextStyle(fontSize: 10), // Tamanho pequeno para caber bem.
+                    ),
+                    onDeleted: () => // Ação ao clicar no "X" da etiqueta.
+                        setState(() => _filtroSelecionado = 'Todas'), // Volta o filtro para 'Todas' e redesenha.
                   ),
                 ],
               ),
             ),
-
+          
+          /**
+           * WIDGET: Expanded
+           * O QUE FAZ: Faz com que a lista de startups ocupe todo o resto do espaço disponível na tela.
+           * 
+           * ENCADEAMENTO DE BUILDERS (A parte mais complexa do arquivo):
+           * 1. FutureBuilder: Busca a lista fixa de todas as startups cadastradas.
+           * 2. StreamBuilder (exchange): Ouve em tempo real as mudanças de preço e variação.
+           * 3. StreamBuilder (investimentos): Ouve os investimentos que o usuário logado possui.
+           */
           Expanded(
-// Expanded -> ocupa o espaço disponível
+            child: FutureBuilder<QuerySnapshot>( // Widget que espera por dados que vêm do banco uma única vez.
+              // Busca a coleção principal de startups no Firestore.
+              future: FirebaseFirestore.instance.collection('startups').get(),
+              builder: (context, startupsSnap) { // Construtor que decide o que mostrar dependendo do estado da busca.
+                if (!startupsSnap.hasData) // Se os dados ainda não chegaram do banco.
+                  return const Center(child: CircularProgressIndicator()); // Mostra um círculo de carregamento no centro.
 
-            child: FutureBuilder<QuerySnapshot>(
-// FutureBuilder -> widget que espera operação assíncrona
-// QuerySnapshot -> conjunto de documentos do Firestore
-
-              future: FirebaseFirestore.instance
-                  .collection('startups')
-                  .get(),
-// FirebaseFirestore -> classe principal do Firestore
-// instance -> instância ativa do Firestore
-// collection() -> acessa coleção
-// get() -> busca dados do banco
-
-              builder: (context, startupsSnap) {
-// builder -> constrói interface após receber dados
-
-                if (!startupsSnap.hasData)
-// hasData -> verifica se os dados chegaram
-
-                  return const Center(
-// Center -> centraliza widgets
-
-                    child: CircularProgressIndicator(),
-// CircularProgressIndicator -> indicador de carregamento
-                  );
-
-                return StreamBuilder<QuerySnapshot>(
-// StreamBuilder -> widget que escuta atualizações em tempo real
-
+                return StreamBuilder<QuerySnapshot>( // Widget que "escuta" o banco em tempo real (Stream).
+                  // Ouve as mudanças na coleção 'exchange' (onde ficam preços e variações).
                   stream: FirebaseFirestore.instance
                       .collection('exchange')
                       .snapshots(),
-// snapshots() -> escuta alterações em tempo real
+                  builder: (context, exchangeSnap) { // Construtor para os dados de mercado em tempo real.
+                    if (!exchangeSnap.hasData) // Se os dados de mercado ainda não carregaram.
+                      return const Center(child: CircularProgressIndicator()); // Mostra carregando...
 
-                  builder: (context, exchangeSnap) {
-
-                    if (!exchangeSnap.hasData)
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-
-                    final userId = FirebaseAuth
-                        .instance.currentUser?.uid;
-// FirebaseAuth -> autenticação Firebase
-// currentUser -> usuário logado
-// uid -> identificador do usuário
-
-                    final investStream = userId != null
+                    // Pega o ID único do usuário logado para buscar seus investimentos específicos.
+                    final userId = FirebaseAuth.instance.currentUser?.uid;
+                    final investStream = userId != null // Verifica se existe um usuário logado no momento.
                         ? FirebaseFirestore.instance
                             .collection('users')
                             .doc(userId)
                             .collection('investimentos')
-                            .snapshots()
-                        : const Stream<QuerySnapshot>.empty();
-// doc() -> acessa documento específico
-// Stream.empty() -> stream vazia
+                            .snapshots() // Se logado, ouve a pasta de investimentos desse usuário.
+                        : const Stream<QuerySnapshot>.empty(); // Se não logado, cria um fluxo vazio.
 
-                    return StreamBuilder<QuerySnapshot>(
+                    return StreamBuilder<QuerySnapshot>( // Terceiro nível: ouve os investimentos do usuário.
+                      stream: investStream, // Canal de dados dos investimentos do usuário.
+                      builder: (context, investSnap) { // Construtor final que junta todas as informações.
+                        // Extrai as listas de documentos de cada um dos "snaps" (fotos do banco).
+                        final startupsDocs = startupsSnap.data!.docs; // Todas as startups do catálogo.
+                        final exchangeDocs = exchangeSnap.data!.docs; // Todos os preços e variações do mercado.
+                        final investDocs = investSnap.data?.docs ?? []; // Investimentos do usuário (ou lista vazia).
 
-                      stream: investStream,
+                        // Criamos uma lista de mapas para "combinar" os dados de 3 lugares diferentes em um só.
+                        final List<Map<String, dynamic>> combinedList = [];
 
-                      builder: (context, investSnap) {
-
-                        final startupsDocs =
-                            startupsSnap.data!.docs;
-// docs -> lista de documentos
-
-                        final exchangeDocs =
-                            exchangeSnap.data!.docs;
-
-                        final investDocs =
-                            investSnap.data?.docs ?? [];
-
-                        final List<Map<String, dynamic>>
-                            combinedList = [];
-// List -> lista
-// Map -> estrutura chave e valor
-// dynamic -> aceita qualquer tipo
-
+                        // LOOP: Percorre cada startup encontrada no catálogo para montar seus dados completos.
                         for (var s in startupsDocs) {
-// for -> percorre elementos da lista
-// var -> tipo inferido automaticamente
-
-                          final sData =
-                              s.data() as Map<String, dynamic>;
-// data() -> pega dados do documento
-// as -> conversão de tipo
-
+                          final sData = s.data() as Map<String, dynamic>; // Extrai os dados básicos da startup.
+                          
+                          // Procura nos dados de mercado (exchange) se existe preço para esta startup.
                           final ex = exchangeDocs
-                              .where((e) =>
-                                  e.id == s.id)
-                              .firstOrNull
-                              ?.data()
-                              as Map<String, dynamic>?;
-// where() -> filtra elementos
-// firstOrNull -> pega primeiro item ou nulo
-
+                              .where((e) => e.id == s.id) // Compara o ID do mercado com o ID da startup.
+                              .firstOrNull // Pega o primeiro que encontrar ou retorna nulo.
+                              ?.data() as Map<String, dynamic>?; // Extrai os dados se existirem.
+                          
+                          // Procura se o usuário logado possui tokens desta startup específica.
                           final inv = investDocs
-                              .where((i) =>
-                                  i.id == s.id)
-                              .firstOrNull
-                              ?.data()
-                              as Map<String, dynamic>?;
+                              .where((i) => i.id == s.id) // Compara o ID do investimento com o ID da startup.
+                              .firstOrNull // Pega o resultado ou nulo.
+                              ?.data() as Map<String, dynamic>?; // Extrai os dados de investimento.
 
-                          final preco =
-                              ex?['precoAtual'] ??
-                                  (sData[
-                                              'currentTokenPriceCents'] ??
-                                          0) /
-                                      100.0;
-// ?? -> operador de valor padrão
-
-                          final qtd =
-                              inv?['tokensComprados'] ?? 0;
-
+                          // LÓGICA DE PREÇO: Prioriza o preço do mercado (exchange), senão usa o preço base do catálogo.
+                          final preco = ex?['precoAtual'] ??
+                              (sData['currentTokenPriceCents'] ?? 0) / 100.0; // Converte centavos para Reais.
+                          
+                          // LÓGICA DE SALDO: Quantidade de tokens que o usuário tem na carteira.
+                          final qtd = inv?['tokensComprados'] ?? 0;
+                          
+                          // LÓGICA DE VARIAÇÃO: Pega a porcentagem de subida ou descida do mercado.
                           final double variacao =
-                              (ex?['variacao'] ?? 0.0)
-                                  .toDouble();
-// double -> número decimal
-// toDouble() -> converte para decimal
+                              (ex?['variacao'] ?? 0.0).toDouble();
 
-                          String ticker =
-                              s.id.toUpperCase();
-// toUpperCase() -> transforma em maiúsculo
-
-                          switch (s.id) {
-// switch -> múltiplas condições
-
-                            case 'agrisense':
-                              ticker = 'AGRI3';
-                              break;
-// break -> encerra o case
-
-                            case 'devmatch':
-                              ticker = 'DEVM3';
-                              break;
-
-                            case 'ecocycle':
-                              ticker = 'ECYC1';
-                              break;
-
-                            case 'healthbit':
-                              ticker = 'HBIT3';
-                              break;
-
-                            case 'smartcampus':
-                              ticker = 'SCMP3';
-                              break;
+                          // LÓGICA DE TICKER: Transforma o nome interno (ex: agrisense) em um código (AGRI3).
+                          String ticker = s.id.toUpperCase(); // Por padrão, usa o ID em maiúsculo.
+                          switch (s.id) { // Traduz IDs específicos para os nomes de bolsa.
+                            case 'agrisense': ticker = 'AGRI3'; break;
+                            case 'devmatch': ticker = 'DEVM3'; break;
+                            case 'ecocycle': ticker = 'ECYC1'; break;
+                            case 'healthbit': ticker = 'HBIT3'; break;
+                            case 'smartcampus': ticker = 'SCMP3'; break;
                           }
 
+                          // Adiciona o "pacotão" de dados completo na nossa lista final para exibição.
                           combinedList.add({
-// add() -> adiciona item na lista
-
-                            'nome':
-                                sData['name'] ??
-                                    'Desconhecido',
-
-                            'ticker': ticker,
-
-                            'logo': sData[
-                                    'coverImageUrl'] ??
-                                'assets/images/logos/logotipoAgriSense.png',
-
-                            'preco':
-                                preco.toDouble(),
-
-                            'valorizacao':
-                                variacao > 0
-                                    ? '+${variacao.toStringAsFixed(1)}%'
-                                    : '${variacao.toStringAsFixed(1)}%',
-// toStringAsFixed() -> define casas decimais
-
-                            'qtd': qtd,
-
-                            'setor': sData['tags']
-                                            ?.isNotEmpty ==
-                                        true
-                                ? sData['tags'][0]
+                            'nome': sData['name'] ?? 'Desconhecido', // Nome da empresa.
+                            'ticker': ticker, // Código da bolsa.
+                            'logo': sData['coverImageUrl'] ??
+                                'assets/images/logos/logotipoAgriSense.png', // Logo ou imagem padrão.
+                            'preco': preco.toDouble(), // Preço unitário do token.
+                            'valorizacao': variacao > 0 // Lógica para o sinal de '+' na porcentagem.
+                                ? '+${variacao.toStringAsFixed(1)}%' // Se positivo, adiciona '+'.
+                                : '${variacao.toStringAsFixed(1)}%', // Se negativo ou zero, mostra normal.
+                            'qtd': qtd, // Quantidade que o usuário possui.
+                            'setor': sData['tags']?.isNotEmpty == true
+                                ? sData['tags'][0] // Pega o primeiro setor da lista de tags.
                                 : 'Desconhecido',
-
-                            'id': s.id,
+                            'id': s.id, // ID único da startup.
                           });
                         }
 
-                        final listaFiltrada =
-                            _filtroSelecionado ==
-                                    'Todas'
-                                ? combinedList
-                                : combinedList
-                                    .where((s) {
-// where() -> filtra lista
+                        /**
+                         * LÓGICA DE FILTRAGEM:
+                         * Se o filtro for 'Todas', usa a lista completa combinada.
+                         * Se for um setor específico, filtra apenas os itens que correspondem.
+                         */
+                        final listaFiltrada = _filtroSelecionado == 'Todas'
+                            ? combinedList // Usa tudo.
+                            : combinedList.where((s) {
+                                final setor =
+                                    (s['setor'] as String).toLowerCase(); // Setor da empresa em minúsculo.
+                                final filtro = _filtroSelecionado.toLowerCase(); // Filtro escolhido em minúsculo.
+                                
+                                // Comparações inteligentes para encontrar setores relacionados (ex: 'agro' em 'Agronegócio').
+                                if (filtro == 'agronegócio' &&
+                                    setor.contains('agro')) return true;
+                                if (filtro == 'tecnologia' &&
+                                    setor.contains('tech')) return true;
+                                if (filtro == 'sustentabilidade' &&
+                                    (setor.contains('clean') ||
+                                        setor.contains('green'))) return true;
+                                if (filtro == 'saúde' && setor.contains('health'))
+                                  return true;
+                                if (filtro == 'educação' &&
+                                    setor.contains('edtech')) return true;
+                                return s['setor'] == _filtroSelecionado; // Retorno padrão se for igual.
+                              }).toList(); // Converte de volta para uma lista real.
 
-                                  final setor =
-                                      (s['setor']
-                                              as String)
-                                          .toLowerCase();
-// toLowerCase() -> transforma em minúsculo
-
-                                  final filtro =
-                                      _filtroSelecionado
-                                          .toLowerCase();
-
-                                  if (filtro ==
-                                          'agronegócio' &&
-                                      setor.contains(
-                                          'agro'))
-// contains() -> verifica se contém texto
-                                    return true;
-
-                                  if (filtro ==
-                                          'tecnologia' &&
-                                      setor.contains(
-                                          'tech'))
-                                    return true;
-
-                                  if (filtro ==
-                                          'sustentabilidade' &&
-                                      (setor.contains(
-                                              'clean') ||
-                                          setor.contains(
-                                              'green')))
-                                    return true;
-
-                                  if (filtro ==
-                                          'saúde' &&
-                                      setor.contains(
-                                          'health'))
-                                    return true;
-
-                                  if (filtro ==
-                                          'educação' &&
-                                      setor.contains(
-                                          'edtech'))
-                                    return true;
-
-                                  return s['setor'] ==
-                                      _filtroSelecionado;
-                                }).toList();
-
+                        // Se a lista filtrada estiver vazia, mostra uma mensagem amigável no centro.
                         return listaFiltrada.isEmpty
-// isEmpty -> verifica se lista está vazia
-
                             ? Center(
-                                child: Column(
+                                child: Column( // Organiza o ícone e o texto de erro.
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(
-                                        Icons.search_off),
-
-                                    Text(
-                                      "Nenhuma startup encontrada",
+                                    Icon( // Ícone de "lupa com X" (nada encontrado).
+                                      Icons.search_off,
+                                      size: 64,
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text( // Texto de aviso.
+                                      "Nenhuma startup encontrada\nneste setor.",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ],
                                 ),
                               )
-
+                            /**
+                             * WIDGET: ListView.builder
+                             * O QUE FAZ: Desenha a lista de cartões na tela de forma otimizada.
+                             * É excelente para listas grandes pois só desenha o que está visível.
+                             */
                             : ListView.builder(
-// ListView.builder() -> lista otimizada para muitos itens
-
-                                padding:
-                                    const EdgeInsets
-                                        .all(20),
-
-                                itemCount:
-                                    listaFiltrada
-                                        .length,
-// length -> quantidade de itens
-
-                                itemBuilder:
-                                    (context,
-                                        index) {
-// itemBuilder -> constrói cada item da lista
-
-                                  final startup =
-                                      listaFiltrada[
-                                          index];
-
+                                padding: const EdgeInsets.all(20), // Margem ao redor de toda a lista.
+                                itemCount: listaFiltrada.length, // Total de itens para mostrar.
+                                itemBuilder: (context, index) { // Função que desenha cada item individualmente.
+                                  final startup = listaFiltrada[index]; // Pega os dados da startup nesta posição.
+                                  
+                                  // CÁLCULO: Valor total investido pelo usuário (Preço unitário x Quantidade de tokens).
                                   final double total =
-                                      startup[
-                                              'preco'] *
-                                          startup[
-                                              'qtd'];
+                                      startup['preco'] * startup['qtd'];
 
+                                  // Retorna o componente visual do cartão para cada empresa.
                                   return StartupCard(
-// StartupCard -> componente personalizado
-
-                                    startup: startup,
-
-                                    total: total,
+                                    startup: startup, // Passa os dados combinados da empresa.
+                                    total: total, // Passa o valor total calculado.
                                   );
                                 },
                               );
@@ -500,4 +345,3 @@ class _BalcaoNegociacaoPageState
     );
   }
 }
-```
