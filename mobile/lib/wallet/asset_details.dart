@@ -1,25 +1,18 @@
-/**
- * DETALHES DO ATIVO (Asset Details)
- * 
- * Funcionalidades implementadas:
- * - Visualização técnica detalhada de uma startup específica.
- * - Execução de ordens de investimento (Compra) via Cloud Functions.
- * - Execução de ordens de troca (Swap/Venda) simulada.
- * - Integração de widgets granularizados: Gráfico Dinâmico, Livro de Ofertas e Histórico de Transações.
- * - Monitoramento em tempo real do saldo de tokens do usuário para o ativo selecionado.
- */
+//feito por camila fernandes costacurta ra: 25012949 
 
-import 'package:flutter/material.dart'; // Importa o pacote básico de widgets do Flutter.
-import 'package:google_fonts/google_fonts.dart'; // Importa a biblioteca de fontes do Google.
-import 'package:fl_chart/fl_chart.dart'; // Importa a biblioteca para criação de gráficos.
-import 'package:cloud_functions/cloud_functions.dart'; // Importa o suporte para chamadas de funções na nuvem.
-import 'package:cloud_firestore/cloud_firestore.dart'; // Importa o acesso ao banco de dados Firestore.
-import 'package:firebase_auth/firebase_auth.dart'; // Importa o sistema de autenticação do Firebase.
-import 'package:mobile/features/wallet/presentation/token_performance_screen.dart' as token_page; // Importa a página de token com um apelido.
-import 'package:mobile/features/wallet/presentation/widgets/asset_chart_widget.dart'; // Importa o widget do gráfico.
-import 'package:mobile/features/wallet/presentation/widgets/order_book_widget.dart'; // Importa o widget do livro de ofertas.
-import 'package:mobile/features/wallet/presentation/widgets/transaction_history_widget.dart'; // Importa o widget do histórico.
-import 'package:mobile/features/wallet/presentation/widgets/asset_action_button.dart'; // Importa o botão de ação.
+ 
+
+import 'package:flutter/material.dart'; // Biblioteca base do Flutter (permite usar widgets como Scaffold, Column, Row).
+import 'package:google_fonts/google_fonts.dart'; // Biblioteca de fontes (permite usar GoogleFonts.lora).
+import 'package:fl_chart/fl_chart.dart'; // Biblioteca de gráficos (permite usar LineChart, FlSpot).
+import 'package:cloud_functions/cloud_functions.dart'; // Biblioteca de funções na nuvem (permite usar FirebaseFunctions, httpsCallable).
+import 'package:cloud_firestore/cloud_firestore.dart'; // Biblioteca do Banco de Dados (permite usar FirebaseFirestore, DocumentSnapshot).
+import 'package:firebase_auth/firebase_auth.dart'; // Biblioteca de Autenticação (permite usar FirebaseAuth, currentUser).
+import 'package:mobile/features/wallet/presentation/token_performance_screen.dart' as token_page; // Importa a página de performance (permite navegar para ValorizacaoPage).
+import 'package:mobile/features/wallet/presentation/widgets/asset_chart_widget.dart'; // Importa o widget do gráfico (permite usar AssetChartWidget).
+import 'package:mobile/features/wallet/presentation/widgets/order_book_widget.dart'; // Importa o widget do livro de ofertas (permite usar OrderBookWidget).
+import 'package:mobile/features/wallet/presentation/widgets/transaction_history_widget.dart'; // Importa o widget do histórico (permite usar TransactionHistoryWidget).
+import 'package:mobile/features/wallet/presentation/widgets/asset_action_button.dart'; // Importa o botão de ação (permite usar AssetActionButton).
 
 // ESTA CLASSE DEFINE A TELA DE DETALHES DE UMA STARTUP ESPECÍFICA, ONDE O USUÁRIO PODE INVESTIR OU TROCAR TOKENS.
 class AssetDetailsScreen extends StatefulWidget { // Declaração da classe como widget com estado.
