@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart'; // Importa o pacote básico de widgets do Flutter.
-import 'package:fl_chart/fl_chart.dart'; // Importa a biblioteca para criação de gráficos.
-import 'package:cloud_firestore/cloud_firestore.dart'; // Importa o acesso ao banco de dados Firestore.
-import 'package:intl/intl.dart';
+import 'package:flutter/material.dart'; // Biblioteca base do Flutter (permite usar widgets como Padding, Column, ChoiceChip).
+import 'package:fl_chart/fl_chart.dart'; // Biblioteca de gráficos (permite usar LineChart, FlSpot).
+import 'package:cloud_firestore/cloud_firestore.dart'; // Biblioteca do Banco de Dados (permite usar FirebaseFirestore, collection).
+import 'package:intl/intl.dart'; // Biblioteca de Formatação (permite usar DateFormat para arrumar datas).
 
 // ESTA CLASSE DEFINE O COMPONENTE VISUAL DO GRÁFICO DE VARIAÇÃO DE PREÇO DO ATIVO.
 class AssetChartWidget extends StatefulWidget { // Widget com estado para gerenciar o período selecionado.
