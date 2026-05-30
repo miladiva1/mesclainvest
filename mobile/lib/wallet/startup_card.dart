@@ -1,11 +1,11 @@
-// feito por camila fernandes costacurta RA:25012949 
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../asset_details_screen.dart';
+import 'package:flutter/material.dart'; // Biblioteca base do Flutter (permite usar widgets como GestureDetector, Container, ClipRRect).
+import 'package:google_fonts/google_fonts.dart'; // Biblioteca de fontes (permite usar GoogleFonts.montserrat).
+import '../asset_details_screen.dart'; // Importa a tela de detalhes (permite navegar para AssetDetailsScreen).
 
 class StartupCard extends StatelessWidget {
   final Map<String, dynamic> startup;
   final double total;
+  //total é o valor total do startup=quantidade de tokens x preço do token
 
   const StartupCard({
     super.key,
@@ -15,6 +15,10 @@ class StartupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //este widget é usado para criar uma cartão de startup
+    //ele contém as informações do startup, como nome, logo, preço, quantidade de tokens, valor total
+    //e um botão para ver detalhes
+    //quando o usuário clica no botão, ele é levado para a tela de detalhes do startup
     return GestureDetector(
       onTap: () {
         Navigator.push(
