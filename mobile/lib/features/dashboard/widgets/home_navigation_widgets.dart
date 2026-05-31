@@ -1,7 +1,8 @@
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/core/routes/app_routes.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({
@@ -46,7 +47,6 @@ class HomeHeader extends StatelessWidget {
           child: Text(
             'Ol\u00e1, $userName',
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: primaryPurple,
               fontSize: 17,
@@ -151,23 +151,29 @@ class _WalletCardState extends State<WalletCard> {
   @override
   void initState() {
     super.initState();
-    _buscarSaldo();
+    _ouvirSaldo();
   }
 
-  Future<void> _buscarSaldo() async {
-    try {
-      final functions = FirebaseFunctions.instanceFor(region: 'us-central1');
-      final resultado = await functions.httpsCallable('buscarSaldo').call();
-      if (resultado.data['success'] == true) {
-        setState(() {
-          _saldo = (resultado.data['saldo'] as num).toDouble();
-          _carregando = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('Erro buscarSaldo: $e');
+  void _ouvirSaldo() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
       setState(() => _carregando = false);
+      return;
     }
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('carteira')
+        .doc('saldo')
+        .snapshots()
+        .listen((snap) {
+          if (!mounted) return;
+          setState(() {
+            _saldo = (snap.data()?['saldo'] as num? ?? 0).toDouble();
+            _carregando = false;
+          });
+        });
   }
 
   @override
@@ -175,8 +181,8 @@ class _WalletCardState extends State<WalletCard> {
     final saldoTexto = _carregando
         ? 'Carregando...'
         : widget.showBalance
-            ? 'R\$ ${_saldo.toStringAsFixed(2)}'
-            : 'R\$ ******';
+        ? 'R\$ ${_saldo.toStringAsFixed(2)}'
+        : 'R\$ ******';
 
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
