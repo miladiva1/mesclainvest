@@ -198,7 +198,17 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
                     // Exibe carregamento se os dados de mercado não estiverem prontos
                     if (!exchangeSnap.hasData)
                       return const Center(child: CircularProgressIndicator());
+
+                    // Obtém o ID do usuário autenticado para buscar seus investimentos
+                    final userId = FirebaseAuth.instance.currentUser?.uid;
                     // Define o fluxo de dados de investimentos se o usuário estiver logado
+                    final investStream = userId != null
+                        ? FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(userId)
+                              .collection('investimentos')
+                              .snapshots()
+                        : const Stream<QuerySnapshot>.empty();
                     final investStream = FirebaseFirestore.instance
                         .collection('users')
                         .doc(currentUser.uid)
@@ -1421,12 +1431,6 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
               final double chartMinX = spots.first.x;
               // Define o fim do eixo X como o último ponto temporal
               final double chartMaxX = spots.last.x;
-              final double hInterval = (chartMaxY - chartMinY) == 0 
-                  ? 1.0 
-                  : (chartMaxY - chartMinY) / 4;
-              final double xInterval = (chartMaxX - chartMinX) == 0 
-                  ? 1.0 
-                  : (chartMaxX - chartMinX) / 4;
 
               // Retorna o widget do gráfico de linha com altura fixa
               return SizedBox(
@@ -1446,7 +1450,7 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                       drawVerticalLine: false,
                       drawHorizontalLine: true,
                       // Divide o eixo Y em 4 faixas horizontais
-                      horizontalInterval: hInterval,
+                      horizontalInterval: (chartMaxY - chartMinY) / 4,
                       // Define o estilo visual das linhas horizontais
                       getDrawingHorizontalLine: (value) => FlLine(
                         color: Colors.grey.withValues(alpha: 0.15),
@@ -1473,7 +1477,7 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                           showTitles: true,
                           reservedSize: 28,
                           // Define o intervalo de tempo entre as etiquetas do eixo X
-                          interval: xInterval,
+                          interval: (chartMaxX - chartMinX) / 4,
                           // Função para gerar os widgets de texto do eixo X
                           getTitlesWidget: (value, meta) {
                             // Evitar rótulos nas bordas extremas que cortam
@@ -1519,7 +1523,7 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                           showTitles: true,
                           reservedSize: 45,
                           // Define o intervalo de valores entre as etiquetas do eixo Y
-                          interval: hInterval,
+                          interval: (chartMaxY - chartMinY) / 4,
                           // Função para gerar os widgets de texto do eixo Y
                           getTitlesWidget: (value, meta) {
                             // Oculta valores que ficariam cortados nas bordas
