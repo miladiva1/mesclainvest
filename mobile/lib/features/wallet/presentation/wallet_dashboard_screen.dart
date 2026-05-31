@@ -1,3 +1,4 @@
+import 'dart:async';
 // GUILHERME PREVENTI CORREIA
 // =============================================================================
 // SECAO: IMPORTACOES
@@ -1064,3 +1065,5 @@ class _WalletDashboardScreenState extends State<WalletDashboardScreen> {
   // Analise da Linha: }
   // } = Fechamento de Bloco. Encerra o escopo aberto anteriormente.
 }
+
+```
