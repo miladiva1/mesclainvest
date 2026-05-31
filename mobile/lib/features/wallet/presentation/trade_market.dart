@@ -1,4 +1,3 @@
-
 // feito por camila fernandes costacurta RA:25012949
 
 // Importa os widgets básicos e o framework Material Design
@@ -111,7 +110,8 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
   // Sobrescreve o método principal de construção da interface visual
   @override
   // Método central onde a interface do widget é descrita
-  Widget build(BuildContext context) {    return Scaffold(
+  Widget build(BuildContext context) {
+    return Scaffold(
       // Define a cor de fundo cinza claro para toda a tela
       backgroundColor: const Color(0xFFF8F9FB),
       // Define a barra superior da aplicação
@@ -182,35 +182,38 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
               // Constrói a interface com base no estado da busca de startups
               builder: (context, startupsSnap) {
                 // Exibe um indicador de carregamento enquanto os dados não chegam
-                if (!startupsSnap.hasData) return const Center(child: CircularProgressIndicator());
+                if (!startupsSnap.hasData)
+                  return const Center(child: CircularProgressIndicator());
 
-
-                
                 final currentUser = FirebaseAuth.instance.currentUser;
                 if (currentUser == null) return const SizedBox.shrink();
 
-
                 return StreamBuilder<QuerySnapshot>(
                   // Define o fluxo de dados em tempo real da coleção 'exchange'
-                  stream: FirebaseFirestore.instance.collection('exchange').snapshots(),
+                  stream: FirebaseFirestore.instance
+                      .collection('exchange')
+                      .snapshots(),
                   // Constrói a interface com base nos dados de mercado
                   builder: (context, exchangeSnap) {
                     // Exibe carregamento se os dados de mercado não estiverem prontos
-                    if (!exchangeSnap.hasData) return const Center(child: CircularProgressIndicator());
-
+                    if (!exchangeSnap.hasData)
+                      return const Center(child: CircularProgressIndicator());
 
                     // Obtém o ID do usuário autenticado para buscar seus investimentos
                     final userId = FirebaseAuth.instance.currentUser?.uid;
                     // Define o fluxo de dados de investimentos se o usuário estiver logado
                     final investStream = userId != null
-                        ? FirebaseFirestore.instance.collection('users').doc(userId).collection('investimentos').snapshots()
+                        ? FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(userId)
+                              .collection('investimentos')
+                              .snapshots()
                         : const Stream<QuerySnapshot>.empty();
                     final investStream = FirebaseFirestore.instance
                         .collection('users')
                         .doc(currentUser.uid)
                         .collection('investimentos')
                         .snapshots();
-
 
                     // Monitora os investimentos do usuário em tempo real
                     return StreamBuilder<QuerySnapshot>(
@@ -231,42 +234,71 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
                           // Converte os dados brutos do documento da startup em um mapa
                           final sData = s.data() as Map<String, dynamic>;
                           // Busca os dados de mercado correspondentes ao ID da startup
-                          final ex = exchangeDocs.where((e) => e.id == s.id).firstOrNull?.data() as Map<String, dynamic>?;
+                          final ex =
+                              exchangeDocs
+                                      .where((e) => e.id == s.id)
+                                      .firstOrNull
+                                      ?.data()
+                                  as Map<String, dynamic>?;
                           // Busca os dados de investimento do usuário para esta startup específica
-                          final inv = investDocs.where((i) => i.id == s.id).firstOrNull?.data() as Map<String, dynamic>?;
+                          final inv =
+                              investDocs
+                                      .where((i) => i.id == s.id)
+                                      .firstOrNull
+                                      ?.data()
+                                  as Map<String, dynamic>?;
 
                           // Define o preço atual vindo do mercado ou o preço base da startup
-                          final preco = ex?['precoAtual'] ?? (sData['currentTokenPriceCents'] ?? 0) / 100.0;
+                          final preco =
+                              ex?['precoAtual'] ??
+                              (sData['currentTokenPriceCents'] ?? 0) / 100.0;
                           // Define a quantidade de tokens que o usuário possui desta startup
                           final qtd = inv?['tokensComprados'] ?? 0;
                           // Converte e extrai a variação percentual do preço
-                          final double variacao = (ex?['variacao'] ?? 0.0).toDouble();
+                          final double variacao = (ex?['variacao'] ?? 0.0)
+                              .toDouble();
 
                           // Define a variável para o ticker (código de negociação)
                           String ticker = s.id.toUpperCase();
                           // Mapeia IDs internos para tickers personalizados amigáveis ao mercado
                           switch (s.id) {
                             // Caso Agrisense, define o ticker AGRI3
-                            case 'agrisense': ticker = 'AGRI3'; break;
+                            case 'agrisense':
+                              ticker = 'AGRI3';
+                              break;
                             // Caso Devmatch, define o ticker DEVM3
-                            case 'devmatch': ticker = 'DEVM3'; break;
+                            case 'devmatch':
+                              ticker = 'DEVM3';
+                              break;
                             // Caso Ecocycle, define o ticker ECYC1
-                            case 'ecocycle': ticker = 'ECYC1'; break;
+                            case 'ecocycle':
+                              ticker = 'ECYC1';
+                              break;
                             // Caso Healthbit, define o ticker HBIT3
-                            case 'healthbit': ticker = 'HBIT3'; break;
+                            case 'healthbit':
+                              ticker = 'HBIT3';
+                              break;
                             // Caso Smartcampus, define o ticker SCMP3
-                            case 'smartcampus': ticker = 'SCMP3'; break;
+                            case 'smartcampus':
+                              ticker = 'SCMP3';
+                              break;
                           }
 
                           // Adiciona o mapa de dados processados da startup à lista combinada
                           combinedList.add({
                             'nome': sData['name'] ?? 'Desconhecido',
                             'ticker': ticker,
-                            'logo': sData['coverImageUrl'] ?? 'assets/images/logos/logotipoAgriSense.png',
+                            'logo':
+                                sData['coverImageUrl'] ??
+                                'assets/images/logos/logotipoAgriSense.png',
                             'preco': preco.toDouble(),
-                            'valorizacao': variacao > 0 ? '+${variacao.toStringAsFixed(1)}%' : '${variacao.toStringAsFixed(1)}%',
+                            'valorizacao': variacao > 0
+                                ? '+${variacao.toStringAsFixed(1)}%'
+                                : '${variacao.toStringAsFixed(1)}%',
                             'qtd': qtd,
-                            'setor': sData['tags']?.isNotEmpty == true ? sData['tags'][0] : 'Desconhecido',
+                            'setor': sData['tags']?.isNotEmpty == true
+                                ? sData['tags'][0]
+                                : 'Desconhecido',
                             'id': s.id,
                           });
                         }
@@ -278,20 +310,32 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
                             // Caso contrário, filtra os itens que correspondem ao setor
                             : combinedList.where((s) {
                                 // Normaliza o nome do setor para comparação em minúsculas
-                                final setor = (s['setor'] as String).toLowerCase();
+                                final setor = (s['setor'] as String)
+                                    .toLowerCase();
                                 // Normaliza o filtro selecionado para comparação em minúsculas
                                 final filtro = _filtroSelecionado.toLowerCase();
                                 // Aproximação de filtro pois os dados do firebase são tags em inglês/outros
                                 // Verifica se o filtro é Agronegócio e o setor contém a palavra 'agro'
-                                if (filtro == 'agronegócio' && setor.contains('agro')) return true;
+                                if (filtro == 'agronegócio' &&
+                                    setor.contains('agro'))
+                                  return true;
                                 // Verifica se o filtro é Tecnologia e o setor contém a palavra 'tech'
-                                if (filtro == 'tecnologia' && setor.contains('tech')) return true;
+                                if (filtro == 'tecnologia' &&
+                                    setor.contains('tech'))
+                                  return true;
                                 // Verifica se o filtro é Sustentabilidade e o setor contém palavras relacionadas
-                                if (filtro == 'sustentabilidade' && (setor.contains('clean') || setor.contains('green'))) return true;
+                                if (filtro == 'sustentabilidade' &&
+                                    (setor.contains('clean') ||
+                                        setor.contains('green')))
+                                  return true;
                                 // Verifica se o filtro é Saúde e o setor contém a palavra 'health'
-                                if (filtro == 'saúde' && setor.contains('health')) return true;
+                                if (filtro == 'saúde' &&
+                                    setor.contains('health'))
+                                  return true;
                                 // Verifica se o filtro é Educação e o setor contém a palavra 'edtech'
-                                if (filtro == 'educação' && setor.contains('edtech')) return true;
+                                if (filtro == 'educação' &&
+                                    setor.contains('edtech'))
+                                  return true;
                                 // Retorno padrão comparando a string exata do setor com o filtro
                                 return s['setor'] == _filtroSelecionado;
                               }).toList();
@@ -335,7 +379,8 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
                                   // Obtém os dados da startup correspondente ao índice atual
                                   final startup = listaFiltrada[index];
                                   // Calcula o valor total investido pelo usuário nesta startup
-                                  final double total = startup['preco'] * startup['qtd'];
+                                  final double total =
+                                      startup['preco'] * startup['qtd'];
 
                                   // Widget que detecta toques e navega para a tela de detalhes
                                   return GestureDetector(
@@ -346,7 +391,9 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
                                         MaterialPageRoute(
                                           // Passa os dados da startup como parâmetro para a nova tela
                                           builder: (context) =>
-                                              AssetDetailsScreen(startup: startup),
+                                              AssetDetailsScreen(
+                                                startup: startup,
+                                              ),
                                         ),
                                       );
                                     },
@@ -363,7 +410,9 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
                                         // Adiciona uma sombra suave para dar profundidade ao cartão
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withValues(alpha: 0.04),
+                                            color: Colors.black.withValues(
+                                              alpha: 0.04,
+                                            ),
                                             blurRadius: 10,
                                             offset: const Offset(0, 4),
                                           ),
@@ -382,33 +431,60 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
                                                 // Estiliza o fundo do logo em cinza quase branco
                                                 decoration: BoxDecoration(
                                                   color: Colors.grey[50],
-                                                  borderRadius: BorderRadius.circular(12),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
                                                 ),
                                                 // Recorta a imagem para respeitar as bordas arredondadas
                                                 child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(12),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
                                                   // Carrega a imagem da internet ou dos ativos locais
-                                                  child: startup['logo'].toString().startsWith('http')
+                                                  child:
+                                                      startup['logo']
+                                                          .toString()
+                                                          .startsWith('http')
                                                       // Se for URL, utiliza Image.network
                                                       ? Image.network(
                                                           startup['logo'],
                                                           fit: BoxFit.contain,
                                                           // Exibe ícone de fallback em caso de erro no carregamento
-                                                          errorBuilder: (context, error, stackTrace) =>
-                                                              const Icon(Icons.business, color: Colors.grey),
+                                                          errorBuilder:
+                                                              (
+                                                                context,
+                                                                error,
+                                                                stackTrace,
+                                                              ) => const Icon(
+                                                                Icons.business,
+                                                                color:
+                                                                    Colors.grey,
+                                                              ),
                                                         )
                                                       // Se for caminho local, utiliza Image.asset
                                                       : Image.asset(
                                                           'assets/images/logos/${startup['logo']}',
                                                           fit: BoxFit.contain,
                                                           // Tenta carregar o caminho alternativo se o primeiro falhar
-                                                          errorBuilder: (context, error, stackTrace) =>
-                                                              Image.asset(
+                                                          errorBuilder:
+                                                              (
+                                                                context,
+                                                                error,
+                                                                stackTrace,
+                                                              ) => Image.asset(
                                                                 startup['logo'],
-                                                                fit: BoxFit.contain,
+                                                                fit: BoxFit
+                                                                    .contain,
                                                                 // Exibe ícone de fallback final
-                                                                errorBuilder: (context, error, stackTrace) =>
-                                                                    const Icon(Icons.business, color: Colors.grey),
+                                                                errorBuilder:
+                                                                    (
+                                                                      context,
+                                                                      error,
+                                                                      stackTrace,
+                                                                    ) => const Icon(
+                                                                      Icons
+                                                                          .business,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                    ),
                                                               ),
                                                         ),
                                                 ),
@@ -425,42 +501,51 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
                                                     // Exibe o ticker da startup em negrito
                                                     Text(
                                                       startup['ticker'],
-                                                      style: GoogleFonts.montserrat(
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 16,
-                                                      ),
+                                                      style:
+                                                          GoogleFonts.montserrat(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16,
+                                                          ),
                                                     ),
                                                     // Exibe o nome completo da startup em cinza
                                                     Text(
                                                       startup['nome'],
-                                                      style: GoogleFonts.montserrat(
-                                                        fontSize: 12,
-                                                        color: Colors.grey[600],
-                                                      ),
+                                                      style:
+                                                          GoogleFonts.montserrat(
+                                                            fontSize: 12,
+                                                            color: Colors
+                                                                .grey[600],
+                                                          ),
                                                     ),
                                                   ],
                                                 ),
                                               ),
                                               // Coluna da direita contendo preço e valorização
                                               Column(
-                                                crossAxisAlignment: CrossAxisAlignment.end,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
                                                 children: [
                                                   // Exibe o preço unitário atual formatado em Reais
                                                   Text(
                                                     'R\$ ${startup['preco'].toStringAsFixed(2)}',
-                                                    style: GoogleFonts.montserrat(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 16,
-                                                    ),
+                                                    style:
+                                                        GoogleFonts.montserrat(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 16,
+                                                        ),
                                                   ),
                                                   // Exibe a porcentagem de valorização em verde negrito
                                                   Text(
                                                     startup['valorizacao'],
-                                                    style: GoogleFonts.montserrat(
-                                                      fontSize: 12,
-                                                      color: Colors.green,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
+                                                    style:
+                                                        GoogleFonts.montserrat(
+                                                          fontSize: 12,
+                                                          color: Colors.green,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
                                                   ),
                                                 ],
                                               ),
@@ -487,7 +572,9 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
                                                 style: GoogleFonts.montserrat(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold,
-                                                  color: const Color(0xFF512DA8),
+                                                  color: const Color(
+                                                    0xFF512DA8,
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -498,11 +585,11 @@ class _BalcaoNegociacaoPageState extends State<BalcaoNegociacaoPage> {
                                   );
                                 },
                               );
-                      }
+                      },
                     );
-                  }
+                  },
                 );
-              }
+              },
             ),
           ),
         ],
@@ -552,17 +639,23 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
     // Avalia o ticker fornecido para retornar o ID correspondente
     switch (ticker) {
       // Caso seja AGRI3, retorna o identificador interno agrisense
-      case 'AGRI3': return 'agrisense';
+      case 'AGRI3':
+        return 'agrisense';
       // Caso seja DEVM3, retorna o identificador interno devmatch
-      case 'DEVM3': return 'devmatch';
+      case 'DEVM3':
+        return 'devmatch';
       // Caso seja ECYC1, retorna o identificador interno ecocycle
-      case 'ECYC1': return 'ecocycle';
+      case 'ECYC1':
+        return 'ecocycle';
       // Caso seja HBIT3, retorna o identificador interno healthbit
-      case 'HBIT3': return 'healthbit';
+      case 'HBIT3':
+        return 'healthbit';
       // Caso seja SCMP3, retorna o identificador interno smartcampus
-      case 'SCMP3': return 'smartcampus';
+      case 'SCMP3':
+        return 'smartcampus';
       // Retorno padrão caso o ticker não seja reconhecido
-      default: return 'agrisense';
+      default:
+        return 'agrisense';
     }
   }
 
@@ -642,16 +735,23 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                             ? null
                             : () async {
                                 // Sanitiza o texto da quantidade substituindo vírgulas
-                                final quantidadeTexto = _quantidadeController.text.replaceAll(',', '.');
+                                final quantidadeTexto = _quantidadeController
+                                    .text
+                                    .replaceAll(',', '.');
                                 // Tenta converter o texto sanitizado em um número inteiro
-                                final quantidade = int.tryParse(quantidadeTexto) ?? 0;
+                                final quantidade =
+                                    int.tryParse(quantidadeTexto) ?? 0;
 
                                 // Valida se a quantidade inserida é maior que zero
                                 if (quantidade <= 0) {
                                   // Exibe uma mensagem de erro se a quantidade for inválida
-                                  ScaffoldMessenger.of(builderContext).showSnackBar(
+                                  ScaffoldMessenger.of(
+                                    builderContext,
+                                  ).showSnackBar(
                                     const SnackBar(
-                                      content: Text('Informe uma quantidade válida (número inteiro > 0).'),
+                                      content: Text(
+                                        'Informe uma quantidade válida (número inteiro > 0).',
+                                      ),
                                       backgroundColor: Colors.orange,
                                     ),
                                   );
@@ -664,7 +764,9 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
 
                                 try {
                                   // Obtém o ID interno da startup via ticker
-                                  final startupId = _getStartupId(widget.startup['ticker']);
+                                  final startupId = _getStartupId(
+                                    widget.startup['ticker'],
+                                  );
                                   // Prepara a chamada para a função serverless de compra
                                   final callable = FirebaseFunctions.instance
                                       .httpsCallable('exchange-buyTokens');
@@ -681,31 +783,41 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                                   // Exibe uma notificação de sucesso para o usuário
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('Ordem de compra executada com sucesso!'),
+                                      content: Text(
+                                        'Ordem de compra executada com sucesso!',
+                                      ),
                                       backgroundColor: Colors.green,
                                     ),
                                   );
-                                // Captura erros específicos vindos do Firebase Functions
+                                  // Captura erros específicos vindos do Firebase Functions
                                 } on FirebaseFunctionsException catch (e) {
                                   // Remove o estado de carregamento em caso de falha
                                   setModalState(() => _isLoading = false);
                                   // Verifica se o widget ainda está ativo
                                   if (!mounted) return;
                                   // Exibe o erro detalhado retornado pelo servidor
-                                  ScaffoldMessenger.of(builderContext).showSnackBar(
+                                  ScaffoldMessenger.of(
+                                    builderContext,
+                                  ).showSnackBar(
                                     SnackBar(
-                                      content: Text(e.message ?? e.details?.toString() ?? 'Erro na transação.'),
+                                      content: Text(
+                                        e.message ??
+                                            e.details?.toString() ??
+                                            'Erro na transação.',
+                                      ),
                                       backgroundColor: Colors.red,
                                     ),
                                   );
-                                // Captura qualquer outro erro genérico
+                                  // Captura qualquer outro erro genérico
                                 } catch (e) {
                                   // Remove o estado de carregamento
                                   setModalState(() => _isLoading = false);
                                   // Verifica se o widget ainda está ativo
                                   if (!mounted) return;
                                   // Exibe a descrição do erro inesperado
-                                  ScaffoldMessenger.of(builderContext).showSnackBar(
+                                  ScaffoldMessenger.of(
+                                    builderContext,
+                                  ).showSnackBar(
                                     SnackBar(
                                       content: Text('Erro inesperado: $e'),
                                       backgroundColor: Colors.red,
@@ -816,16 +928,23 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                             ? null
                             : () async {
                                 // Sanitiza o texto da quantidade substituindo vírgulas
-                                final quantidadeTexto = _quantidadeController.text.replaceAll(',', '.');
+                                final quantidadeTexto = _quantidadeController
+                                    .text
+                                    .replaceAll(',', '.');
                                 // Tenta converter o texto sanitizado em um número inteiro
-                                final quantidade = int.tryParse(quantidadeTexto) ?? 0;
+                                final quantidade =
+                                    int.tryParse(quantidadeTexto) ?? 0;
 
                                 // Valida se a quantidade inserida é maior que zero
                                 if (quantidade <= 0) {
                                   // Exibe uma mensagem de erro se a quantidade for inválida
-                                  ScaffoldMessenger.of(builderContext).showSnackBar(
+                                  ScaffoldMessenger.of(
+                                    builderContext,
+                                  ).showSnackBar(
                                     const SnackBar(
-                                      content: Text('Informe uma quantidade válida (número inteiro > 0).'),
+                                      content: Text(
+                                        'Informe uma quantidade válida (número inteiro > 0).',
+                                      ),
                                       backgroundColor: Colors.orange,
                                     ),
                                   );
@@ -838,7 +957,9 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
 
                                 try {
                                   // Obtém o ID interno da startup via ticker
-                                  final startupId = _getStartupId(widget.startup['ticker']);
+                                  final startupId = _getStartupId(
+                                    widget.startup['ticker'],
+                                  );
                                   // Prepara a chamada para a função serverless de venda
                                   final callable = FirebaseFunctions.instance
                                       .httpsCallable('exchange-sellTokens');
@@ -855,31 +976,41 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                                   // Exibe uma notificação de sucesso para o usuário
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('Venda realizada com sucesso!'),
+                                      content: Text(
+                                        'Venda realizada com sucesso!',
+                                      ),
                                       backgroundColor: Colors.green,
                                     ),
                                   );
-                                // Captura erros específicos vindos do Firebase Functions
+                                  // Captura erros específicos vindos do Firebase Functions
                                 } on FirebaseFunctionsException catch (e) {
                                   // Remove o estado de carregamento em caso de falha
                                   setModalState(() => _isLoading = false);
                                   // Verifica se o widget ainda está ativo
                                   if (!mounted) return;
                                   // Exibe o erro detalhado retornado pelo servidor
-                                  ScaffoldMessenger.of(builderContext).showSnackBar(
+                                  ScaffoldMessenger.of(
+                                    builderContext,
+                                  ).showSnackBar(
                                     SnackBar(
-                                      content: Text(e.message ?? e.details?.toString() ?? 'Erro na transação.'),
+                                      content: Text(
+                                        e.message ??
+                                            e.details?.toString() ??
+                                            'Erro na transação.',
+                                      ),
                                       backgroundColor: Colors.red,
                                     ),
                                   );
-                                // Captura qualquer outro erro genérico
+                                  // Captura qualquer outro erro genérico
                                 } catch (e) {
                                   // Remove o estado de carregamento
                                   setModalState(() => _isLoading = false);
                                   // Verifica se o widget ainda está ativo
                                   if (!mounted) return;
                                   // Exibe a descrição do erro inesperado
-                                  ScaffoldMessenger.of(builderContext).showSnackBar(
+                                  ScaffoldMessenger.of(
+                                    builderContext,
+                                  ).showSnackBar(
                                     SnackBar(
                                       content: Text('Erro inesperado: $e'),
                                       backgroundColor: Colors.red,
@@ -946,73 +1077,84 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
             // Valor grande do Token
             // Widget que reconstrói parte da UI com base em fluxos de dados do Firestore
             StreamBuilder<DocumentSnapshot>(
-            // Define o fluxo de dados baseado no investimento do usuário atual
-            stream: FirebaseAuth.instance.currentUser != null
-                ? FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .collection('investimentos')
-                    .doc(widget.startup['id'] ?? _getStartupId(widget.startup['ticker']))
-                    .snapshots()
-                : const Stream.empty(),
-            // Construtor da interface baseada no estado do snapshot de dados
-            builder: (context, snapshot) {
-              // Calcula a quantidade real de tokens possuídos pelo usuário
-              final qtdReal = snapshot.data?.data() != null
-                  ? (snapshot.data!.data() as Map<String, dynamic>)['tokensComprados'] ?? 0
-                  : widget.startup['qtd'];
+              // Define o fluxo de dados baseado no investimento do usuário atual
+              stream: FirebaseAuth.instance.currentUser != null
+                  ? FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection('investimentos')
+                        .doc(
+                          widget.startup['id'] ??
+                              _getStartupId(widget.startup['ticker']),
+                        )
+                        .snapshots()
+                  : const Stream.empty(),
+              // Construtor da interface baseada no estado do snapshot de dados
+              builder: (context, snapshot) {
+                // Calcula a quantidade real de tokens possuídos pelo usuário
+                final qtdReal = snapshot.data?.data() != null
+                    ? (snapshot.data!.data()
+                              as Map<String, dynamic>)['tokensComprados'] ??
+                          0
+                    : widget.startup['qtd'];
 
-              // Extrai o preço atual do ativo
-              final precoAtual = widget.startup['preco'] as double;
-              // Calcula o valor financeiro total da posição do usuário
-              final valorTotal = precoAtual * qtdReal;
+                // Extrai o preço atual do ativo
+                final precoAtual = widget.startup['preco'] as double;
+                // Calcula o valor financeiro total da posição do usuário
+                final valorTotal = precoAtual * qtdReal;
 
-              // Retorna uma coluna com as informações de quantidade e valor
-              return Column(
-                children: [
-                  // Exibe a quantidade de tokens com formatação plural/singular
-                  Text(
-                    "$qtdReal ${qtdReal == 1 ? 'Token' : 'Tokens'}",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF512DA8),
+                // Retorna uma coluna com as informações de quantidade e valor
+                return Column(
+                  children: [
+                    // Exibe a quantidade de tokens com formatação plural/singular
+                    Text(
+                      "$qtdReal ${qtdReal == 1 ? 'Token' : 'Tokens'}",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF512DA8),
+                      ),
                     ),
-                  ),
-                  // Adiciona um espaçamento vertical de 8 pixels
-                  const SizedBox(height: 8),
-                  // Organiza as informações de preço unitário e total em uma linha
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Exibe o preço atual por token formatado em Reais
-                        Text(
-                          "R\$ ${precoAtual.toStringAsFixed(2)} por token",
-                          style: const TextStyle(fontSize: 14, color: Colors.black),
-                        ),
-                        // Adiciona um espaçamento horizontal de 16 pixels
-                        const SizedBox(width: 16),
-                        // Desenha uma linha vertical separadora
-                        Container(width: 1, height: 18, color: Colors.black),
-                        // Adiciona um espaçamento horizontal de 16 pixels
-                        const SizedBox(width: 16),
-                        // Exibe o valor total investido formatado em Reais
-                        Text(
-                          "R\$ ${valorTotal.toStringAsFixed(2)} total",
-                          style: const TextStyle(fontSize: 14, color: Colors.black),
-                        ),
-                      ],
+                    // Adiciona um espaçamento vertical de 8 pixels
+                    const SizedBox(height: 8),
+                    // Organiza as informações de preço unitário e total em uma linha
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Exibe o preço atual por token formatado em Reais
+                          Text(
+                            "R\$ ${precoAtual.toStringAsFixed(2)} por token",
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
+                          ),
+                          // Adiciona um espaçamento horizontal de 16 pixels
+                          const SizedBox(width: 16),
+                          // Desenha uma linha vertical separadora
+                          Container(width: 1, height: 18, color: Colors.black),
+                          // Adiciona um espaçamento horizontal de 16 pixels
+                          const SizedBox(width: 16),
+                          // Exibe o valor total investido formatado em Reais
+                          Text(
+                            "R\$ ${valorTotal.toStringAsFixed(2)} total",
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  // Adiciona um pequeno espaçamento vertical de 6 pixels
-                  const SizedBox(height: 6),
-                ],
-              );
-            },
-          ),
+                    // Adiciona um pequeno espaçamento vertical de 6 pixels
+                    const SizedBox(height: 6),
+                  ],
+                );
+              },
+            ),
             // Adiciona um espaçamento vertical de 30 pixels
             const SizedBox(height: 30),
 
@@ -1030,11 +1172,7 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                 // Adiciona um espaçamento horizontal largo entre os botões
                 const SizedBox(width: 40),
                 // Constrói o botão de ação para Vender
-                _buildActionButton(
-                  Icons.sell,
-                  "Vender",
-                  _abrirModalVender,
-                ),
+                _buildActionButton(Icons.sell, "Vender", _abrirModalVender),
               ],
             ),
 
@@ -1062,15 +1200,26 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                 // Botão com borda e ícone para iniciar uma contraproposta
                 child: OutlinedButton.icon(
                   onPressed: _abrirContrapropostaInfo,
-                  icon: const Icon(Icons.handshake_outlined, color: Color(0xFF512DA8), size: 16),
+                  icon: const Icon(
+                    Icons.handshake_outlined,
+                    color: Color(0xFF512DA8),
+                    size: 16,
+                  ),
                   // Define o rótulo do botão de contraproposta
                   label: const Text(
                     "Contraproposta",
-                    style: TextStyle(color: Color(0xFF512DA8), fontWeight: FontWeight.bold, fontSize: 12),
+                    style: TextStyle(
+                      color: Color(0xFF512DA8),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
                   ),
                   // Configura o estilo visual do botão contornado
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 16,
+                    ),
                     side: const BorderSide(color: Color(0xFF512DA8)),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -1223,7 +1372,8 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
               // Filtra os documentos que estão dentro da janela de tempo definida
               final filteredDocs = docs.where((doc) {
                 final data = doc['data'] as Timestamp;
-                return data.toDate().isAfter(dataLimite) || data.toDate().isAtSameMomentAs(dataLimite);
+                return data.toDate().isAfter(dataLimite) ||
+                    data.toDate().isAtSameMomentAs(dataLimite);
               }).toList();
 
               // Inicializa a lista final de documentos que serão plotados
@@ -1236,7 +1386,9 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                   finalDocs.add(filteredDocs[i]);
                 }
                 // Garante que o último ponto disponível seja sempre incluído
-                if (finalDocs.isNotEmpty && filteredDocs.isNotEmpty && finalDocs.last.id != filteredDocs.last.id) {
+                if (finalDocs.isNotEmpty &&
+                    filteredDocs.isNotEmpty &&
+                    finalDocs.last.id != filteredDocs.last.id) {
                   finalDocs.add(filteredDocs.last);
                 }
               }
@@ -1267,7 +1419,10 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
               // Calcula uma margem de segurança para o topo e base do gráfico
               final margemY = (precoMax - precoMin) * 0.05;
               // Define o valor mínimo do eixo Y, garantindo que não seja negativo
-              final double chartMinY = (precoMin - margemY).clamp(0, double.infinity);
+              final double chartMinY = (precoMin - margemY).clamp(
+                0,
+                double.infinity,
+              );
               // Define o valor máximo do eixo Y com a margem aplicada
               final double chartMaxY = precoMax + margemY;
 
@@ -1307,9 +1462,13 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                     // Configura os títulos e rótulos dos eixos do gráfico
                     titlesData: FlTitlesData(
                       // Oculta os títulos superiores do gráfico
-                      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
                       // Oculta os títulos do lado direito do gráfico
-                      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
 
                       // Eixo X — Formatação contextual por _selectedPeriod
                       // Configura a exibição das datas no eixo inferior
@@ -1326,13 +1485,16 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
                               return const SizedBox.shrink();
                             }
                             // Converte o valor numérico de volta para objeto de data
-                            final dt = DateTime.fromMillisecondsSinceEpoch(value.toInt());
+                            final dt = DateTime.fromMillisecondsSinceEpoch(
+                              value.toInt(),
+                            );
                             String label;
                             // Formata o rótulo conforme o período selecionado
                             if (_selectedPeriod == 'Diário') {
                               // Hora:minuto para a janela mais curta
                               label = DateFormat('HH:mm').format(dt);
-                            } else if (_selectedPeriod == '6 meses' || _selectedPeriod == 'YTD') {
+                            } else if (_selectedPeriod == '6 meses' ||
+                                _selectedPeriod == 'YTD') {
                               // Mês abreviado para janelas longas
                               label = DateFormat('MMM', 'pt_BR').format(dt);
                             } else {
@@ -1419,706 +1581,783 @@ class _AssetDetailsScreenState extends State<AssetDetailsScreen> {
   // Livro de Ofertas conforme solicitado
   // Método que constrói a tabela visual do livro de ofertas do mercado
   Widget _buildOrderBook() {
-  // Adiciona preenchimento horizontal de 20 pixels
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    // Organiza o título e a tabela em uma coluna vertical
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Exibe o título da seção com uma cor roxa específica
-        const Text(
-          "Livro de Ofertas (Mercado)",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF4B0082),
+    // Adiciona preenchimento horizontal de 20 pixels
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      // Organiza o título e a tabela em uma coluna vertical
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Exibe o título da seção com uma cor roxa específica
+          const Text(
+            "Livro de Ofertas (Mercado)",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4B0082),
+            ),
           ),
-        ),
-        // Adiciona um espaçamento vertical de 15 pixels
-        const SizedBox(height: 15),
-        // Widget que escuta em tempo real a subcoleção de ofertas da startup
-        StreamBuilder<QuerySnapshot>(
-          // Define a consulta ao Firestore limitada às 4 ofertas mais recentes
-          stream: FirebaseFirestore.instance
-              .collection('startups')
-              .doc(widget.startup['id'] ?? _getStartupId(widget.startup['ticker']))
-              .collection('Ofertas')
-              .orderBy('data', descending: true)
-              .limit(4)
-              .snapshots(),
-          // Construtor da interface baseada nos dados das ofertas
-          builder: (context, snapshot) {
-            // Extrai a lista de documentos do snapshot
-            final docs = snapshot.data?.docs ?? [];
-            // Retorna uma tabela organizada em colunas flexíveis
-            return Table(
-              columnWidths: const {
-                // Define que cada uma das 3 colunas ocupa o mesmo espaço proporcional
-                0: FlexColumnWidth(1),
-                1: FlexColumnWidth(1),
-                2: FlexColumnWidth(1),
-              },
-              // Define as linhas da tabela
-              children: [
-                // Linha de cabeçalho da tabela
-                TableRow(
-                  children: [
-                    // Cabeçalho para a quantidade de tokens
-                    _tableHeader("Qtd Tokens"),
-                    // Cabeçalho para o valor unitário do token
-                    _tableHeader("Valor Token"),
-                    // Cabeçalho para o valor total da oferta
-                    _tableHeader("Total Pago"),
-                  ],
-                ),
-                // Exibe uma linha informativa caso não existam ofertas registradas
-                if (docs.isEmpty)
+          // Adiciona um espaçamento vertical de 15 pixels
+          const SizedBox(height: 15),
+          // Widget que escuta em tempo real a subcoleção de ofertas da startup
+          StreamBuilder<QuerySnapshot>(
+            // Define a consulta ao Firestore limitada às 4 ofertas mais recentes
+            stream: FirebaseFirestore.instance
+                .collection('startups')
+                .doc(
+                  widget.startup['id'] ??
+                      _getStartupId(widget.startup['ticker']),
+                )
+                .collection('Ofertas')
+                .orderBy('data', descending: true)
+                .limit(4)
+                .snapshots(),
+            // Construtor da interface baseada nos dados das ofertas
+            builder: (context, snapshot) {
+              // Extrai a lista de documentos do snapshot
+              final docs = snapshot.data?.docs ?? [];
+              // Retorna uma tabela organizada em colunas flexíveis
+              return Table(
+                columnWidths: const {
+                  // Define que cada uma das 3 colunas ocupa o mesmo espaço proporcional
+                  0: FlexColumnWidth(1),
+                  1: FlexColumnWidth(1),
+                  2: FlexColumnWidth(1),
+                },
+                // Define as linhas da tabela
+                children: [
+                  // Linha de cabeçalho da tabela
                   TableRow(
                     children: [
-                      // Mensagem de ausência de dados ocupando a primeira célula
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          'Nenhuma oferta ainda.',
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                      ),
-                      // Célula vazia para manter o alinhamento da tabela
-                      const SizedBox(),
-                      // Outra célula vazia para manter o alinhamento
-                      const SizedBox(),
+                      // Cabeçalho para a quantidade de tokens
+                      _tableHeader("Qtd Tokens"),
+                      // Cabeçalho para o valor unitário do token
+                      _tableHeader("Valor Token"),
+                      // Cabeçalho para o valor total da oferta
+                      _tableHeader("Total Pago"),
                     ],
-                  )
-                // Mapeia os documentos de ofertas para linhas da tabela se existirem
-                else
-                  ...docs.map((doc) {
-                    // Converte os dados do documento para um mapa chave-valor
-                    final data = doc.data() as Map<String, dynamic>;
-                    // Extrai e trata a quantidade de tokens como número
-                    final tokens = (data['Tokens Comprados'] ?? 0) as num;
-                    // Extrai e trata o valor unitário do token como número
-                    final valorToken = (data['Valor Token'] ?? 0) as num;
-                    // Extrai e trata o valor total pago como número
-                    final totalPago = (data['Preco Pago'] ?? 0) as num;
-                    // Retorna uma linha de oferta formatada
-                    return _orderRow(
-                      tokens.toString(),
-                      'R\$ ${valorToken.toStringAsFixed(2)}',
-                      'R\$ ${totalPago.toStringAsFixed(2)}',
-                      Colors.black,
-                    );
-                  }),
-              ],
-            );
-          },
-        ),
-      ],
-    ),
-  );
-}
-
-// Método para abrir o diálogo de informações e criação de contraproposta
-void _abrirContrapropostaInfo() {
-  // Controlador para o campo de texto da quantidade de tokens
-  final qtdController = TextEditingController();
-  // Controlador para o campo de texto do preço sugerido
-  final precoController = TextEditingController();
-  // Variável para armazenar a porcentagem calculada da participação
-  double porcentagem = 0;
-  // Controle de visibilidade do campo de preço baseado na validade da quantidade
-  bool mostrarPreco = false;
-
-  // Variável para armazenar o total de tokens emitidos pela startup
-  num totalTokensIssued = 1;
-  // Variável para acumular o total de tokens já negociados no mercado
-  num totalVendidoGeral = 0;
-  // Flag para evitar múltiplas buscas desnecessárias ao banco de dados
-  bool dadosCarregados = false;
-  // Valor inteiro representando a porcentagem de desconto concedida
-  int desconto = 0;
-  // Valor calculado do preço mínimo com desconto aplicado
-  double valorComDesconto = 0;
-  // Valor base do preço sem qualquer desconto aplicado
-  double valorSemDesconto = 0;
-  // Mensagem de erro para validação do preço inserido
-  String? precoErro;
-  // Estado para indicar se a contraproposta está sendo enviada ao servidor
-  bool enviando = false;
-  // Estado para indicar se os dados iniciais estão sendo carregados
-  bool carregando = false;
-
-  // Exibe o painel modal inferior configurado para entrada de dados
-  showModalBottomSheet(
-    context: context,
-    // Permite que o modal se ajuste ao teclado e ocupe a tela necessária
-    isScrollControlled: true,
-    // Define o estilo visual com bordas superiores arredondadas
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-    ),
-    // Constrói o conteúdo dinâmico do painel modal
-    builder: (context) {
-      // Widget que permite atualizar o estado local do modal independentemente
-      return StatefulBuilder(
-        builder: (builderContext, setModalState) {
-          // Define as margens e o comportamento de ajuste ao teclado
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-              left: 28,
-              right: 28,
-              top: 28,
-            ),
-            // Organiza os elementos do formulário em uma coluna compacta
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Barra visual decorativa no topo do modal
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
                   ),
-                ),
-                // Adiciona um espaçamento vertical de 24 pixels
-                const SizedBox(height: 24),
-                // Exibe o ícone de aperto de mãos simbolizando o acordo
-                const Icon(Icons.handshake_outlined, size: 48, color: Color(0xFF512DA8)),
-                // Adiciona um espaçamento vertical de 16 pixels
-                const SizedBox(height: 16),
-                // Título principal do diálogo de contraproposta
-                const Text(
-                  "Contraproposta",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                // Adiciona um espaçamento vertical de 8 pixels
-                const SizedBox(height: 8),
-                // Texto explicativo sobre a regra mínima de 5% para contrapropostas
-                const Text(
-                  "Você pode fazer uma contraproposta investindo no mínimo em 5% ou mais das ações da startup.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Color(0xFFFFA000), height: 1.5),
-                ),
-                // Adiciona um espaçamento vertical de 20 pixels
-                const SizedBox(height: 20),
-                // Campo de entrada para a quantidade de tokens desejada
-                TextField(
-                  controller: qtdController,
-                  // Filtros para garantir que apenas números inteiros positivos sejam aceitos
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    TextInputFormatter.withFunction((oldValue, newValue) {
-                      if (newValue.text.isEmpty) return newValue;
-                      final n = int.tryParse(newValue.text);
-                      if (n == null || n <= 0) return oldValue;
-                      return newValue.copyWith(text: n.toString());
+                  // Exibe uma linha informativa caso não existam ofertas registradas
+                  if (docs.isEmpty)
+                    TableRow(
+                      children: [
+                        // Mensagem de ausência de dados ocupando a primeira célula
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            'Nenhuma oferta ainda.',
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                        ),
+                        // Célula vazia para manter o alinhamento da tabela
+                        const SizedBox(),
+                        // Outra célula vazia para manter o alinhamento
+                        const SizedBox(),
+                      ],
+                    )
+                  // Mapeia os documentos de ofertas para linhas da tabela se existirem
+                  else
+                    ...docs.map((doc) {
+                      // Converte os dados do documento para um mapa chave-valor
+                      final data = doc.data() as Map<String, dynamic>;
+                      // Extrai e trata a quantidade de tokens como número
+                      final tokens = (data['Tokens Comprados'] ?? 0) as num;
+                      // Extrai e trata o valor unitário do token como número
+                      final valorToken = (data['Valor Token'] ?? 0) as num;
+                      // Extrai e trata o valor total pago como número
+                      final totalPago = (data['Preco Pago'] ?? 0) as num;
+                      // Retorna uma linha de oferta formatada
+                      return _orderRow(
+                        tokens.toString(),
+                        'R\$ ${valorToken.toStringAsFixed(2)}',
+                        'R\$ ${totalPago.toStringAsFixed(2)}',
+                        Colors.black,
+                      );
                     }),
-                  ],
-                  // Configuração visual e rótulo do campo de quantidade
-                  decoration: InputDecoration(
-                    labelText: "Quantidade de tokens",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    prefixIcon: const Icon(Icons.token),
-                  ),
-                  // Define o teclado numérico para facilitar a entrada
-                  keyboardType: TextInputType.number,
-                  // Lógica executada a cada alteração no valor do campo
-                  onChanged: (value) async {
-                    // Tenta converter o valor atual em número inteiro
-                    final qtd = int.tryParse(value) ?? 0;
-                    // Se a quantidade for válida, inicia a busca de dados do mercado
-                    if (qtd > 0) {
-                      // Verifica se os dados globais já foram buscados anteriormente
-                      if (!dadosCarregados && !carregando) {
-                        // Marca como carregando para evitar chamadas paralelas
-                        carregando = true;
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
-                        // Obtém o identificador interno da startup
-                        final startupId = widget.startup['id'] ?? _getStartupId(widget.startup['ticker']);
+  // Método para abrir o diálogo de informações e criação de contraproposta
+  void _abrirContrapropostaInfo() {
+    // Controlador para o campo de texto da quantidade de tokens
+    final qtdController = TextEditingController();
+    // Controlador para o campo de texto do preço sugerido
+    final precoController = TextEditingController();
+    // Variável para armazenar a porcentagem calculada da participação
+    double porcentagem = 0;
+    // Controle de visibilidade do campo de preço baseado na validade da quantidade
+    bool mostrarPreco = false;
 
-                        // Busca o documento principal da startup no Firestore
-                        final startupSnap = await FirebaseFirestore.instance
-                            .collection('startups')
-                            .doc(startupId)
-                            .get();
-                        // Extrai o total de tokens emitidos pela empresa
-                        totalTokensIssued = (startupSnap.data()?['totalTokensIssued'] ?? 1) as num;
+    // Variável para armazenar o total de tokens emitidos pela startup
+    num totalTokensIssued = 1;
+    // Variável para acumular o total de tokens já negociados no mercado
+    num totalVendidoGeral = 0;
+    // Flag para evitar múltiplas buscas desnecessárias ao banco de dados
+    bool dadosCarregados = false;
+    // Valor inteiro representando a porcentagem de desconto concedida
+    int desconto = 0;
+    // Valor calculado do preço mínimo com desconto aplicado
+    double valorComDesconto = 0;
+    // Valor base do preço sem qualquer desconto aplicado
+    double valorSemDesconto = 0;
+    // Mensagem de erro para validação do preço inserido
+    String? precoErro;
+    // Estado para indicar se a contraproposta está sendo enviada ao servidor
+    bool enviando = false;
+    // Estado para indicar se os dados iniciais estão sendo carregados
+    bool carregando = false;
 
-                        // Busca todo o histórico de negociações para calcular o estoque
-                        final historicoGeralSnap = await FirebaseFirestore.instance
-                            .collection('startups')
-                            .doc(startupId)
-                            .collection('Histórico')
-                            .get();
-
-                        // Itera pelos registros para calcular o saldo líquido de tokens
-                        for (var doc in historicoGeralSnap.docs) {
-                          final data = doc.data();
-                          // Soma tokens comprados ao volume negociado
-                          if (data['tipo'] == 'Compra') {
-                            totalVendidoGeral += (data['Tokens Comprados'] ?? 0) as num;
-                          }
-                          // Subtrai tokens vendidos do volume negociado
-                          if (data['tipo'] == 'Venda') {
-                            totalVendidoGeral -= (data['Tokens Vendidos'] ?? 0) as num;
-                          }
-                        }
-                        // Busca as ofertas pendentes para complementar o cálculo de estoque
-                        final ofertasSnap = await FirebaseFirestore.instance
-                            .collection('startups')
-                            .doc(startupId)
-                            .collection('Ofertas')
-                            .get();
-
-                        // Adiciona as ofertas ao total vendido geral
-                        for (var doc in ofertasSnap.docs) {
-                          totalVendidoGeral += (doc.data()['Tokens Comprados'] ?? 0) as num;
-                        }
-
-                        // Marca que os dados base foram carregados com sucesso
-                        dadosCarregados = true;
-                      }
-
-                      // Calcula o estoque real de tokens disponíveis para negociação
-                      final tokensDisponiveis = (totalTokensIssued - totalVendidoGeral).toInt();
-
-                      // Se o usuário pedir mais do que há no mercado, limita ao disponível
-                      if (qtd > tokensDisponiveis) {
-                        qtdController.text = tokensDisponiveis.toString();
-                        // Reposiciona o cursor no final do texto corrigido
-                        qtdController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: qtdController.text.length),
-                        );
-                      }
-
-                      // Define a quantidade final após as validações de estoque
-                      final qtdFinal = qtd > tokensDisponiveis ? tokensDisponiveis : qtd;
-                      // Calcula a porcentagem que esta compra representa no capital da startup
-                      final pct = qtdFinal == tokensDisponiveis
-                          ? 100.0
-                          : (qtdFinal / totalTokensIssued) * 100;
-
-                      // Atualiza o estado do modal com os novos cálculos de desconto e preços
-                      setModalState(() {
-                        porcentagem = pct;
-                        mostrarPreco = true;
-                        // O desconto é proporcional à participação, limitado a 30%
-                        desconto = (pct / 100 * 30).round();
-                        // Calcula o preço sugerido com o desconto aplicado
-                        valorComDesconto = widget.startup['preco'] * (1 - desconto / 100);
-                        // Define o preço base (sem desconto) como limite superior
-                        valorSemDesconto = widget.startup['preco'];
-                        // Limpa o campo de preço para forçar nova entrada válida
-                        precoController.clear();
-                      });
-                    } else {
-                      // Reseta as variáveis de controle caso a quantidade seja zerada
-                      setModalState(() {
-                        porcentagem = 0;
-                        mostrarPreco = false;
-                        desconto = 0;
-                        precoController.clear();
-                      });
-                    }
-                  },
-                ),
-
-                // Adiciona um espaçamento vertical de 12 pixels
-                const SizedBox(height: 12),
-
-                // Exibe aviso se a participação for menor que o requisito de 5%
-                if (mostrarPreco && porcentagem < 5)
-                  Text(
-                    "A sua contraproposta de ${porcentagem.toStringAsFixed(3)}% tem menos de 5% dos tokens.",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Colors.red,
-                      height: 1.5,
+    // Exibe o painel modal inferior configurado para entrada de dados
+    showModalBottomSheet(
+      context: context,
+      // Permite que o modal se ajuste ao teclado e ocupe a tela necessária
+      isScrollControlled: true,
+      // Define o estilo visual com bordas superiores arredondadas
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      // Constrói o conteúdo dinâmico do painel modal
+      builder: (context) {
+        // Widget que permite atualizar o estado local do modal independentemente
+        return StatefulBuilder(
+          builder: (builderContext, setModalState) {
+            // Define as margens e o comportamento de ajuste ao teclado
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 28,
+                right: 28,
+                top: 28,
+              ),
+              // Organiza os elementos do formulário em uma coluna compacta
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Barra visual decorativa no topo do modal
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-
-                // Exibe as opções de preço se a participação atingir o mínimo de 5%
-                if (mostrarPreco && porcentagem >= 5) ...[
-                  // Texto informativo sobre o desconto disponível baseado na participação
-                  Text(
-                    "Você tem direito a um desconto de $desconto%, escolha um valor para pagar entre R\$ ${valorComDesconto.toStringAsFixed(2)} e R\$ ${valorSemDesconto.toStringAsFixed(2)}",
+                  // Adiciona um espaçamento vertical de 24 pixels
+                  const SizedBox(height: 24),
+                  // Exibe o ícone de aperto de mãos simbolizando o acordo
+                  const Icon(
+                    Icons.handshake_outlined,
+                    size: 48,
+                    color: Color(0xFF512DA8),
+                  ),
+                  // Adiciona um espaçamento vertical de 16 pixels
+                  const SizedBox(height: 16),
+                  // Título principal do diálogo de contraproposta
+                  const Text(
+                    "Contraproposta",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  // Adiciona um espaçamento vertical de 8 pixels
+                  const SizedBox(height: 8),
+                  // Texto explicativo sobre a regra mínima de 5% para contrapropostas
+                  const Text(
+                    "Você pode fazer uma contraproposta investindo no mínimo em 5% ou mais das ações da startup.",
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 13,
+                    style: TextStyle(
+                      fontSize: 14,
                       color: Color(0xFFFFA000),
                       height: 1.5,
                     ),
                   ),
-                  // Adiciona um espaçamento vertical de 12 pixels
-                  const SizedBox(height: 12),
-                  // Campo de entrada para o preço sugerido por token
+                  // Adiciona um espaçamento vertical de 20 pixels
+                  const SizedBox(height: 20),
+                  // Campo de entrada para a quantidade de tokens desejada
                   TextField(
-                    controller: precoController,
-                    // Permite entrada de números decimais
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    // Valida a entrada para aceitar apenas formato monetário
+                    controller: qtdController,
+                    // Filtros para garantir que apenas números inteiros positivos sejam aceitos
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*[,.]?\d{0,2}')),
+                      FilteringTextInputFormatter.digitsOnly,
+                      TextInputFormatter.withFunction((oldValue, newValue) {
+                        if (newValue.text.isEmpty) return newValue;
+                        final n = int.tryParse(newValue.text);
+                        if (n == null || n <= 0) return oldValue;
+                        return newValue.copyWith(text: n.toString());
+                      }),
                     ],
-                    // Configura a decoração visual e ícone do campo de preço
+                    // Configuração visual e rótulo do campo de quantidade
                     decoration: InputDecoration(
-                      labelText: "Preço por token (R\$)",
+                      labelText: "Quantidade de tokens",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      prefixIcon: const Icon(Icons.attach_money),
-                      errorText: precoErro,
+                      prefixIcon: const Icon(Icons.token),
                     ),
-                    // Valida o preço em tempo real conforme o usuário digita
-                    onChanged: (value) {
-                      final preco = double.tryParse(value.replaceAll(',', '.')) ?? 0;
-                      // Limpa o erro se o campo estiver vazio
-                      if (value.isEmpty) {
-                        setModalState(() { precoErro = null; });
-                        return;
-                      }
-                      // Verifica se o preço está dentro da faixa permitida com desconto
-                      if (preco < valorComDesconto || preco > valorSemDesconto) {
+                    // Define o teclado numérico para facilitar a entrada
+                    keyboardType: TextInputType.number,
+                    // Lógica executada a cada alteração no valor do campo
+                    onChanged: (value) async {
+                      // Tenta converter o valor atual em número inteiro
+                      final qtd = int.tryParse(value) ?? 0;
+                      // Se a quantidade for válida, inicia a busca de dados do mercado
+                      if (qtd > 0) {
+                        // Verifica se os dados globais já foram buscados anteriormente
+                        if (!dadosCarregados && !carregando) {
+                          // Marca como carregando para evitar chamadas paralelas
+                          carregando = true;
+
+                          // Obtém o identificador interno da startup
+                          final startupId =
+                              widget.startup['id'] ??
+                              _getStartupId(widget.startup['ticker']);
+
+                          // Busca o documento principal da startup no Firestore
+                          final startupSnap = await FirebaseFirestore.instance
+                              .collection('startups')
+                              .doc(startupId)
+                              .get();
+                          // Extrai o total de tokens emitidos pela empresa
+                          totalTokensIssued =
+                              (startupSnap.data()?['totalTokensIssued'] ?? 1)
+                                  as num;
+
+                          // Busca todo o histórico de negociações para calcular o estoque
+                          final historicoGeralSnap = await FirebaseFirestore
+                              .instance
+                              .collection('startups')
+                              .doc(startupId)
+                              .collection('Histórico')
+                              .get();
+
+                          // Itera pelos registros para calcular o saldo líquido de tokens
+                          for (var doc in historicoGeralSnap.docs) {
+                            final data = doc.data();
+                            // Soma tokens comprados ao volume negociado
+                            if (data['tipo'] == 'Compra') {
+                              totalVendidoGeral +=
+                                  (data['Tokens Comprados'] ?? 0) as num;
+                            }
+                            // Subtrai tokens vendidos do volume negociado
+                            if (data['tipo'] == 'Venda') {
+                              totalVendidoGeral -=
+                                  (data['Tokens Vendidos'] ?? 0) as num;
+                            }
+                          }
+                          // Busca as ofertas pendentes para complementar o cálculo de estoque
+                          final ofertasSnap = await FirebaseFirestore.instance
+                              .collection('startups')
+                              .doc(startupId)
+                              .collection('Ofertas')
+                              .get();
+
+                          // Adiciona as ofertas ao total vendido geral
+                          for (var doc in ofertasSnap.docs) {
+                            totalVendidoGeral +=
+                                (doc.data()['Tokens Comprados'] ?? 0) as num;
+                          }
+
+                          // Marca que os dados base foram carregados com sucesso
+                          dadosCarregados = true;
+                        }
+
+                        // Calcula o estoque real de tokens disponíveis para negociação
+                        final tokensDisponiveis =
+                            (totalTokensIssued - totalVendidoGeral).toInt();
+
+                        // Se o usuário pedir mais do que há no mercado, limita ao disponível
+                        if (qtd > tokensDisponiveis) {
+                          qtdController.text = tokensDisponiveis.toString();
+                          // Reposiciona o cursor no final do texto corrigido
+                          qtdController.selection = TextSelection.fromPosition(
+                            TextPosition(offset: qtdController.text.length),
+                          );
+                        }
+
+                        // Define a quantidade final após as validações de estoque
+                        final qtdFinal = qtd > tokensDisponiveis
+                            ? tokensDisponiveis
+                            : qtd;
+                        // Calcula a porcentagem que esta compra representa no capital da startup
+                        final pct = qtdFinal == tokensDisponiveis
+                            ? 100.0
+                            : (qtdFinal / totalTokensIssued) * 100;
+
+                        // Atualiza o estado do modal com os novos cálculos de desconto e preços
                         setModalState(() {
-                          precoErro = 'Valor deve ser entre R\$ ${valorComDesconto.toStringAsFixed(2)} e R\$ ${valorSemDesconto.toStringAsFixed(2)}';
+                          porcentagem = pct;
+                          mostrarPreco = true;
+                          // O desconto é proporcional à participação, limitado a 30%
+                          desconto = (pct / 100 * 30).round();
+                          // Calcula o preço sugerido com o desconto aplicado
+                          valorComDesconto =
+                              widget.startup['preco'] * (1 - desconto / 100);
+                          // Define o preço base (sem desconto) como limite superior
+                          valorSemDesconto = widget.startup['preco'];
+                          // Limpa o campo de preço para forçar nova entrada válida
+                          precoController.clear();
                         });
                       } else {
-                        // Remove o erro se o valor for válido
-                        setModalState(() { precoErro = null; });
+                        // Reseta as variáveis de controle caso a quantidade seja zerada
+                        setModalState(() {
+                          porcentagem = 0;
+                          mostrarPreco = false;
+                          desconto = 0;
+                          precoController.clear();
+                        });
                       }
                     },
                   ),
-                ],
 
-                // Adiciona um espaçamento vertical de 20 pixels
-                const SizedBox(height: 20),
-                // Botão principal para submeter a contraproposta
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    // Define o estilo visual roxo e arredondado do botão
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF512DA8),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  // Adiciona um espaçamento vertical de 12 pixels
+                  const SizedBox(height: 12),
+
+                  // Exibe aviso se a participação for menor que o requisito de 5%
+                  if (mostrarPreco && porcentagem < 5)
+                    Text(
+                      "A sua contraproposta de ${porcentagem.toStringAsFixed(3)}% tem menos de 5% dos tokens.",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.red,
+                        height: 1.5,
                       ),
                     ),
-                    // Desabilita o botão se já estiver enviando dados
-                    onPressed: enviando ? null : () async {
 
-                      // Captura e sanitiza o preço e quantidade finais
-                      final preco = double.tryParse(precoController.text.replaceAll(',', '.')) ?? 0;
-                      final qtd = int.tryParse(qtdController.text) ?? 0;
-
-                      // Valida se os campos obrigatórios foram preenchidos
-                      if (qtd <= 0 || preco <= 0) {
-                        setModalState(() {
-                          enviando = false;
-                          precoErro = 'Preencha o preço por token.';
-                        });
-                        return;
-                      }
-
-                      // Define uma pequena margem de tolerância para cálculos de ponto flutuante
-                      const tolerancia = 0.01;
-
-                      // Valida se o preço final submetido respeita os limites calculados
-                      if (preco < valorComDesconto - tolerancia || preco > valorSemDesconto + tolerancia) {
-                        setModalState(() { enviando = false; });
-                        // Exibe aviso flutuante sobre o preço inválido
-                        ScaffoldMessenger.of(builderContext).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Preço deve estar entre R\$ ${valorComDesconto.toStringAsFixed(2)} e R\$ ${valorSemDesconto.toStringAsFixed(2)}.',
-                            ),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                        return;
-                      }
-
-                      // Calcula o montante financeiro total necessário para a operação
-                      final totalNecessario = qtd * preco;
-                      // Obtém o identificador único do usuário autenticado
-                      final uid = FirebaseAuth.instance.currentUser?.uid;
-                      // Interrompe se o usuário não estiver logado
-                      if (uid == null) {
-                        setModalState(() { enviando = false; }); // <--
-                        return;
-                      }
-
-                      // Ativa o estado de carregamento visual
-                      setModalState(() { enviando = true; });
-
-                      try {
-                          // Registra no console a busca pelo saldo do usuário
-                          debugPrint('Buscando saldo...');
-                          // Referencia o documento de saldo do usuário no Firestore
-                          final saldoRef = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(uid)
-                              .collection('carteira')
-                              .doc('saldo');
-                              
-                          // Busca os dados atuais do saldo
-                          final userSnap = await saldoRef.get();
-                          // Extrai o valor numérico do saldo
-                          final saldoAtual = (userSnap.data()?['saldo'] ?? 0) as num;
-                          // Registra o saldo atual no console para depuração
-                          debugPrint('saldoAtual: $saldoAtual');
-
-                        // Valida se o usuário possui fundos suficientes para a compra
-                        if (saldoAtual < totalNecessario) {
-                          // Calcula o valor que falta para completar a transação
-                          final falta = totalNecessario - saldoAtual;
-                          // Fecha o modal e exibe erro de saldo insuficiente
-                          Navigator.pop(builderContext);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Saldo insuficiente. Faltam R\$ ${falta.toStringAsFixed(2)} para realizar a contraproposta.',
-                              ),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
+                  // Exibe as opções de preço se a participação atingir o mínimo de 5%
+                  if (mostrarPreco && porcentagem >= 5) ...[
+                    // Texto informativo sobre o desconto disponível baseado na participação
+                    Text(
+                      "Você tem direito a um desconto de $desconto%, escolha um valor para pagar entre R\$ ${valorComDesconto.toStringAsFixed(2)} e R\$ ${valorSemDesconto.toStringAsFixed(2)}",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFFFFA000),
+                        height: 1.5,
+                      ),
+                    ),
+                    // Adiciona um espaçamento vertical de 12 pixels
+                    const SizedBox(height: 12),
+                    // Campo de entrada para o preço sugerido por token
+                    TextField(
+                      controller: precoController,
+                      // Permite entrada de números decimais
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      // Valida a entrada para aceitar apenas formato monetário
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d*[,.]?\d{0,2}'),
+                        ),
+                      ],
+                      // Configura a decoração visual e ícone do campo de preço
+                      decoration: InputDecoration(
+                        labelText: "Preço por token (R\$)",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        prefixIcon: const Icon(Icons.attach_money),
+                        errorText: precoErro,
+                      ),
+                      // Valida o preço em tempo real conforme o usuário digita
+                      onChanged: (value) {
+                        final preco =
+                            double.tryParse(value.replaceAll(',', '.')) ?? 0;
+                        // Limpa o erro se o campo estiver vazio
+                        if (value.isEmpty) {
+                          setModalState(() {
+                            precoErro = null;
+                          });
                           return;
                         }
-
-                        // Obtém o ID interno da startup via ticker
-                        final startupId = widget.startup['id'] ?? _getStartupId(widget.startup['ticker']);
-
-                        // Deduz o valor da compra do saldo do usuário no banco de dados
-                        await saldoRef.update({'saldo': saldoAtual - totalNecessario});
-
-                        // Registra a nova oferta na coleção da startup
-                        await FirebaseFirestore.instance
-                            .collection('startups')
-                            .doc(startupId)
-                            .collection('Ofertas')
-                            .add({
-                          'Preco Pago': totalNecessario,
-                          'Tokens Comprados': qtd,
-                          'Valor Token': preco,
-                          'data': FieldValue.serverTimestamp(),
-                          'status': 'Sucesso',
-                          'tipo': 'Compra',
-                          'uid': uid,
-                        });
-
-                        // Referencia o registro de investimento do usuário para esta startup
-                        final investimentoRef = FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(uid)
-                            .collection('investimentos')
-                            .doc(startupId);
-
-                        // Verifica se o usuário já possui investimentos nesta empresa
-                        final investimentoSnap = await investimentoRef.get();
-
-                        // Atualiza ou cria o registro de investimento conforme a existência
-                        if (investimentoSnap.exists) {
-                          // Acumula os tokens e valores aos registros já existentes
-                          final tokensAtuais = (investimentoSnap.data()?['tokensComprados'] ?? 0) as num;
-                          final valorAtuais = (investimentoSnap.data()?['valorPago'] ?? 0) as num;
-                          await investimentoRef.update({
-                            'tokensComprados': tokensAtuais + qtd,
-                            'valorPago': valorAtuais + totalNecessario,
+                        // Verifica se o preço está dentro da faixa permitida com desconto
+                        if (preco < valorComDesconto ||
+                            preco > valorSemDesconto) {
+                          setModalState(() {
+                            precoErro =
+                                'Valor deve ser entre R\$ ${valorComDesconto.toStringAsFixed(2)} e R\$ ${valorSemDesconto.toStringAsFixed(2)}';
                           });
                         } else {
-                          // Cria um novo registro de investimento para o usuário
-                          await investimentoRef.set({
-                            'tokensComprados': qtd,
-                            'valorPago': totalNecessario,
+                          // Remove o erro se o valor for válido
+                          setModalState(() {
+                            precoErro = null;
                           });
                         }
+                      },
+                    ),
+                  ],
 
-                        // Fecha o modal e exibe mensagem de sucesso
-                        Navigator.pop(builderContext);
-                        ScaffoldMessenger.of(builderContext).showSnackBar(
-                          const SnackBar(
-                            content: Text('Contraproposta enviada com sucesso!'),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      // Captura e trata qualquer erro durante o processo de transação
-                      } catch (e) {
-                        // Remove o estado de carregamento e exibe mensagem de erro genérica
-                        setModalState(() { enviando = false; });
-                        ScaffoldMessenger.of(builderContext).showSnackBar(
-                          const SnackBar(
-                            content: Text('Erro ao enviar contraproposta. Tente novamente.'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
-                    // Exibe carregador ou texto dependendo do estado de envio
-                    child: enviando
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          // Ícone de progresso circular branco
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Text(
-                          "Fazer Contraproposta",
-                          style: TextStyle(color: Colors.white, fontSize: 15),
+                  // Adiciona um espaçamento vertical de 20 pixels
+                  const SizedBox(height: 20),
+                  // Botão principal para submeter a contraproposta
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      // Define o estilo visual roxo e arredondado do botão
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF512DA8),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
+                      ),
+                      // Desabilita o botão se já estiver enviando dados
+                      onPressed: enviando
+                          ? null
+                          : () async {
+                              // Captura e sanitiza o preço e quantidade finais
+                              final preco =
+                                  double.tryParse(
+                                    precoController.text.replaceAll(',', '.'),
+                                  ) ??
+                                  0;
+                              final qtd = int.tryParse(qtdController.text) ?? 0;
+
+                              // Valida se os campos obrigatórios foram preenchidos
+                              if (qtd <= 0 || preco <= 0) {
+                                setModalState(() {
+                                  enviando = false;
+                                  precoErro = 'Preencha o preço por token.';
+                                });
+                                return;
+                              }
+
+                              // Define uma pequena margem de tolerância para cálculos de ponto flutuante
+                              const tolerancia = 0.01;
+
+                              // Valida se o preço final submetido respeita os limites calculados
+                              if (preco < valorComDesconto - tolerancia ||
+                                  preco > valorSemDesconto + tolerancia) {
+                                setModalState(() {
+                                  enviando = false;
+                                });
+                                // Exibe aviso flutuante sobre o preço inválido
+                                ScaffoldMessenger.of(
+                                  builderContext,
+                                ).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Preço deve estar entre R\$ ${valorComDesconto.toStringAsFixed(2)} e R\$ ${valorSemDesconto.toStringAsFixed(2)}.',
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              // Calcula o montante financeiro total necessário para a operação
+                              final totalNecessario = qtd * preco;
+                              // Obtém o identificador único do usuário autenticado
+                              final uid =
+                                  FirebaseAuth.instance.currentUser?.uid;
+                              // Interrompe se o usuário não estiver logado
+                              if (uid == null) {
+                                setModalState(() {
+                                  enviando = false;
+                                }); // <--
+                                return;
+                              }
+
+                              // Ativa o estado de carregamento visual
+                              setModalState(() {
+                                enviando = true;
+                              });
+
+                              try {
+                                // Registra no console a busca pelo saldo do usuário
+                                debugPrint('Buscando saldo...');
+                                // Referencia o documento de saldo do usuário no Firestore
+                                final saldoRef = FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(uid)
+                                    .collection('carteira')
+                                    .doc('saldo');
+
+                                // Busca os dados atuais do saldo
+                                final userSnap = await saldoRef.get();
+                                // Extrai o valor numérico do saldo
+                                final saldoAtual =
+                                    (userSnap.data()?['saldo'] ?? 0) as num;
+                                // Registra o saldo atual no console para depuração
+                                debugPrint('saldoAtual: $saldoAtual');
+
+                                // Valida se o usuário possui fundos suficientes para a compra
+                                if (saldoAtual < totalNecessario) {
+                                  // Calcula o valor que falta para completar a transação
+                                  final falta = totalNecessario - saldoAtual;
+                                  // Fecha o modal e exibe erro de saldo insuficiente
+                                  Navigator.pop(builderContext);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Saldo insuficiente. Faltam R\$ ${falta.toStringAsFixed(2)} para realizar a contraproposta.',
+                                      ),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                // Obtém o ID interno da startup via ticker
+                                final startupId =
+                                    widget.startup['id'] ??
+                                    _getStartupId(widget.startup['ticker']);
+
+                                // Deduz o valor da compra do saldo do usuário no banco de dados
+                                await saldoRef.update({
+                                  'saldo': saldoAtual - totalNecessario,
+                                });
+
+                                // Registra a nova oferta na coleção da startup
+                                await FirebaseFirestore.instance
+                                    .collection('startups')
+                                    .doc(startupId)
+                                    .collection('Ofertas')
+                                    .add({
+                                      'Preco Pago': totalNecessario,
+                                      'Tokens Comprados': qtd,
+                                      'Valor Token': preco,
+                                      'data': FieldValue.serverTimestamp(),
+                                      'status': 'Sucesso',
+                                      'tipo': 'Compra',
+                                      'uid': uid,
+                                    });
+
+                                // Referencia o registro de investimento do usuário para esta startup
+                                final investimentoRef = FirebaseFirestore
+                                    .instance
+                                    .collection('users')
+                                    .doc(uid)
+                                    .collection('investimentos')
+                                    .doc(startupId);
+
+                                // Verifica se o usuário já possui investimentos nesta empresa
+                                final investimentoSnap = await investimentoRef
+                                    .get();
+
+                                // Atualiza ou cria o registro de investimento conforme a existência
+                                if (investimentoSnap.exists) {
+                                  // Acumula os tokens e valores aos registros já existentes
+                                  final tokensAtuais =
+                                      (investimentoSnap
+                                                  .data()?['tokensComprados'] ??
+                                              0)
+                                          as num;
+                                  final valorAtuais =
+                                      (investimentoSnap.data()?['valorPago'] ??
+                                              0)
+                                          as num;
+                                  await investimentoRef.update({
+                                    'tokensComprados': tokensAtuais + qtd,
+                                    'valorPago': valorAtuais + totalNecessario,
+                                  });
+                                } else {
+                                  // Cria um novo registro de investimento para o usuário
+                                  await investimentoRef.set({
+                                    'tokensComprados': qtd,
+                                    'valorPago': totalNecessario,
+                                  });
+                                }
+
+                                // Fecha o modal e exibe mensagem de sucesso
+                                Navigator.pop(builderContext);
+                                ScaffoldMessenger.of(
+                                  builderContext,
+                                ).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Contraproposta enviada com sucesso!',
+                                    ),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                                // Captura e trata qualquer erro durante o processo de transação
+                              } catch (e) {
+                                // Remove o estado de carregamento e exibe mensagem de erro genérica
+                                setModalState(() {
+                                  enviando = false;
+                                });
+                                ScaffoldMessenger.of(
+                                  builderContext,
+                                ).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Erro ao enviar contraproposta. Tente novamente.',
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            },
+                      // Exibe carregador ou texto dependendo do estado de envio
+                      child: enviando
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              // Ícone de progresso circular branco
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text(
+                              "Fazer Contraproposta",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                              ),
+                            ),
+                    ),
                   ),
-                ),
-                // Adiciona um espaçamento vertical final de 20 pixels
-                const SizedBox(height: 20),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
-}
+                  // Adiciona um espaçamento vertical final de 20 pixels
+                  const SizedBox(height: 20),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   // Widget de Histórico que usa a lista _historicoFake
   // Método que constrói a lista dinâmica de histórico de transações do usuário
   Widget _buildDynamicHistory() {
-  // Obtém o ID do usuário autenticado no momento
-  final uid = FirebaseAuth.instance.currentUser?.uid;
-  // Define o ID da startup com base nos dados fornecidos ou via ticker
-  final startupId = widget.startup['id'] ??
-      _getStartupId(widget.startup['ticker']);
+    // Obtém o ID do usuário autenticado no momento
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    // Define o ID da startup com base nos dados fornecidos ou via ticker
+    final startupId =
+        widget.startup['id'] ?? _getStartupId(widget.startup['ticker']);
 
-  // Adiciona preenchimento horizontal de 20 pixels
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    // Organiza o título e a lista em uma coluna vertical
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Exibe o título "Histórico" com estilo cinza e negrito
-        const Text(
-          "Histórico",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
-        ),
-        // Adiciona um espaçamento vertical de 10 pixels
-        const SizedBox(height: 10),
-        // Widget que escuta em tempo real o histórico de transações no Firestore
-        StreamBuilder<QuerySnapshot>(
-          // Define a consulta filtrada pelo usuário logado e ordenada por data
-          stream: FirebaseFirestore.instance
-              .collection('startups')
-              .doc(startupId)
-              .collection('Histórico')
-              .where('uid', isEqualTo: uid)
-              .orderBy('data', descending: true)
-              .snapshots(),
-          // Construtor da interface baseada nos dados do histórico
-          builder: (context, snapshot) {
-            // Exibe carregamento enquanto os dados não são recebidos
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+    // Adiciona preenchimento horizontal de 20 pixels
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      // Organiza o título e a lista em uma coluna vertical
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Exibe o título "Histórico" com estilo cinza e negrito
+          const Text(
+            "Histórico",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+          ),
+          // Adiciona um espaçamento vertical de 10 pixels
+          const SizedBox(height: 10),
+          // Widget que escuta em tempo real o histórico de transações no Firestore
+          StreamBuilder<QuerySnapshot>(
+            // Define a consulta filtrada pelo usuário logado e ordenada por data
+            stream: FirebaseFirestore.instance
+                .collection('startups')
+                .doc(startupId)
+                .collection('Histórico')
+                .where('uid', isEqualTo: uid)
+                .orderBy('data', descending: true)
+                .snapshots(),
+            // Construtor da interface baseada nos dados do histórico
+            builder: (context, snapshot) {
+              // Exibe carregamento enquanto os dados não são recebidos
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            // Extrai a lista de documentos do snapshot
-            final docs = snapshot.data?.docs ?? [];
+              // Extrai a lista de documentos do snapshot
+              final docs = snapshot.data?.docs ?? [];
 
-            // Exibe mensagem informativa se não houver transações registradas
-            if (docs.isEmpty) {
-              return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Text(
-                  'Nenhuma transação encontrada.',
-                  style: TextStyle(color: Colors.grey, fontSize: 13),
-                ),
-              );
-            }
-
-            // Define quais documentos exibir baseado no estado da variável _verTodos
-            final exibir = _verTodos ? docs : docs.take(2).toList();
-
-            // Retorna uma coluna contendo os itens do histórico e botão de expansão
-            return Column(
-              children: [
-                // Mapeia cada documento para um widget de linha de transação
-                ...exibir.map((doc) {
-                  // Converte os dados do documento para um mapa
-                  final data = doc.data() as Map<String, dynamic>;
-                  // Retorna o widget visual da transação individual
-                  return _buildTransactionTile(data);
-                }),
-                // Exibe o botão de "Ver mais/menos" se houver mais de 2 itens
-                if (docs.length > 2)
-                  TextButton(
-                    // Alterna o estado de visualização completa ao clicar
-                    onPressed: () => setState(() => _verTodos = !_verTodos),
-                    // Define o rótulo dinâmico do botão
-                    child: Text(
-                      _verTodos ? 'Ver menos' : 'Ver mais',
-                      style: const TextStyle(color: Color(0xFF512DA8)),
-                    ),
+              // Exibe mensagem informativa se não houver transações registradas
+              if (docs.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Text(
+                    'Nenhuma transação encontrada.',
+                    style: TextStyle(color: Colors.grey, fontSize: 13),
                   ),
-              ],
-            );
-          },
-        ),
-      ],
-    ),
-  );
-}
+                );
+              }
 
+              // Define quais documentos exibir baseado no estado da variável _verTodos
+              final exibir = _verTodos ? docs : docs.take(2).toList();
 
+              // Retorna uma coluna contendo os itens do histórico e botão de expansão
+              return Column(
+                children: [
+                  // Mapeia cada documento para um widget de linha de transação
+                  ...exibir.map((doc) {
+                    // Converte os dados do documento para um mapa
+                    final data = doc.data() as Map<String, dynamic>;
+                    // Retorna o widget visual da transação individual
+                    return _buildTransactionTile(data);
+                  }),
+                  // Exibe o botão de "Ver mais/menos" se houver mais de 2 itens
+                  if (docs.length > 2)
+                    TextButton(
+                      // Alterna o estado de visualização completa ao clicar
+                      onPressed: () => setState(() => _verTodos = !_verTodos),
+                      // Define o rótulo dinâmico do botão
+                      child: Text(
+                        _verTodos ? 'Ver menos' : 'Ver mais',
+                        style: const TextStyle(color: Color(0xFF512DA8)),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   // Método auxiliar para construir o cabeçalho das tabelas
   Widget _tableHeader(String label) => Padding(
-  // Adiciona preenchimento vertical de 8 pixels
-  padding: const EdgeInsets.symmetric(vertical: 8),
-  // Retorna o texto do cabeçalho formatado em negrito
-  child: Text(
-    label,
-    style: const TextStyle(
-      fontSize: 10,
-      color: Colors.black,
-      fontWeight: FontWeight.bold,
+    // Adiciona preenchimento vertical de 8 pixels
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    // Retorna o texto do cabeçalho formatado em negrito
+    child: Text(
+      label,
+      style: const TextStyle(
+        fontSize: 10,
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+      ),
     ),
-  ),
-);
+  );
 
-// Método auxiliar para construir uma linha de dados no livro de ofertas
-TableRow _orderRow(String tipo, String qtd, String preco, Color color) {
-  // Retorna uma linha de tabela com três células
-  return TableRow(
-    children: [
-      // Primeira célula contendo o tipo da oferta ou quantidade
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Text(
-          tipo,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 12,
+  // Método auxiliar para construir uma linha de dados no livro de ofertas
+  TableRow _orderRow(String tipo, String qtd, String preco, Color color) {
+    // Retorna uma linha de tabela com três células
+    return TableRow(
+      children: [
+        // Primeira célula contendo o tipo da oferta ou quantidade
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            tipo,
+            style: const TextStyle(color: Colors.black, fontSize: 12),
           ),
         ),
-      ),
-      // Segunda célula contendo a quantidade de tokens em verde
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Text(qtd, style: const TextStyle(fontSize: 12, color: Colors.green)),
-      ),
-      // Terceira célula contendo o preço total em verde
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Text(preco, style: const TextStyle(fontSize: 12, color: Colors.green)),
-      ),
-    ],
-  );
-}
+        // Segunda célula contendo a quantidade de tokens em verde
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            qtd,
+            style: const TextStyle(fontSize: 12, color: Colors.green),
+          ),
+        ),
+        // Terceira célula contendo o preço total em verde
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            preco,
+            style: const TextStyle(fontSize: 12, color: Colors.green),
+          ),
+        ),
+      ],
+    );
+  }
 
   // Método auxiliar para construir os botões circulares de ação rápida
   Widget _buildActionButton(IconData icon, String label, VoidCallback onTap) {
@@ -2149,8 +2388,8 @@ TableRow _orderRow(String tipo, String qtd, String preco, Color color) {
     );
   }
 
-// Método auxiliar para construir cada linha individual do histórico
-Widget _buildTransactionTile(Map<String, dynamic> item) {
+  // Método auxiliar para construir cada linha individual do histórico
+  Widget _buildTransactionTile(Map<String, dynamic> item) {
     // Identifica o tipo de transação (Compra ou Venda)
     final tipo = item['tipo'] ?? 'Compra';
     // Booleano que indica se a transação é uma compra
@@ -2162,8 +2401,9 @@ Widget _buildTransactionTile(Map<String, dynamic> item) {
 
     // Formata a data e hora do servidor para exibição amigável
     final dataFormatada = item['data'] != null
-        ? DateFormat('MMM dd, hh:mm a')
-            .format((item['data'] as Timestamp).toDate())
+        ? DateFormat(
+            'MMM dd, hh:mm a',
+          ).format((item['data'] as Timestamp).toDate())
         : '';
 
     // Retorna um componente de lista clicável
@@ -2253,8 +2493,9 @@ class TransactionDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Formata a data da transação para exibição amigável ou define mensagem padrão
     final dataFormatada = transacao['data'] != null
-        ? DateFormat('MMM dd, hh:mm a')
-            .format((transacao['data'] as Timestamp).toDate())
+        ? DateFormat(
+            'MMM dd, hh:mm a',
+          ).format((transacao['data'] as Timestamp).toDate())
         : 'Data não disponível';
 
     // Retorna a estrutura básica da página de detalhes
@@ -2310,13 +2551,26 @@ class TransactionDetailsScreen extends StatelessWidget {
                   // Exibe a linha com a data da transação
                   _buildDetailRow("Data", dataFormatada),
                   // Exibe a linha com o status atual da transação
-                  _buildDetailRow("Status", transacao['status'] ?? '-', isStatus: true),
+                  _buildDetailRow(
+                    "Status",
+                    transacao['status'] ?? '-',
+                    isStatus: true,
+                  ),
                   // Exibe a linha com o preço total da operação
-                  _buildDetailRow("Preço Pago", "R\$ ${(transacao['Preco Pago'] as num?)?.toStringAsFixed(2) ?? '0.00'}"),
+                  _buildDetailRow(
+                    "Preço Pago",
+                    "R\$ ${(transacao['Preco Pago'] as num?)?.toStringAsFixed(2) ?? '0.00'}",
+                  ),
                   // Exibe a linha com a quantidade de tokens envolvida
-                  _buildDetailRow("Tokens Comprados", "${transacao['Tokens Comprados'] ?? transacao['Tokens Vendidos'] ?? 0}"),
+                  _buildDetailRow(
+                    "Tokens Comprados",
+                    "${transacao['Tokens Comprados'] ?? transacao['Tokens Vendidos'] ?? 0}",
+                  ),
                   // Exibe a linha com o valor unitário do token na operação
-                  _buildDetailRow("Valor do Token", "R\$ ${(transacao['Valor Token'] as num?)?.toStringAsFixed(2) ?? '0.00'}"),
+                  _buildDetailRow(
+                    "Valor do Token",
+                    "R\$ ${(transacao['Valor Token'] as num?)?.toStringAsFixed(2) ?? '0.00'}",
+                  ),
                 ],
               ),
             ),
