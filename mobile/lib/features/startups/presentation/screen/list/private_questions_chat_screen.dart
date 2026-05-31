@@ -1,7 +1,24 @@
+// Vinícius Panutti Salgado - 25007329
+// ── private_questions_chat_screen.dart ─────────────────────────────────
+// Tela de chat privado com os fundadores da startup.
+//
+// Responsabilidades:
+//   1. Exibir uma interface de mensagens (estilo chat) para comunicação.
+//   2. Restringir acesso: esta tela só pode ser chamada se o usuário
+//      for comprovadamente um investidor (verificado na tela anterior).
+//   3. Construir bolhas de mensagem e rolagem automática ao enviar.
+//
+// Componentes Chave:
+//   - ListView com ScrollController: para scrollar as mensagens.
+//   - TextField: campo para compor a pergunta, com estado reativo para 
+//     habilitar/desabilitar o botão de envio.
+// ───────────────────────────────────────────────────────────────────────
 import 'package:flutter/material.dart';
 import 'package:mobile/core/theme/app_colors.dart';
 import 'package:mobile/features/startups/domain/startup.dart';
 
+// ── PrivateQuestionsChatScreen — Tela Stateful ───────────────────────
+// Recebe a startup via construtor para compor a header do chat.
 class PrivateQuestionsChatScreen extends StatefulWidget {
   final StartupDetail startup;
 
